@@ -33,11 +33,9 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "generate-changelog": "^1.8.0"
+    "@actions/github": "^4.0.0"
   },
   "devDependencies": {
-    "@types/generate-changelog": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
     "@vercel/ncc": "^0.24.1",

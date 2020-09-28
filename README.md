@@ -12,10 +12,6 @@ Automatic Changelog generator
 
 Exclude selected commit types (comma separated).
 
-### `allow-unknown`
-
-Allow unknown commit types.
-
 ## Outputs
 
 ### `changelog`
@@ -29,5 +25,4 @@ uses: ardalanamini/auto-changelog@v1.0.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
-  allow-unknown: 'true'
 ```
