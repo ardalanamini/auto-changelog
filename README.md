@@ -2,7 +2,7 @@
 
 Automatic Changelog generator
 
-##Usage
+## Usage
 
 To use this action, your commit messages have to follow the format below:
 
