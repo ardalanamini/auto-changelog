@@ -1,0 +1,33 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    env:
+      RELEASE: ${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run all
+
+      - id: changelog
+        uses: ardalanamini/auto-changelog@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: |
+            ${{ steps.changelog.outputs.changelog }}
