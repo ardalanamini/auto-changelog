@@ -1,0 +1,46 @@
+{
+  "name": "auto-changelog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Github Automatic Changelog action",
+  "author": {
+    "name": "Ardalan Amini",
+    "email": "ardalanamini22@gmail.com",
+    "url": "https://ardalanamini.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ardalanamini/auto-changelog#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ardalanamini/auto-changelog.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ardalanamini/auto-changelog/issues"
+  },
+  "keywords": [
+    "actions",
+    "changelog"
+  ],
+  "main": "dist/index.js",
+  "scripts": {
+    "format": "prettier --write src",
+    "lint": "eslint src",
+    "build": "tsc",
+    "watch": "npm run build -- --watch",
+    "package": "ncc build --out action --minify --source-map --license licenses.txt",
+    "all": "npm run format && npm run lint && npm run build && npm run package",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "@vercel/ncc": "^0.24.1",
+    "eslint": "^7.10.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
+  }
+}

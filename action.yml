@@ -1,0 +1,16 @@
+name: 'Auto Changelog'
+description: 'Automatic Changelog generator'
+author: 'Ardalan Amini'
+branding:
+  icon: 'clock'
+  color: 'blue'
+inputs:
+  token:
+    description: 'Github token'
+    required: true
+outputs:
+  changelog:
+    description: 'The generated changelogs'
+runs:
+  using: 'node12'
+  main: 'action/index.js'
