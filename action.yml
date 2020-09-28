@@ -8,6 +8,14 @@ inputs:
   token:
     description: 'Github token'
     required: true
+  exclude:
+    description: 'Exclude selected commit types (comma separated)'
+    required: false
+    default: ''
+  allow-unknown:
+    description: 'Allow unknown commit types'
+    required: false
+    default: 'false'
 outputs:
   changelog:
     description: 'The generated changelogs'

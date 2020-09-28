@@ -20,4 +20,22 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  test-with-exclude: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exclude: 'chore,ci,build'
+
+  test-with-allow-unknown: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allow-unknown: 'true'

@@ -5,6 +5,9 @@ import Changelog from "generate-changelog";
 async function run() {
   try {
     const token = getInput("token", { required: true });
+    const exclude = getInput("exclude", { required: false }).split(",");
+    const allowUnknown =
+      getInput("allow-unknown", { required: false }) === "true";
     const octokit = getOctokit(token);
     const {
       repo: { owner, repo },
@@ -25,10 +28,14 @@ async function run() {
       } else tag = tags[0].name;
     }
 
-    const changelog = await Changelog.generate({
+    let changelog = await Changelog.generate({
       repoUrl: `https://github.com/${owner}/${repo}`,
       tag,
+      exclude,
+      allowUnknown,
     });
+
+    changelog = changelog.replace(/^#+ +(\d)/, "#### v$1");
 
     info(changelog);
 
