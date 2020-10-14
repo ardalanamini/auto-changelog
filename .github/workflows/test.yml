@@ -31,7 +31,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: 'chore,ci,build'
 
-  test-with-changelog: # make sure the action works on a clean machine without building
+  test-with-empty-changelog: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,6 +40,20 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           updateFile: true
           changeLogFilePath: './CHANGELOG.md'
-          fileHeading: 'ChangeLog for Auto Changelog Github Action'
+          fileHeading: '# ChangeLog for Auto Changelog Github Action'
           sectionHeading: '## Release {{ GITHUB_REF }}'
-      - run: echo ./CHANGELOG.md
+      - run: cat ./CHANGELOG.md
+
+  test-with-existing-changelog: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: printf '# ChangeLog for Auto Changelog Github Action\n\n' | tee ./CHANGELOG.md
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          updateFile: true
+          changeLogFilePath: './CHANGELOG.md'
+          fileHeading: '# ChangeLog for Auto Changelog Github Action'
+          sectionHeading: '## Release {{ GITHUB_REF }}'
+      - run: cat ./CHANGELOG.md
