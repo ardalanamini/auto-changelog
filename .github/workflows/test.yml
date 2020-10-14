@@ -38,7 +38,7 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          updateFile: true
+          updateFile: 'true'
           changeLogFilePath: './CHANGELOG.md'
           fileHeading: '# ChangeLog for Auto Changelog Github Action'
           sectionHeading: '## Release {{ GITHUB_REF }}'
@@ -52,7 +52,7 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          updateFile: true
+          updateFile: 'true'
           changeLogFilePath: './CHANGELOG.md'
           fileHeading: '# ChangeLog for Auto Changelog Github Action'
           sectionHeading: '## Release {{ GITHUB_REF }}'

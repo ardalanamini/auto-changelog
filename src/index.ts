@@ -34,7 +34,7 @@ async function run() {
 
     setOutput("changelog", changelog);
 
-    if (updateFile) {
+    if (updateFile === "true") {
       await updateChangelogFile(changelog);
     }
   } catch (error) {

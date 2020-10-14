@@ -71,7 +71,7 @@ uses: ardalanamini/auto-changelog@v1.0.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
-  updateFile: true
+  updateFile: 'true'
   changeLogFilePath: './CHANGELOG.md'
   fileHeading: '# My Project Change Log'
   sectionHeading: '## Release: {{ GITHUB_REF }}'
