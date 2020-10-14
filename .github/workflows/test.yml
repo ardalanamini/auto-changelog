@@ -30,3 +30,38 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: 'chore,ci,build'
+
+  test-generating-new-changelog-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run all
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate: 'true'
+          path: './CHANGELOG.md'
+          title: '# ChangeLog for Auto Changelog Github Action'
+          section: '## Release {{ GITHUB_REF }}'
+      - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
+      - run: cat ./CHANGELOG.md | grep -q '## Release ' ; echo $?
+      - run: cat ./CHANGELOG.md
+
+  test-updating-existing-changelog-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run all
+      - run: printf '# ChangeLog for Auto Changelog Github Action\n\n' | tee ./CHANGELOG.md
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate: 'true'
+          path: './CHANGELOG.md'
+          title: '# ChangeLog for Auto Changelog Github Action'
+          section: '## Release - {{ GITHUB_REF }}'
+      - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
+      - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
+      - run: cat ./CHANGELOG.md

@@ -12,6 +12,22 @@ inputs:
     description: 'Exclude selected commit types (comma separated)'
     required: false
     default: ''
+  generate:
+    description: 'Set to true if a CHANGELOG.md is to be generated/updated'
+    required: false
+    default: false
+  path:
+    description: 'Specify the path of the change log filefor updating if generate is set to true'
+    required: false
+    default: './CHANGELOG.md'
+  title:
+    description: 'Specify the markdown text to use as the file heading'
+    required: false
+    default: '# Changelog'
+  section:
+    description: 'Specify the tagged markdown text to use for each release section'
+    required: false
+    default: '## Release {{ GITHUB_REF }}'
 outputs:
   changelog:
     description: 'The generated changelogs'
