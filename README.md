@@ -42,6 +42,22 @@ The `flag` is optional (if provided, it must be surrounded in square brackets). 
 
 Exclude selected commit types (comma separated).
 
+#### `generate`
+
+Generate or update a change log file.
+
+#### `path`
+
+If `generate` set, specifies the path of the change log file to update (default `./CHANGELOG.md`)
+
+#### `title`
+
+If `generate` set, specifies the markdown text to use as the file heading (default `# Changelog`)
+
+#### `section`
+
+If `generate` set, specifies the tagged markdown text to use for each release section (default `## Release {{ GITHUB_REF }}`)
+
 ### Outputs
 
 #### `changelog`
@@ -55,4 +71,8 @@ uses: ardalanamini/auto-changelog@v1.0.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
+  generate: 'true'
+  path: './CHANGELOG.md'
+  title: '# My Project Change Log'
+  section: '## Release: {{ GITHUB_REF }}'
 ```
