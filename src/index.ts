@@ -7,7 +7,7 @@ async function run() {
   try {
     const token = getInput("token", { required: true });
     const exclude = getInput("exclude", { required: false }).split(",");
-    const generate = getInput("generate", { required: false });
+    const updateFile = getInput("generate", { required: false });
     const octokit = getOctokit(token);
     const {
       repo: { owner, repo },
@@ -34,7 +34,7 @@ async function run() {
 
     setOutput("changelog", changelog);
 
-    if (generate === "true") {
+    if (updateFile === "true") {
       await updateChangelogFile(changelog);
     }
   } catch (error) {
