@@ -56,7 +56,7 @@ If `updateFile` set, specifies the markdown text to use as the file heading (def
 
 #### `sectionHeading`
 
-If `updateFile` set, specifies the tagged markdown text to use for each release section (default `## Release ${{ GITHUB_REF }}`)
+If `updateFile` set, specifies the tagged markdown text to use for each release section (default `## Release {{ GITHUB_REF }}`)
 
 ### Outputs
 
@@ -71,4 +71,8 @@ uses: ardalanamini/auto-changelog@v1.0.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
+  updateFile: true
+  changeLogFilePath: './CHANGELOG.md'
+  fileHeading: '# My Project Change Log'
+  sectionHeading: '## Release: {{ GITHUB_REF }}'
 ```

@@ -41,5 +41,5 @@ jobs:
           updateFile: true
           changeLogFilePath: './CHANGELOG.md'
           fileHeading: 'ChangeLog for Auto Changelog Github Action'
-          sectionHeading: '## Release ${{ GITHUB_REF }}'
+          sectionHeading: '## Release {{ GITHUB_REF }}'
       - run: echo ./CHANGELOG.md
