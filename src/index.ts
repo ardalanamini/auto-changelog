@@ -1,11 +1,13 @@
 import { info, getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { generate } from "./changelog";
+import { updateChangelogFile } from "./updateChangelogFile";
 
 async function run() {
   try {
     const token = getInput("token", { required: true });
     const exclude = getInput("exclude", { required: false }).split(",");
+    const updateFile = getInput("updateFile", { required: false });
     const octokit = getOctokit(token);
     const {
       repo: { owner, repo },
@@ -31,6 +33,10 @@ async function run() {
     info(changelog);
 
     setOutput("changelog", changelog);
+
+    if (updateFile) {
+      await updateChangelogFile(changelog);
+    }
   } catch (error) {
     setFailed(error.message);
   }
