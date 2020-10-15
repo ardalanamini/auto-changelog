@@ -92,7 +92,7 @@ function trim(value: string): string {
   return value.trim().replace(/ {2,}/g, " ");
 }
 
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*$/;
+const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*\n?/;
 const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
