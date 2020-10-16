@@ -25,7 +25,7 @@ export async function generate(
     for (const { sha, ...commit } of data) {
       if (sha === tagRef) break paginator;
 
-      const message = commit.commit.message;
+      const message = commit.commit.message.split("\n")[0];
 
       let [, type, category, title, flag] = COMMIT_REGEX.exec(message) || [];
 
@@ -92,7 +92,7 @@ function trim(value: string): string {
   return value.trim().replace(/ {2,}/g, " ");
 }
 
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*\n?/;
+const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*$/;
 const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
