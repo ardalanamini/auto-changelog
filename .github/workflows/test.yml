@@ -37,15 +37,19 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm ci
       - run: npm run all
+      - run: |
+          CURRENT_DATE=$(date +%Y-%m-%d)
+          echo ::set-output name=heading::## Release - $CURRENT_DATE
+        id: heading_step
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           generate: 'true'
           path: './CHANGELOG.md'
           title: '# ChangeLog for Auto Changelog Github Action'
-          section: '## Release {{ GITHUB_REF }}'
+          section: ${{ steps.heading_step.outputs.heading }}
       - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
-      - run: cat ./CHANGELOG.md | grep -q '## Release ' ; echo $?
+      - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
       - run: cat ./CHANGELOG.md
 
   test-updating-existing-changelog-file:
@@ -55,13 +59,44 @@ jobs:
       - run: npm ci
       - run: npm run all
       - run: printf '# ChangeLog for Auto Changelog Github Action\n\n' | tee ./CHANGELOG.md
+      - run: |
+          CURRENT_DATE=$(date +%Y-%m-%d)
+          echo ::set-output name=heading::## Release - $CURRENT_DATE
+        id: heading_step
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           generate: 'true'
           path: './CHANGELOG.md'
           title: '# ChangeLog for Auto Changelog Github Action'
-          section: '## Release - {{ GITHUB_REF }}'
+          section: ${{ steps.heading_step.outputs.heading }}
       - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
       - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
       - run: cat ./CHANGELOG.md
+
+  test-committing-changelog-file:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm run all
+      - run: printf '# ChangeLog for Auto Changelog Github Action\n\n' | tee ./CHANGELOG.md
+      - run: |
+          CURRENT_DATE=$(date +%Y-%m-%d)
+          echo ::set-output name=heading::## Release - $CURRENT_DATE
+        id: heading_step
+      - uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate: 'true'
+          path: './CHANGELOG.md'
+          title: '# ChangeLog for Auto Changelog Github Action'
+          section: ${{ steps.heading_step.outputs.heading }}
+          files_to_commit: './CHANGELOG.md'
+          commit_message: 'chore(pipeline updates): [skip ci]'
+          author_name: 'Github Action CI'
+          author_email: 'support@github.com'
+      - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
+      - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
+      - run: cat ./CHANGELOG.md
+      - run: git rm ./CHANGELOG.md

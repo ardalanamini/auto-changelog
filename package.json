@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0"
+    "@actions/github": "^4.0.0",
+    "simple-git": "^2.21.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.4.1",
