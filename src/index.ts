@@ -2,12 +2,14 @@ import { info, getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { generate } from "./changelog";
 import { updateChangelogFile } from "./updateChangelogFile";
+import { commitFiles } from "./commitFiles";
 
 async function run() {
   try {
     const token = getInput("token", { required: true });
     const exclude = getInput("exclude", { required: false }).split(",");
     const updateFile = getInput("generate", { required: false });
+    const files = getInput("files_to_commit", { required: false });
     const octokit = getOctokit(token);
     const {
       repo: { owner, repo },
@@ -36,6 +38,10 @@ async function run() {
 
     if (updateFile === "true") {
       await updateChangelogFile(changelog);
+    }
+
+    if (files.length) {
+      await commitFiles(files.split(","));
     }
   } catch (error) {
     setFailed(error.message);

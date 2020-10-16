@@ -6,19 +6,16 @@ export async function updateChangelogFile(changeLog: string): Promise<void> {
   if (changeLogPath.length === 0) changeLogPath = "./CHANGELOG.md";
   info(`Updating changelog file at ${changeLogPath}`);
 
-  let title = getInput("title", { required: false });
+  let title = getInput("title", { required: false }).trim();
   if (title.length === 0) title = "# Changelog";
 
   let section = getInput("section", { required: false });
-  if (section.length === 0)
-    section = `## Release ${process.env.GITHUB_REF}`;
+  if (section.length === 0) section = `## Release ${process.env.GITHUB_REF}`;
 
   let existingContent = "";
   fs.access(changeLogPath, fs.constants.F_OK, async (err) => {
     if (!err) {
-      existingContent = (
-        await fs.promises.readFile(changeLogPath)
-      ).toString();
+      existingContent = (await fs.promises.readFile(changeLogPath)).toString();
     }
   });
 
@@ -41,20 +38,20 @@ function createNewContent(
 ): string {
   let updatedContent = "";
   if (existingContent.length === 0) {
-    updatedContent = `${title}\n\n${addNewReleaseSection(
-      newContent,
-      section,
-    )}`;
+    updatedContent = `${title}\n\n${addNewReleaseSection(newContent, section)}`;
   } else {
     // Remove original heading so we can add our new section then add it back
-    const strippedContent = existingContent.replace(title, "").trim();
+    const strippedContent = existingContent
+      .trim()
+      .replace(/^# .*?\n+/g, "")
+      .trim();
 
     const releaseSection = addNewReleaseSection(newContent, section);
     updatedContent = `${title}\n\n${releaseSection}${strippedContent}`;
   }
-  return updatedContent;
+  return updatedContent.trim();
 }
 
 function addNewReleaseSection(content: string, section: string): string {
-  return `\n\n${section}\n\n${content}\n\n`;
+  return `${section}\n\n${content}\n\n`;
 }
