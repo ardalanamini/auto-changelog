@@ -31,14 +31,14 @@ export async function generate(
 
       if (!title) continue;
 
+      flag = trim(flag);
+      if (flag === "ignore") continue;
+
       type = trim(type);
       type =
         (TYPES as { [type: string]: string | undefined })[type] ?? TYPES.other;
 
       category = category ? trim(category) : "";
-
-      flag = trim(flag);
-      if (flag !== "breaking") flag = undefined as never;
 
       title = trim(title).replace(
         PR_REGEX,
