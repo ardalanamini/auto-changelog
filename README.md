@@ -55,7 +55,7 @@ The generated changelog.
 ### Example usage
 
 ```yaml
-uses: ardalanamini/auto-changelog@v1.0.1
+uses: ardalanamini/auto-changelog@v1.1.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
