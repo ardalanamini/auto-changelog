@@ -30,15 +30,19 @@ The `type` must be one of the followings:
 
 The `category` is optional and can be anything of your choice.
 
-The `flag` is optional (if provided, it must be surrounded in square brackets). (eg. `breaking`)
+The `flag` is optional (if provided, it must be surrounded in square brackets) and can be one of the followings:
+
+* `ignore` (Omits the commit from the changelog)
+
+> If `flag` is not found in the list, it'll be ignored.
 
 ### Inputs
 
-#### `token`
+#### `token` **(Required)**
 
-**Required** Github token.
+Github token.
 
-#### `exclude`
+#### `exclude` **(Optional)**
 
 Exclude selected commit types (comma separated).
 
