@@ -1,16 +1,17 @@
-import { info, getInput } from "@actions/core";
+import { info } from "@actions/core";
+import { context } from "@actions/github";
+import { GitHub } from "@actions/github/lib/utils";
 import * as fs from "fs";
 
-export async function updateChangelogFile(changeLog: string): Promise<void> {
-  let changeLogPath = getInput("path", { required: false });
-  if (changeLogPath.length === 0) changeLogPath = "./CHANGELOG.md";
+export async function updateChangelogFile(
+  octokit: InstanceType<typeof GitHub>,
+  changeLog: string,
+): Promise<void> {
+  const changeLogPath = "./CHANGELOG.md";
   info(`Updating changelog file at ${changeLogPath}`);
 
-  let title = getInput("title", { required: false }).trim();
-  if (title.length === 0) title = "# Changelog";
-
-  let section = getInput("section", { required: false });
-  if (section.length === 0) section = `## Release ${process.env.GITHUB_REF}`;
+  const title = `# ${context.repo.repo}`;
+  const section = `## Release ${new Date().toISOString().substr(0, 10)}`;
 
   let existingContent = "";
   fs.access(changeLogPath, fs.constants.F_OK, async (err) => {
@@ -27,7 +28,17 @@ export async function updateChangelogFile(changeLog: string): Promise<void> {
   );
 
   info("Writing new or updated changelog file");
-  await fs.promises.writeFile(changeLogPath, updatedContent);
+  await octokit.repos.createOrUpdateFileContents({
+    repo: context.repo.repo,
+    path: "./CHANGELOG.md",
+    content: updatedContent,
+    owner: context.repo.owner,
+    message: "chore(pipeline updates): [skip ci]",
+    author: {
+      name: "GitHub CI",
+      email: "ci@github.com",
+    },
+  });
 }
 
 function createNewContent(

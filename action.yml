@@ -16,32 +16,6 @@ inputs:
     description: 'Set to true if a CHANGELOG.md is to be generated/updated'
     required: false
     default: false
-  path:
-    description: 'Specify the path of the change log filefor updating if generate is set to true'
-    required: false
-    default: './CHANGELOG.md'
-  title:
-    description: 'Specify the markdown text to use as the file heading'
-    required: false
-    default: '# Changelog'
-  section:
-    description: 'Specify the tagged markdown text to use for each release section'
-    required: false
-    default: '## Release {{ GITHUB_REF }}'
-  files_to_commit:
-    description: 'Specify which files you would like to automatically commit once changed (comma separated); this allows you to also commit any files with updated version numbers'
-    required: false
-    default: ''
-  commit_message:
-    description: 'Specify the message to use for committing changed files'
-    required: false
-    default: 'chore(pipeline updates): [skip ci]'
-  author_name:
-    description: 'Specify the name to assign to the committed files'
-    required: true
-  author_email:
-    description: 'Specify the email to assign to the committed files'
-    required: true
 outputs:
   changelog:
     description: 'The generated changelogs'

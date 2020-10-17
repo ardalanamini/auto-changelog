@@ -44,35 +44,7 @@ Exclude selected commit types (comma separated).
 
 #### `generate`
 
-Generate or update a change log file.
-
-#### `path`
-
-If `generate` set, specifies the path of the change log file to update (default `./CHANGELOG.md`)
-
-#### `title`
-
-If `generate` set, specifies the markdown text to use as the file heading (default `# Changelog`)
-
-#### `section`
-
-If `generate` set, specifies the tagged markdown text to use for each release section (default `## Release {{ GITHUB_REF }}`)
-
-#### `files_to_commit`
-
-Commits any files, like the updated changelog file, to the repo on completion (comma separated). Does not commit anything by default.
-
-#### `commit_message`
-
-If `files_to_commit` contains any files to commit, this specifies the message to use (default `chore(pipeline updates): [skip ci]`)
-
-#### `author_name`
-
-If `files_to_commit` contains any files to commit, this specifies the Author Name to assign to the commit (required if files are being committed)
-
-#### `author_email`
-
-If `files_to_commit` contains any files to commit, this specifies the Author Email to assign to the commit (required if files are being committed)
+Generate or update a change log file located as `.\CHANGELOG.md`. Each new log section will be titled `## Release {{ CURRENT_DATE }}`. This file will be committed to the repository.
 
 ### Outputs
 
@@ -88,11 +60,4 @@ with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
   generate: 'true'
-  path: './CHANGELOG.md'
-  title: '# My Project Change Log'
-  section: '## Release'
-  files_to_commit: './CHANGELOG.md'
-  commit_message: 'chore(pipeline updates): [skip ci]'
-  author_name: 'My Name'
-  author_email: 'my@email.com'
 ```
