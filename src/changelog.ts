@@ -44,9 +44,7 @@ export async function generate(
         PR_REGEX,
         (match, pull) => `[${match}](${repoUrl}/pull/${pull})`,
       );
-      if (flag) title = title.replace(new RegExp(` ?\\[${flag}\\]$`), "");
       title = `${title} ([${sha.slice(0, 8)}](${repoUrl}/commit/${sha}))`;
-      if (flag) title += ` **[${flag}]**`;
 
       commits[type] = commits[type] ?? {};
       commits[type][category] = commits[type][category] ?? [];
@@ -92,7 +90,7 @@ function trim(value: string): string {
   return value.trim().replace(/ {2,}/g, " ");
 }
 
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*$/;
+const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
 const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
