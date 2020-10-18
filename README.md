@@ -46,6 +46,10 @@ Github token.
 
 Exclude selected commit types (comma separated).
 
+#### `file`
+
+Specify a change log file to create or update with the latest log. Omit to not write to any file. This file will be committed to the repository.
+
 ### Outputs
 
 #### `changelog`
@@ -59,4 +63,5 @@ uses: ardalanamini/auto-changelog@v1.1.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
+  file: './CHANGELOG.md'
 ```

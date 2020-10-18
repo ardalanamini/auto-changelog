@@ -12,6 +12,9 @@ inputs:
     description: 'Exclude selected commit types (comma separated)'
     required: false
     default: ''
+  file:
+    description: 'Specify a change log file to create or update with the latest log. Omit to not write to any file'
+    required: false
 outputs:
   changelog:
     description: 'The generated changelogs'
