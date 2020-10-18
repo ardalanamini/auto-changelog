@@ -40,7 +40,7 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          generate: 'true'
+          file: './CHANGELOG.md'
       - run: cat ./CHANGELOG.md | grep -q '# auto-changelog' ; echo $?
       - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
       - run: cat ./CHANGELOG.md
@@ -55,7 +55,7 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          generate: 'true'
+          file: './CHANGELOG.md'
       - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
       - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
       - run: cat ./CHANGELOG.md
@@ -70,7 +70,7 @@ jobs:
       - uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          generate: 'true'
+          file: './CHANGELOG.md'
       - run: cat ./CHANGELOG.md | grep -q '# ChangeLog for Auto Changelog Github Action' ; echo $?
       - run: cat ./CHANGELOG.md | grep -q '## Release - ' ; echo $?
       - run: cat ./CHANGELOG.md

@@ -5,9 +5,9 @@ import * as fs from "fs";
 
 export async function updateChangelogFile(
   octokit: InstanceType<typeof GitHub>,
+  changeLogPath: string,
   changeLog: string,
 ): Promise<void> {
-  const changeLogPath = "./CHANGELOG.md";
   info(`Updating changelog file at ${changeLogPath}`);
 
   const title = `# ${context.repo.repo}`;
@@ -30,10 +30,10 @@ export async function updateChangelogFile(
   info("Writing new or updated changelog file");
   await octokit.repos.createOrUpdateFileContents({
     repo: context.repo.repo,
-    path: "./CHANGELOG.md",
+    path: changeLogPath,
     content: updatedContent,
     owner: context.repo.owner,
-    message: "chore(pipeline updates): [skip ci]",
+    message: `chore: updating change log [skip ci]`,
     author: {
       name: "GitHub CI",
       email: "ci@github.com",
@@ -45,24 +45,27 @@ function createNewContent(
   existingContent: string,
   newContent: string,
   title: string,
-  section: string,
+  sectionHeading: string,
 ): string {
   let updatedContent = "";
   if (existingContent.length === 0) {
-    updatedContent = `${title}\n\n${addNewReleaseSection(newContent, section)}`;
+    updatedContent = `${title}\n\n${addNewReleaseSection(sectionHeading, newContent)}`;
   } else {
-    // Remove original heading so we can add our new section then add it back
-    const strippedContent = existingContent
-      .trim()
-      .replace(/^# .*?\n+/g, "")
-      .trim();
+    const releaseSection = addNewReleaseSection(sectionHeading, newContent);
 
-    const releaseSection = addNewReleaseSection(newContent, section);
-    updatedContent = `${title}\n\n${releaseSection}${strippedContent}`;
+    // Find last release heading which will be a level 2 head: '## '
+    const lastReleaseIndex = existingContent.indexOf('\n## ');
+    if (lastReleaseIndex === -1) {
+      // Should never get here really, but if we do append the new changelog to the end
+      updatedContent = `${existingContent}\n\n${releaseSection}`;
+    } else {
+      updatedContent = `${existingContent.substr(0, lastReleaseIndex).trim()}\n\n${releaseSection}${existingContent.substr(lastReleaseIndex).trim()}`;
+    }
   }
+
   return updatedContent.trim();
 }
 
-function addNewReleaseSection(content: string, section: string): string {
+function addNewReleaseSection(section: string, content: string): string {
   return `${section}\n\n${content}\n\n`;
 }

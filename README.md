@@ -42,9 +42,9 @@ The `flag` is optional (if provided, it must be surrounded in square brackets). 
 
 Exclude selected commit types (comma separated).
 
-#### `generate`
+#### `file`
 
-Generate or update a change log file located as `.\CHANGELOG.md`. Each new log section will be titled `## Release {{ CURRENT_DATE }}`. This file will be committed to the repository.
+Specify a change log file to create or update with the latest log. Omit to not write to any file. This file will be committed to the repository.
 
 ### Outputs
 
@@ -59,5 +59,5 @@ uses: ardalanamini/auto-changelog@v1.0.0
 with:
   token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
-  generate: 'true'
+  file: './CHANGELOG.md'
 ```
