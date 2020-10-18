@@ -12,7 +12,7 @@ export async function generate(
   );
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
-  const commits: Commits = {};
+  const commits: Logs = {};
 
   paginator: for await (const { data } of octokit.paginate.iterator(
     octokit.repos.listCommits,
@@ -31,26 +31,30 @@ export async function generate(
 
       if (!title) continue;
 
+      flag = trim(flag);
+      if (flag === "ignore") continue;
+
       type = trim(type);
       type =
         (TYPES as { [type: string]: string | undefined })[type] ?? TYPES.other;
 
       category = category ? trim(category) : "";
 
-      flag = trim(flag);
-      if (flag !== "breaking") flag = undefined as never;
-
       title = trim(title).replace(
         PR_REGEX,
         (match, pull) => `[${match}](${repoUrl}/pull/${pull})`,
       );
-      if (flag) title = title.replace(new RegExp(` ?\\[${flag}\\]$`), "");
-      title = `${title} ([${sha.slice(0, 8)}](${repoUrl}/commit/${sha}))`;
-      if (flag) title += ` **[${flag}]**`;
 
       commits[type] = commits[type] ?? {};
       commits[type][category] = commits[type][category] ?? [];
-      commits[type][category].push(title);
+
+      const existingIndex = commits[type][category].findIndex(
+        (commit) => commit.title === title,
+      );
+
+      if (existingIndex === -1)
+        commits[type][category].push({ title, commits: [sha] });
+      else commits[type][category][existingIndex].commits.push(sha);
     }
   }
 
@@ -74,8 +78,12 @@ export async function generate(
 
         const baseLine = defaultCategory ? "" : "  ";
 
-        for (const title of categoryGroup) {
-          changelog.push(baseLine + "* " + title);
+        for (const { title, commits } of categoryGroup) {
+          changelog.push(
+            `${baseLine}* ${title} (${commits
+              .map((sha) => `[${sha.slice(0, 8)}](${repoUrl}/commit/${sha})`)
+              .join(",")})`,
+          );
         }
       }
 
@@ -92,7 +100,7 @@ function trim(value: string): string {
   return value.trim().replace(/ {2,}/g, " ");
 }
 
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?(?:\[([^\]]+?)\]|))\s*$/;
+const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
 const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
@@ -111,8 +119,13 @@ const TYPES = {
   test: "Tests",
 };
 
-interface Commits {
+interface Logs {
   [type: string]: {
-    [category: string]: string[];
+    [category: string]: Log[];
   };
+}
+
+interface Log {
+  title: string;
+  commits: string[];
 }
