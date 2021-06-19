@@ -1,32 +1,55 @@
 name: Test
 
 on: # rebuild any PRs and main branch changes
-  pull_request:
   push:
     branches:
       - master
+  pull_request:
 
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci
-      - run: npm run all
+
+      - name: Setup Cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ matrix.os }}-${{ matrix.node-version }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install packages
+        run: npm i
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Package
+        run: npm run package
 
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+
+      - name: Changelog
+        uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   test-with-exclude: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+
+      - name: Changelog
+        uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           exclude: 'chore,ci,build'

@@ -23,12 +23,13 @@
   ],
   "main": "dist/index.js",
   "scripts": {
-    "format": "prettier --write src",
     "lint": "eslint src",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:format": "prettier --write src",
     "build": "tsc",
-    "watch": "npm run build -- --watch",
+    "build:watch": "npm run build -- --watch",
     "package": "ncc build --out action --minify --source-map --license licenses.txt",
-    "all": "npm run format && npm run lint && npm run build && npm run package",
+    "all": "npm run lint:format && npm run lint && npm run build && npm run package",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
