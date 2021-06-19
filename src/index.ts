@@ -11,7 +11,7 @@ async function run() {
     sha,
   } = context;
 
-  const { data: tags } = await octokit.repos.listTags({
+  const { data: tags } = await octokit.rest.repos.listTags({
     owner,
     repo,
     per_page: 2,

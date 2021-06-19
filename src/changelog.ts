@@ -15,7 +15,7 @@ export async function generate(
   const commits: Logs = {};
 
   paginator: for await (const { data } of octokit.paginate.iterator(
-    octokit.repos.listCommits,
+    octokit.rest.repos.listCommits,
     {
       per_page: 100,
       owner,
