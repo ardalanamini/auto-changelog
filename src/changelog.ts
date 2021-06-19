@@ -105,9 +105,10 @@ const PR_REGEX = /#([1-9]\d*)/g;
 
 const TYPES = {
   breaking: "Breaking Changes",
-  build: "Build System / Dependencies",
+  build: "Build System",
   ci: "Continuous Integration",
   chore: "Chores",
+  deps: "Dependencies",
   docs: "Documentation Changes",
   feat: "New Features",
   fix: "Bug Fixes",

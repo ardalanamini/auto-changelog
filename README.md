@@ -13,9 +13,10 @@ type(category): description [flag]
 The `type` must be one of the followings:
 
 * `breaking` (Breaking Changes)
-* `build` (Build System / Dependencies)
+* `build` (Build System)
 * `ci` (Continuous Integration)
 * `chore` (Chores)
+* `deps` (Dependencies)
 * `docs` (Documentation Changes)
 * `feat` (New Features)
 * `fix` (Bug Fixes)
