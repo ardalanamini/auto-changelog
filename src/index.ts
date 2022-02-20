@@ -25,7 +25,14 @@ async function run() {
     } else tagRef = tags[0].commit.sha;
   }
 
-  const changelog = await generate(octokit, exclude, owner, repo, tagRef);
+  const changelog = await generate({
+    octokit,
+    exclude,
+    owner,
+    repo,
+    sha,
+    tagRef,
+  });
 
   info(changelog);
 

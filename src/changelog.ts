@@ -1,18 +1,15 @@
 import type { GitHub } from "@actions/github/lib/utils";
 
-export async function generate(
-  octokit: InstanceType<typeof GitHub>,
-  exclude: string[],
-  owner: string,
-  repo: string,
-  tagRef?: string,
-): Promise<string> {
+export async function generate(input: InputI): Promise<string> {
+  const { octokit, owner, repo, sha, tagRef } = input;
+  let { exclude } = input;
+
   exclude = exclude.map(
     (type) => (TYPES as { [type: string]: string | undefined })[type] ?? type,
   );
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
-  const commits: Logs = {};
+  const commits: LogsI = {};
 
   paginator: for await (const { data } of octokit.paginate.iterator(
     octokit.rest.repos.listCommits,
@@ -20,6 +17,7 @@ export async function generate(
       per_page: 100,
       owner,
       repo,
+      sha,
     },
   )) {
     for (const { sha, ...commit } of data) {
@@ -120,13 +118,22 @@ const TYPES = {
   test: "Tests",
 };
 
-interface Logs {
+interface LogsI {
   [type: string]: {
-    [category: string]: Log[];
+    [category: string]: LogI[];
   };
 }
 
-interface Log {
+interface LogI {
   title: string;
   commits: string[];
+}
+
+export interface InputI {
+  octokit: InstanceType<typeof GitHub>;
+  exclude: string[];
+  owner: string;
+  repo: string;
+  sha: string;
+  tagRef?: string;
 }
