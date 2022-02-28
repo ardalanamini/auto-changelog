@@ -1,11 +1,16 @@
 import { getInput, info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { generate } from "./changelog";
+import { TYPES } from "./constants";
 
 async function run() {
   const token = getInput("token", { required: true });
-  const exclude = getInput("exclude", { required: false }).split(",");
+  const exclude = getInput("exclude", { required: false })
+    .split(",")
+    .map((type) => TYPES[type] ?? type);
+
   const octokit = getOctokit(token);
+
   const {
     repo: { owner, repo },
     sha,

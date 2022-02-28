@@ -1,12 +1,7 @@
-import type { GitHub } from "@actions/github/lib/utils";
+import { COMMIT_REGEX, InputI, LogsI, PR_REGEX, TYPES } from "./constants";
 
 export async function generate(input: InputI): Promise<string> {
-  const { octokit, owner, repo, sha, tagRef } = input;
-  let { exclude } = input;
-
-  exclude = exclude.map(
-    (type) => (TYPES as { [type: string]: string | undefined })[type] ?? type,
-  );
+  const { octokit, exclude, owner, repo, sha, tagRef } = input;
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
   const commits: LogsI = {};
@@ -33,8 +28,7 @@ export async function generate(input: InputI): Promise<string> {
       if (flag === "ignore") continue;
 
       type = trim(type);
-      type =
-        (TYPES as { [type: string]: string | undefined })[type] ?? TYPES.other;
+      type = TYPES[type] ?? TYPES.other;
 
       category = category ? trim(category) : "";
 
@@ -96,44 +90,4 @@ function trim(value: string): string {
   if (value == null) return value;
 
   return value.trim().replace(/ {2,}/g, " ");
-}
-
-const COMMIT_REGEX = /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
-const PR_REGEX = /#([1-9]\d*)/g;
-
-const TYPES = {
-  breaking: "Breaking Changes",
-  build: "Build System",
-  ci: "Continuous Integration",
-  chore: "Chores",
-  deps: "Dependencies",
-  docs: "Documentation Changes",
-  feat: "New Features",
-  fix: "Bug Fixes",
-  other: "Other Changes",
-  perf: "Performance Improvements",
-  refactor: "Refactors",
-  revert: "Reverts",
-  style: "Code Style Changes",
-  test: "Tests",
-};
-
-interface LogsI {
-  [type: string]: {
-    [category: string]: LogI[];
-  };
-}
-
-interface LogI {
-  title: string;
-  commits: string[];
-}
-
-export interface InputI {
-  octokit: InstanceType<typeof GitHub>;
-  exclude: string[];
-  owner: string;
-  repo: string;
-  sha: string;
-  tagRef?: string;
 }

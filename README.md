@@ -43,6 +43,8 @@ The `flag` is optional (if provided, it must be surrounded in square brackets) a
 
 Github token.
 
+_Default:_ `${{ github.token }}`
+
 #### `exclude` **(Optional)**
 
 Exclude selected commit types (comma separated).
@@ -58,6 +60,5 @@ The generated changelog.
 ```yaml
 uses: ardalanamini/auto-changelog@v1
 with:
-  token: ${{ secrets.GITHUB_TOKEN }}
   exclude: 'perf,other,breaking'
 ```

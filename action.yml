@@ -1,20 +1,30 @@
 name: 'Auto Changelog'
+
 description: 'Automatic Changelog generator'
+
 author: 'Ardalan Amini'
+
 branding:
   icon: 'clock'
   color: 'blue'
+
 inputs:
+
   token:
     description: 'Github token'
+    default: ${{ github.token }}
     required: true
+
   exclude:
     description: 'Exclude selected commit types (comma separated)'
     required: false
     default: ''
+
 outputs:
+
   changelog:
     description: 'The generated changelogs'
+
 runs:
   using: 'node16'
   main: 'action/index.js'
