@@ -52,7 +52,6 @@ export async function generate(input: InputI): Promise<string> {
 
   return Object.values(TYPES)
     .filter((type) => !exclude.includes(type))
-    .sort()
     .reduce((changelog, type) => {
       const typeGroup = commits[type];
 

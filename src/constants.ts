@@ -6,19 +6,19 @@ export const PR_REGEX = /#([1-9]\d*)/g;
 
 export const TYPES: TypesI = {
   breaking: "Breaking Changes",
-  build: "Build System",
-  ci: "Continuous Integration",
-  chore: "Chores",
-  deps: "Dependencies",
-  docs: "Documentation Changes",
   feat: "New Features",
   fix: "Bug Fixes",
-  other: "Other Changes",
+  revert: "Reverts",
   perf: "Performance Improvements",
   refactor: "Refactors",
-  revert: "Reverts",
+  deps: "Dependencies",
+  docs: "Documentation Changes",
   style: "Code Style Changes",
+  build: "Build System",
+  ci: "Continuous Integration",
   test: "Tests",
+  chore: "Chores",
+  other: "Other Changes",
 };
 
 export interface TypesI {

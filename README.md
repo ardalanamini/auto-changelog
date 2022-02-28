@@ -13,19 +13,21 @@ type(category): description [flag]
 The `type` must be one of the followings:
 
 * `breaking` (Breaking Changes)
-* `build` (Build System)
-* `ci` (Continuous Integration)
-* `chore` (Chores)
-* `deps` (Dependencies)
-* `docs` (Documentation Changes)
 * `feat` (New Features)
 * `fix` (Bug Fixes)
-* `other` (Other Changes)
+* `revert` (Reverts)
 * `perf` (Performance Improvements)
 * `refactor` (Refactors)
-* `revert` (Reverts)
+* `deps` (Dependencies)
+* `docs` (Documentation Changes)
 * `style` (Code Style Changes)
+* `build` (Build System)
+* `ci` (Continuous Integration)
 * `test` (Tests)
+* `chore` (Chores)
+* `other` (Other Changes)
+
+> The changelogs will be in the same order as listed above.
 
 > If the `type` is not found in the list, it'll be considered as `other`.
 
