@@ -5,9 +5,12 @@ on: # rebuild any PRs and main branch changes
     branches:
       - master
   pull_request:
+  workflow_call:
 
 jobs:
   build: # make sure build/ci work properly
+    name: Build
+
     runs-on: ubuntu-latest
 
     steps:
@@ -17,21 +20,28 @@ jobs:
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ matrix.os }}-${{ matrix.node-version }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Install packages
-        run: npm i
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
-      - name: Lint
+      - name: Install dependencies
+        run: npm i --no-fund
+
+      - name: Check code styles
         run: npm run lint
 
-      - name: Build
+      - name: Build using TypeScript
         run: npm run build
 
-      - name: Package
+      - name: Package using ncc
         run: npm run package
 
   test: # make sure the action works on a clean machine without building
+    name: Test
+
     runs-on: ubuntu-latest
 
     steps:
@@ -39,10 +49,10 @@ jobs:
 
       - name: Changelog
         uses: ./
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-  test-with-exclude: # make sure the action works on a clean machine without building
+  test-with-inputes: # make sure the action works on a clean machine without building
+    name: Test with inputs
+
     runs-on: ubuntu-latest
 
     steps:
