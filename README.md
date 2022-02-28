@@ -1,5 +1,7 @@
 # Auto Changelog
 
+[![Test](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml/badge.svg)](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml)
+
 Automatic Changelog generator
 
 ## Usage
