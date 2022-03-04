@@ -1,7 +1,7 @@
 import { COMMIT_REGEX, InputI, LogsI, PR_REGEX, TYPES } from "./constants";
 
 export async function generate(input: InputI): Promise<string> {
-  const { octokit, exclude, owner, repo, sha, tagRef } = input;
+  const { octokit, owner, repo, sha, tagRef } = input;
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
   const commits: LogsI = {};
@@ -51,7 +51,6 @@ export async function generate(input: InputI): Promise<string> {
   }
 
   return Object.values(TYPES)
-    .filter((type) => !exclude.includes(type))
     .reduce((changelog, type) => {
       const typeGroup = commits[type];
 

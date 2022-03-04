@@ -38,7 +38,6 @@ export interface LogI {
 
 export interface InputI {
   octokit: InstanceType<typeof GitHub>;
-  exclude: string[];
   owner: string;
   repo: string;
   sha: string;
