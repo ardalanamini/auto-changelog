@@ -8,7 +8,7 @@ Automatic Changelog generator
 
 - [Usage](#usage)
 - [Inputs](#inputs)
-  - [Github Token](#token)
+  - [Github Token](#github-token)
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
 - [Outputs](#outputs)
@@ -41,7 +41,7 @@ type(category): description [flag]
 
 ### Inputs
 
-#### `token`
+#### `github-token`
 
 **(Optional)**
 
@@ -115,7 +115,7 @@ Using with custom inputs:
   uses: ardalanamini/auto-changelog@v1
   id: changelog
   with:
-    token: ${{ github.token }}
+    github-token: ${{ github.token }}
     commit-types: |
       breaking: Breaking Changes
       feat: New Features

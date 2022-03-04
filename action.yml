@@ -10,14 +10,14 @@ branding:
 
 inputs:
 
-  token:
+  github-token:
     description: 'Github token'
     required: true
     default: ${{ github.token }}
 
   commit-types:
     description: 'Commit types'
-    required: false
+    required: true
     default: |
       breaking: Breaking Changes
       feat: New Features
@@ -36,7 +36,7 @@ inputs:
 
   default-commit-type:
     description: 'Default commit type to be used when the commit message matches none of the defined types'
-    required: false
+    required: true
     default: 'Other Changes'
 
 outputs:

@@ -4,7 +4,7 @@ import YAML from "yaml";
 import { ActionInputsI, TypesI } from "./constants";
 
 export function getToken(): string {
-  return getInput("token", { required: true });
+  return getInput("github-token", { required: true });
 }
 
 export async function getInputs(): Promise<ActionInputsI> {
