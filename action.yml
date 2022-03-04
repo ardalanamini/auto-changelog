@@ -12,11 +12,12 @@ inputs:
 
   token:
     description: 'Github token'
-    default: ${{ github.token }}
     required: true
+    default: ${{ github.token }}
 
   exclude:
     description: 'Exclude selected commit types (comma separated)'
+    deprecationMessage: 'This input will be removed in the next major release'
     required: false
     default: ''
 
