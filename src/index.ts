@@ -1,11 +1,12 @@
-import { getInput, info, setFailed, setOutput } from "@actions/core";
+import { info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { generate } from "./changelog";
+import { getInputs, getToken } from "./context";
 
 async function run() {
-  const token = getInput("token", { required: true });
+  const inputs = await getInputs();
 
-  const octokit = getOctokit(token);
+  const octokit = getOctokit(getToken());
 
   const {
     repo: { owner, repo },
@@ -32,6 +33,7 @@ async function run() {
     repo,
     sha,
     tagRef,
+    inputs,
   });
 
   info(changelog);
