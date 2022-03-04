@@ -49,7 +49,7 @@ Github token.
 
 _Default:_ `${{ github.token }}`
 
-#### `exclude` **(Optional)**
+#### `exclude` **(Optional, Deprecated)**
 
 Exclude selected commit types (comma separated).
 
