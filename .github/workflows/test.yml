@@ -62,3 +62,6 @@ jobs:
         uses: ./
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          commit-types: |
+            feat: Feature
+          default-commit-type: Default Type
