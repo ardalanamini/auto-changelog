@@ -4,23 +4,6 @@ export const COMMIT_REGEX =
   /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
 export const PR_REGEX = /#([1-9]\d*)/g;
 
-export const TYPES: TypesI = {
-  breaking: "Breaking Changes",
-  feat: "New Features",
-  fix: "Bug Fixes",
-  revert: "Reverts",
-  perf: "Performance Improvements",
-  refactor: "Refactors",
-  deps: "Dependencies",
-  docs: "Documentation Changes",
-  style: "Code Style Changes",
-  build: "Build System",
-  ci: "Continuous Integration",
-  test: "Tests",
-  chore: "Chores",
-  other: "Other Changes",
-};
-
 export interface TypesI {
   [type: string]: string;
 }
@@ -36,10 +19,16 @@ export interface LogI {
   commits: string[];
 }
 
-export interface InputI {
+export interface ChangelogInputI {
   octokit: InstanceType<typeof GitHub>;
   owner: string;
   repo: string;
   sha: string;
   tagRef?: string;
+  inputs: ActionInputsI;
+}
+
+export interface ActionInputsI {
+  commitTypes: TypesI;
+  defaultCommitType: string;
 }

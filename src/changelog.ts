@@ -1,7 +1,8 @@
-import { COMMIT_REGEX, InputI, LogsI, PR_REGEX, TYPES } from "./constants";
+import { ChangelogInputI, COMMIT_REGEX, LogsI, PR_REGEX } from "./constants";
 
-export async function generate(input: InputI): Promise<string> {
-  const { octokit, owner, repo, sha, tagRef } = input;
+export async function generate(input: ChangelogInputI): Promise<string> {
+  const { octokit, owner, repo, sha, tagRef, inputs } = input;
+  const { commitTypes, defaultCommitType } = inputs;
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
   const commits: LogsI = {};
@@ -28,7 +29,7 @@ export async function generate(input: InputI): Promise<string> {
       if (flag === "ignore") continue;
 
       type = trim(type);
-      type = TYPES[type] ?? TYPES.other;
+      type = commitTypes[type] ?? defaultCommitType;
 
       category = category ? trim(category) : "";
 
@@ -50,42 +51,46 @@ export async function generate(input: InputI): Promise<string> {
     }
   }
 
-  return Object.values(TYPES)
-    .reduce((changelog, type) => {
-      const typeGroup = commits[type];
+  const TYPES = unique([...Object.values(commitTypes), defaultCommitType]);
 
-      if (typeGroup == null) return changelog;
+  return TYPES.reduce((changelog, type) => {
+    const typeGroup = commits[type];
 
-      changelog.push(`### ${type}`, "");
+    if (typeGroup == null) return changelog;
 
-      const categories = Object.keys(typeGroup).sort();
+    changelog.push(`### ${type}`, "");
 
-      for (const category of categories) {
-        const categoryGroup = typeGroup[category];
-        const defaultCategory = category.length === 0;
+    const categories = Object.keys(typeGroup).sort();
 
-        if (!defaultCategory) changelog.push(`* **${category}:**`);
+    for (const category of categories) {
+      const categoryGroup = typeGroup[category];
+      const defaultCategory = category.length === 0;
 
-        const baseLine = defaultCategory ? "" : "  ";
+      if (!defaultCategory) changelog.push(`* **${category}:**`);
 
-        for (const { title, commits } of categoryGroup) {
-          changelog.push(
-            `${baseLine}* ${title} (${commits
-              .map((sha) => `[${sha.slice(0, 8)}](${repoUrl}/commit/${sha})`)
-              .join(",")})`,
-          );
-        }
+      const baseLine = defaultCategory ? "" : "  ";
+
+      for (const { title, commits } of categoryGroup) {
+        changelog.push(
+          `${baseLine}* ${title} (${commits
+            .map((sha) => `[${sha.slice(0, 8)}](${repoUrl}/commit/${sha})`)
+            .join(",")})`,
+        );
       }
+    }
 
-      changelog.push("");
+    changelog.push("");
 
-      return changelog;
-    }, [] as string[])
-    .join("\n");
+    return changelog;
+  }, [] as string[]).join("\n");
 }
 
 function trim(value: string): string {
   if (value == null) return value;
 
   return value.trim().replace(/ {2,}/g, " ");
+}
+
+function unique(value: string[]): string[] {
+  return [...new Set(value)];
 }
