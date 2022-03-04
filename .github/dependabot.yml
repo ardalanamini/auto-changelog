@@ -9,9 +9,14 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "deps(CI)"
 
   # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps(Dev)"
