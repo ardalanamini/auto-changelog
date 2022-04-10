@@ -11,6 +11,8 @@ updates:
       interval: "daily"
     commit-message:
       prefix: "deps(CI)"
+    reviewers:
+      - ardalanamini
 
   # Maintain dependencies for npm
   - package-ecosystem: "npm"
@@ -20,3 +22,5 @@ updates:
     commit-message:
       prefix: "deps"
       prefix-development: "deps(Dev)"
+    reviewers:
+      - ardalanamini
