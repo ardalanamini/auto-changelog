@@ -1,7 +1,7 @@
 import type { GitHub } from "@actions/github/lib/utils";
 
 export const COMMIT_REGEX =
-  /^([^)]*)(?:\(([^)]*?)\)|):(.*?)(?:\[([^\]]+?)\]|)\s*$/;
+  /^(?<type>[^)]*)(?:\((?<category>[^)]*?)\)|):(?<title>.*?)(?:\[(?<flag>[^\]]+?)\]|)\s*$/;
 export const PR_REGEX = /#([1-9]\d*)/g;
 
 export interface TypesI {
