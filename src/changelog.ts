@@ -21,7 +21,8 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       const message = commit.commit.message.split("\n")[0];
 
-      let { type, category, title, flag } = COMMIT_REGEX.exec(message)?.groups ?? {};
+      let { type, category, title, flag } =
+        COMMIT_REGEX.exec(message)?.groups ?? {};
 
       if (!title) continue;
 
