@@ -40,6 +40,7 @@
     "yaml": "^2.0.1"
   },
   "devDependencies": {
+    "@types/semver": "^7.3.9",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
     "@vercel/ncc": "^0.33.4",
