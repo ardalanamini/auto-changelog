@@ -98,7 +98,15 @@ Other Changes
 
 **(Optional)**
 
-Enable semver based version comparison
+Enable semver based version comparison.
+
+If enabled it'll determine whether the github ref is a valid semver string,
+it'll fail the action in case it's not.
+
+It'll then determine whether the version is a pre-release or not,
+if it is, the previous version will be selected from any version (pre-release or not) lesser than the current ref,
+if current ref is not a pre-release,
+the previous version will be selected only from the latest version (not pre-release) lesser than the current ref.
 
 _Default:_
 

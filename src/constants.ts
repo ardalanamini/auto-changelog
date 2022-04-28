@@ -1,4 +1,5 @@
 import type { GitHub } from "@actions/github/lib/utils";
+import type { SemVer } from "semver";
 
 export const COMMIT_REGEX =
   /^(?<type>[^)]*)(?:\((?<category>[^)]*?)\)|):(?<title>.*?)(?:\[(?<flag>[^\]]+?)\]|)\s*$/;
@@ -17,6 +18,15 @@ export interface LogsI {
 export interface LogI {
   title: string;
   commits: string[];
+}
+
+export interface TagInputI {
+  octokit: InstanceType<typeof GitHub>;
+  owner: string;
+  repo: string;
+  sha: string;
+  semver: SemVer | null;
+  prerelease: boolean;
 }
 
 export interface ChangelogInputI {
