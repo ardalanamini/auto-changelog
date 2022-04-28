@@ -59,7 +59,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
     if (typeGroup == null) return changelog;
 
-    changelog.push(`### ${type}`, "");
+    changelog.push(`## ${type}`);
 
     const categories = Object.keys(typeGroup).sort();
 
