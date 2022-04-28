@@ -39,6 +39,11 @@ inputs:
     required: true
     default: Other Changes
 
+  release-name:
+    description: Release name (version)
+    required: true
+    default: ${{ github.ref_name }}
+
   semver:
     description: Enable semver based version comparison
     required: true

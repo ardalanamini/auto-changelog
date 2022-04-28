@@ -50,7 +50,7 @@ jobs:
       - name: Changelog
         uses: ./
         with:
-          semver: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          semver: ${{ startsWith(github.ref, 'refs/tags/') }}
 
   test-with-inputes: # make sure the action works on a clean machine without building
     name: Test with inputs
@@ -67,4 +67,4 @@ jobs:
           commit-types: |
             feat: Feature
           default-commit-type: Default Type
-          semver: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          semver: ${{ startsWith(github.ref, 'refs/tags/') }}

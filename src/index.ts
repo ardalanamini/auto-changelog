@@ -2,8 +2,8 @@ import { info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import SemVer from "semver";
 import { getTagSha } from "./tag.js";
-import { generate } from "./changelog";
-import { getInputs, getToken } from "./context";
+import { generate } from "./changelog.js";
+import { getInputs, getToken } from "./context.js";
 
 async function run() {
   const inputs = await getInputs();
@@ -13,17 +13,16 @@ async function run() {
   const {
     repo: { owner, repo },
     sha,
-    ref,
   } = context;
 
   let semver: SemVer.SemVer | null = null;
 
   if (inputs.semver) {
-    semver = SemVer.parse(ref, { includePrerelease: true });
+    semver = SemVer.parse(inputs.releaseName, { includePrerelease: true });
 
     if (semver == null)
       return setFailed(
-        `Expected a semver compatible ref, got "${ref}" instead.`,
+        `Expected a semver compatible releaseName, got "${inputs.releaseName}" instead.`,
       );
   }
 

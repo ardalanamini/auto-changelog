@@ -10,6 +10,7 @@ export function getToken(): string {
 export async function getInputs(): Promise<ActionInputsI> {
   const commitTypes = YAML.parse(getInput("commit-types", { required: true }));
   const defaultCommitType = getInput("default-commit-type", { required: true });
+  const releaseName = getInput("release-name", { required: true });
   const semver = getBooleanInput("semver", { required: true });
 
   return Joi.object<ActionInputsI, true>()
@@ -18,7 +19,8 @@ export async function getInputs(): Promise<ActionInputsI> {
         .pattern(Joi.string(), Joi.string())
         .required(),
       defaultCommitType: Joi.string().required(),
+      releaseName: Joi.string().required(),
       semver: Joi.boolean().required(),
     })
-    .validateAsync({ commitTypes, defaultCommitType, semver });
+    .validateAsync({ commitTypes, defaultCommitType, releaseName, semver });
 }

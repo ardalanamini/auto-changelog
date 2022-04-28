@@ -11,6 +11,7 @@ Automatic Changelog generator
   - [Github Token](#github-token)
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
+  - [Release Name](#release-name)
   - [SemVer Compatibility](#semver)
 - [Outputs](#outputs)
   - [Changelog](#changelog)
@@ -94,6 +95,18 @@ _Default:_
 Other Changes
 ```
 
+#### `release-name`
+
+**(Optional)**
+
+Release name (version, e.g. `v1.0.0`).
+
+_Default:_
+
+```yaml
+${{ github.ref_name }}
+```
+
 #### `semver`
 
 **(Optional)**
@@ -160,5 +173,6 @@ Using with custom inputs:
       chore: Chores
       other: Other Changes
     default-commit-type: Other Changes
+    release-name: v1.0.0
     semver: true
 ```
