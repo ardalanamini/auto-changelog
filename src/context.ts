@@ -1,4 +1,4 @@
-import { getInput } from "@actions/core";
+import { getInput, getBooleanInput } from "@actions/core";
 import Joi from "joi";
 import YAML from "yaml";
 import { ActionInputsI, TypesI } from "./constants";
@@ -10,6 +10,7 @@ export function getToken(): string {
 export async function getInputs(): Promise<ActionInputsI> {
   const commitTypes = YAML.parse(getInput("commit-types", { required: true }));
   const defaultCommitType = getInput("default-commit-type", { required: true });
+  const semver = getBooleanInput("semver", { required: true });
 
   return Joi.object<ActionInputsI, true>()
     .keys({
@@ -17,6 +18,7 @@ export async function getInputs(): Promise<ActionInputsI> {
         .pattern(Joi.string(), Joi.string())
         .required(),
       defaultCommitType: Joi.string().required(),
+      semver: Joi.boolean().required(),
     })
-    .validateAsync({ commitTypes, defaultCommitType });
+    .validateAsync({ commitTypes, defaultCommitType, semver });
 }
