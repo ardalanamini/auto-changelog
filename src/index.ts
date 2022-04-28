@@ -40,6 +40,8 @@ async function run() {
 
   info(changelog);
 
+  setOutput("changelog", changelog);
+
   let prerelease = false;
 
   if (inputs.semver) {
@@ -48,7 +50,8 @@ async function run() {
     if (semver != null) prerelease = semver.prerelease.length > 0;
   }
 
-  setOutput("changelog", changelog);
+  info(`prerelease: ${prerelease}`);
+
   setOutput("prerelease", prerelease);
 }
 
