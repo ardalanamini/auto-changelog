@@ -49,6 +49,9 @@ outputs:
   changelog:
     description: The generated changelogs
 
+  prerelease:
+    description: Indicates whether it's a pre-release or not (if semver is set to true, otherwise this output will always return false)
+
 runs:
   using: node16
   main: action/index.js

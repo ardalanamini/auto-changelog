@@ -1,5 +1,6 @@
 import { info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
+import SemVer from "semver";
 import { generate } from "./changelog";
 import { getInputs, getToken } from "./context";
 
@@ -11,6 +12,7 @@ async function run() {
   const {
     repo: { owner, repo },
     sha,
+    ref,
   } = context;
 
   const { data: tags } = await octokit.rest.repos.listTags({
@@ -38,7 +40,16 @@ async function run() {
 
   info(changelog);
 
+  let prerelease = false;
+
+  if (inputs.semver) {
+    const semver = SemVer.parse(ref, { includePrerelease: true });
+
+    if (semver != null) prerelease = semver.prerelease.length > 0;
+  }
+
   setOutput("changelog", changelog);
+  setOutput("prerelease", prerelease);
 }
 
 run().catch((error) => setFailed(error.message));
