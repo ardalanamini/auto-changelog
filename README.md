@@ -11,8 +11,10 @@ Automatic Changelog generator
   - [Github Token](#github-token)
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
+  - [SemVer Compatibility](#semver)
 - [Outputs](#outputs)
   - [Changelog](#changelog)
+  - [Pre-release](#prerelease)
 - [Example Usage](#example-usage)
 
 ## Usage
@@ -92,11 +94,29 @@ _Default:_
 Other Changes
 ```
 
+#### `semver`
+
+**(Optional)**
+
+Enable semver based version comparison
+
+_Default:_
+
+```yaml
+true
+```
+
 ### Outputs
 
 #### `changelog`
 
 The generated changelog.
+
+#### `prerelease`
+
+Indicates whether it's a pre-release or not.
+
+> if semver is set to `true`, otherwise this output will always return `false`.
 
 ### Example Usage
 
@@ -132,4 +152,5 @@ Using with custom inputs:
       chore: Chores
       other: Other Changes
     default-commit-type: Other Changes
+    semver: true
 ```
