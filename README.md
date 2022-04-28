@@ -145,7 +145,7 @@ Using with default inputs:
 
 ```yaml
 - name: Changelog
-  uses: ardalanamini/auto-changelog@v2
+  uses: ardalanamini/auto-changelog@v3
   id: changelog
 ```
 
@@ -153,7 +153,7 @@ Using with custom inputs:
 
 ```yaml
 - name: Changelog
-  uses: ardalanamini/auto-changelog@v2
+  uses: ardalanamini/auto-changelog@v3
   id: changelog
   with:
     github-token: ${{ github.token }}
