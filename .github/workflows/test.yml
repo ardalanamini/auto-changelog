@@ -49,6 +49,8 @@ jobs:
 
       - name: Changelog
         uses: ./
+        with:
+          semver: ${{ github.event_name == 'workflow_call' }}
 
   test-with-inputes: # make sure the action works on a clean machine without building
     name: Test with inputs
@@ -65,3 +67,4 @@ jobs:
           commit-types: |
             feat: Feature
           default-commit-type: Default Type
+          semver: ${{ github.event_name == 'workflow_call' }}
