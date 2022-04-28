@@ -31,4 +31,5 @@ export interface ChangelogInputI {
 export interface ActionInputsI {
   commitTypes: TypesI;
   defaultCommitType: string;
+  semver: boolean;
 }

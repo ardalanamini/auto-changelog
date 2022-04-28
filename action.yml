@@ -1,22 +1,22 @@
-name: 'Auto Changelog'
+name: Auto Changelog
 
-description: 'Automatic Changelog generator'
+description: Automatic Changelog generator
 
-author: 'Ardalan Amini'
+author: Ardalan Amini
 
 branding:
-  icon: 'clock'
-  color: 'blue'
+  icon: clock
+  color: blue
 
 inputs:
 
   github-token:
-    description: 'Github token'
+    description: Github token
     required: true
     default: ${{ github.token }}
 
   commit-types:
-    description: 'Commit types'
+    description: Commit types
     required: true
     default: |
       breaking: Breaking Changes
@@ -35,15 +35,20 @@ inputs:
       other: Other Changes
 
   default-commit-type:
-    description: 'Default commit type to be used when the commit message matches none of the defined types'
+    description: Default commit type to be used when the commit message matches none of the defined types
     required: true
-    default: 'Other Changes'
+    default: Other Changes
+
+  semver:
+    description: Enable semver based version comparison
+    required: true
+    default: 'true'
 
 outputs:
 
   changelog:
-    description: 'The generated changelogs'
+    description: The generated changelogs
 
 runs:
-  using: 'node16'
-  main: 'action/index.js'
+  using: node16
+  main: action/index.js
