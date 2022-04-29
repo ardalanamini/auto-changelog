@@ -1,5 +1,6 @@
 import { info, setFailed, setOutput } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
+import { marked } from "marked";
 import SemVer from "semver";
 import { getTagSha } from "./tag.js";
 import { generate } from "./changelog.js";
@@ -47,6 +48,26 @@ async function run() {
     tagRef,
     inputs,
   });
+
+  if (inputs.mentionNewContributors) {
+    const { data } = await octokit.rest.repos.generateReleaseNotes({
+      owner,
+      repo,
+      tag_name: inputs.releaseName,
+      previous_tag_name: tagName,
+    });
+
+    const tokens = marked.lexer(data.body);
+
+    const index = tokens.findIndex(
+      (token) => token.type === "heading" && token.text === "New Contributors",
+    );
+
+    const token = tokens[index + 1];
+
+    if (token.type === "list")
+      changelog += `\n\n## New Contributors\n${token.raw}\n`;
+  }
 
   if (inputs.includeCompare && tagName != null) {
     changelog += `\n\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;

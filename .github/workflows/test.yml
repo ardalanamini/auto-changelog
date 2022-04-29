@@ -70,3 +70,16 @@ jobs:
           mention-new-contributors: false
           include-compare: false
           semver: false
+
+  test-with-specified-release-name:
+    name: Test with specified release name
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Changelog
+        uses: ./
+        with:
+          release-name: v1.0.1
