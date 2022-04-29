@@ -12,6 +12,7 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
+  - [Mention Authors](#mention-authors)
   - [Mention New Contributors](#mention-new-contributors)
   - [Include GitHub Compare](#include-compare)
   - [SemVer Compatibility](#semver)
@@ -109,6 +110,18 @@ _Default:_
 ${{ github.ref_name }}
 ```
 
+#### `mention-authors`
+
+**(Optional)**
+
+Mention the author of each commit.
+
+_Default:_
+
+```yaml
+true
+```
+
 #### `mention-new-contributors`
 
 **(Optional)**
@@ -202,6 +215,8 @@ Using with custom inputs:
       other: Other Changes
     default-commit-type: Other Changes
     release-name: v1.0.0
+    mention-authors: true
+    mention-new-contributors: true
     include-compare: true
     semver: true
 ```

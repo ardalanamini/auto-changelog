@@ -44,6 +44,11 @@ inputs:
     required: true
     default: ${{ github.ref_name }}
 
+  mention-authors:
+    description: Mention the author of each commit
+    required: true
+    default: 'true'
+
   mention-new-contributors:
     description: Mention new contributors at the bottom of the changelog (New Contributors)
     required: true

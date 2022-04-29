@@ -20,6 +20,7 @@ export interface LogI {
 }
 
 export interface ReferenceI {
+  author?: string;
   commit: string;
   pr?: string;
 }
@@ -51,6 +52,7 @@ export interface ActionInputsI {
   commitTypes: TypesI;
   defaultCommitType: string;
   releaseName: string;
+  mentionAuthors: boolean;
   mentionNewContributors: boolean;
   includeCompare: boolean;
   semver: boolean;
