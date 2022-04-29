@@ -47,6 +47,7 @@ export interface ActionInputsI {
   commitTypes: TypesI;
   defaultCommitType: string;
   releaseName: string;
+  mentionNewContributors: boolean;
   includeCompare: boolean;
   semver: boolean;
 }

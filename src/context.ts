@@ -11,6 +11,9 @@ export async function getInputs(): Promise<ActionInputsI> {
   const commitTypes = YAML.parse(getInput("commit-types", { required: true }));
   const defaultCommitType = getInput("default-commit-type", { required: true });
   const releaseName = getInput("release-name", { required: true });
+  const mentionNewContributors = getBooleanInput("mention-new-contributors", {
+    required: true,
+  });
   const includeCompare = getBooleanInput("include-compare", { required: true });
   const semver = getBooleanInput("semver", { required: true });
 
@@ -21,6 +24,7 @@ export async function getInputs(): Promise<ActionInputsI> {
         .required(),
       defaultCommitType: Joi.string().required(),
       releaseName: Joi.string().required(),
+      mentionNewContributors: Joi.boolean().required(),
       includeCompare: Joi.boolean().required(),
       semver: Joi.boolean().required(),
     })
@@ -28,6 +32,7 @@ export async function getInputs(): Promise<ActionInputsI> {
       commitTypes,
       defaultCommitType,
       releaseName,
+      mentionNewContributors,
       includeCompare,
       semver,
     });

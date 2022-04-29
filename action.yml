@@ -44,6 +44,11 @@ inputs:
     required: true
     default: ${{ github.ref_name }}
 
+  mention-new-contributors:
+    description: Mention new contributors at the bottom of the changelog (New Contributors)
+    required: true
+    default: 'true'
+
   include-compare:
     description: Include GitHub compare at the bottom of the changelog (Full Changelog)
     required: true
