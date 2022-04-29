@@ -30,7 +30,7 @@ async function run() {
 
   if (semver != null) prerelease = semver.prerelease.length > 0;
 
-  const tagRef = await getTagSha({
+  const { sha: tagRef, name: tagName } = await getTagSha({
     octokit,
     owner,
     repo,
@@ -39,7 +39,7 @@ async function run() {
     prerelease,
   });
 
-  const changelog = await generate({
+  let changelog = await generate({
     octokit,
     owner,
     repo,
@@ -48,13 +48,17 @@ async function run() {
     inputs,
   });
 
-  info(changelog);
+  if (tagName != null) {
+    changelog += `\n\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;
+  }
 
-  setOutput("changelog", changelog);
-
-  info(`prerelease: ${prerelease}`);
+  info(`-> prerelease: ${prerelease}`);
 
   setOutput("prerelease", prerelease);
+
+  info(`-> changelog: "${changelog}"`);
+
+  setOutput("changelog", changelog);
 }
 
 run().catch(setFailed);
