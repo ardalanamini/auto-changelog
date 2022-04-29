@@ -36,7 +36,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       title = trim(title).replace(
         PR_REGEX,
-        (match, pull) => `[${match}](${repoUrl}/pull/${pull})`,
+        (match, pull) => `${repoUrl}/pull/${pull}`,
       );
 
       commits[type] = commits[type] ?? {};
@@ -74,7 +74,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       for (const { title, commits } of categoryGroup) {
         changelog.push(
           `${baseLine}* ${title} (${commits
-            .map((sha) => `[${sha.slice(0, 8)}](${repoUrl}/commit/${sha})`)
+            .map((sha) => `${repoUrl}/commit/${sha}`)
             .join(",")})`,
         );
       }
