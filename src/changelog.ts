@@ -1,4 +1,4 @@
-import { ChangelogInputI, COMMIT_REGEX, LogsI, PR_REGEX } from "./constants";
+import { ChangelogInputI, COMMIT_REGEX, LogsI } from "./constants";
 
 export async function generate(input: ChangelogInputI): Promise<string> {
   const { octokit, owner, repo, sha, tagRef, inputs } = input;
@@ -16,45 +16,44 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       sha,
     },
   )) {
-    for (const { sha, ...commit } of data) {
-      if (sha === tagRef) break paginator;
+    for (const commit of data) {
+      if (commit.sha === tagRef) break paginator;
 
       const message = commit.commit.message.split("\n")[0];
 
-      let { type, category, title, flag } =
+      // eslint-disable-next-line prefer-const
+      let { type, category, title, pr, flag } =
         COMMIT_REGEX.exec(message)?.groups ?? {};
 
       if (!title) continue;
 
       flag = trim(flag);
+
       if (flag === "ignore") continue;
 
-      type = trim(type);
-      type = commitTypes[type] ?? defaultCommitType;
+      type = commitTypes[trim(type)] ?? defaultCommitType;
 
       category = category ? trim(category) : "";
 
-      title = trim(title).replace(
-        PR_REGEX,
-        (match, pull) => `${repoUrl}/pull/${pull}`,
-      );
+      title = trim(title);
 
-      commits[type] = commits[type] ?? {};
-      commits[type][category] = commits[type][category] ?? [];
+      if (commits[type] == null) commits[type] = {};
 
-      const existingIndex = commits[type][category].findIndex(
-        (commit) => commit.title === title,
-      );
+      if (commits[type][category] == null) commits[type][category] = [];
 
-      if (existingIndex === -1)
-        commits[type][category].push({ title, commits: [sha] });
-      else commits[type][category][existingIndex].commits.push(sha);
+      const logs = commits[type][category];
+
+      const existingCommit = logs.find((commit) => commit.title === title);
+
+      if (existingCommit == null) {
+        logs.push({ title, references: [{ commit: commit.sha, pr }] });
+      } else existingCommit.references.push({ commit: commit.sha, pr });
     }
   }
 
   const TYPES = unique([...Object.values(commitTypes), defaultCommitType]);
 
-  return TYPES.reduce((changelog, type) => {
+  return TYPES.reduce<string[]>((changelog, type) => {
     const typeGroup = commits[type];
 
     if (typeGroup == null) return changelog;
@@ -71,11 +70,16 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       const baseLine = defaultCategory ? "" : "  ";
 
-      for (const { title, commits } of categoryGroup) {
+      for (const { title, references } of categoryGroup) {
         changelog.push(
-          `${baseLine}* ${title} (${commits
-            .map((sha) => `${repoUrl}/commit/${sha}`)
-            .join(",")})`,
+          `${baseLine}* ${title} (${references
+            .map(
+              (reference) =>
+                `${
+                  reference.pr == null ? "" : `${repoUrl}/pull/${reference.pr} `
+                }${repoUrl}/commit/${reference.commit}`,
+            )
+            .join(", ")})`,
         );
       }
     }
@@ -83,7 +87,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
     changelog.push("");
 
     return changelog;
-  }, [] as string[]).join("\n");
+  }, []).join("\n");
 }
 
 function trim(value: string): string {
