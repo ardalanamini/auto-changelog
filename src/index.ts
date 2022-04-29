@@ -49,7 +49,7 @@ async function run() {
   });
 
   if (tagName != null) {
-    changelog += `\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;
+    changelog += `\n\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;
   }
 
   info(`-> prerelease: ${prerelease}`);
