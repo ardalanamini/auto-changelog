@@ -44,6 +44,11 @@ inputs:
     required: true
     default: ${{ github.ref_name }}
 
+  include-compare:
+    description: Include GitHub compare at the bottom of the changelog (Full Changelog)
+    required: true
+    default: 'true'
+
   semver:
     description: Enable semver based version comparison
     required: true

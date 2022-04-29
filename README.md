@@ -12,6 +12,7 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
+  - [Include GitHub Compare](#include-compare)
   - [SemVer Compatibility](#semver)
 - [Outputs](#outputs)
   - [Changelog](#changelog)
@@ -107,6 +108,20 @@ _Default:_
 ${{ github.ref_name }}
 ```
 
+#### `include-compare`
+
+**(Optional)**
+
+Include GitHub compare at the bottom of the changelog (Full Changelog).
+
+> If there is no previous tag determined it'll be ommited regardless of the provided value.
+
+_Default:_
+
+```yaml
+true
+```
+
 #### `semver`
 
 **(Optional)**
@@ -174,5 +189,6 @@ Using with custom inputs:
       other: Other Changes
     default-commit-type: Other Changes
     release-name: v1.0.0
+    include-compare: true
     semver: true
 ```

@@ -48,7 +48,7 @@ async function run() {
     inputs,
   });
 
-  if (tagName != null) {
+  if (inputs.includeCompare && tagName != null) {
     changelog += `\n\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;
   }
 
