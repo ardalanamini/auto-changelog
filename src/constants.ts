@@ -29,6 +29,11 @@ export interface TagInputI {
   prerelease: boolean;
 }
 
+export interface TagResultI {
+  sha?: string;
+  name?: string;
+}
+
 export interface ChangelogInputI {
   octokit: InstanceType<typeof GitHub>;
   owner: string;
