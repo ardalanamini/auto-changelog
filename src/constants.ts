@@ -2,8 +2,7 @@ import type { GitHub } from "@actions/github/lib/utils";
 import type { SemVer } from "semver";
 
 export const COMMIT_REGEX =
-  /^(?<type>[^)]*)(?:\((?<category>[^)]*?)\)|):(?<title>.*?)(?:\[(?<flag>[^\]]+?)\]|)\s*$/;
-export const PR_REGEX = /#([1-9]\d*)/g;
+  /^(?<type>[^)]*)(?:\((?<category>[^)]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^\]]+?)]|)\s*$/;
 
 export interface TypesI {
   [type: string]: string;
@@ -17,7 +16,12 @@ export interface LogsI {
 
 export interface LogI {
   title: string;
-  commits: string[];
+  references: ReferenceI[];
+}
+
+export interface ReferenceI {
+  commit: string;
+  pr?: string;
 }
 
 export interface TagInputI {
