@@ -12,6 +12,7 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
+  - [Mention New Contributors](#mention-new-contributors)
   - [Include GitHub Compare](#include-compare)
   - [SemVer Compatibility](#semver)
 - [Outputs](#outputs)
@@ -106,6 +107,18 @@ _Default:_
 
 ```yaml
 ${{ github.ref_name }}
+```
+
+#### `mention-new-contributors`
+
+**(Optional)**
+
+Mention new contributors at the bottom of the changelog (New Contributors).
+
+_Default:_
+
+```yaml
+true
 ```
 
 #### `include-compare`

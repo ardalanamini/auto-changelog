@@ -67,5 +67,6 @@ jobs:
           commit-types: |
             feat: Feature
           default-commit-type: Default Type
-          include-compare-link: false
+          mention-new-contributors: false
+          include-compare: false
           semver: false
