@@ -52,7 +52,7 @@ jobs:
         with:
           semver: ${{ startsWith(github.ref, 'refs/tags/') }}
 
-  test-with-inputes: # make sure the action works on a clean machine without building
+  test-with-inputs: # make sure the action works on a clean machine without building
     name: Test with inputs
 
     runs-on: ubuntu-latest
@@ -67,6 +67,7 @@ jobs:
           commit-types: |
             feat: Feature
           default-commit-type: Default Type
+          mention-authors: false
           mention-new-contributors: false
           include-compare: false
           semver: false
