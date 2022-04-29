@@ -16,8 +16,8 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       sha,
     },
   )) {
-    for (const { sha, ...commit } of data) {
-      if (sha === tagRef) break paginator;
+    for (const commit of data) {
+      if (commit.sha === tagRef) break paginator;
 
       const message = commit.commit.message.split("\n")[0];
 
@@ -42,13 +42,12 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       commits[type] = commits[type] ?? {};
       commits[type][category] = commits[type][category] ?? [];
 
-      const existingIndex = commits[type][category].findIndex(
-        (commit) => commit.title === title,
-      );
+      const logs = commits[type][category];
 
-      if (existingIndex === -1)
-        commits[type][category].push({ title, commits: [sha] });
-      else commits[type][category][existingIndex].commits.push(sha);
+      const existingCommit = logs.find((commit) => commit.title === title);
+
+      if (existingCommit == null) logs.push({ title, commits: [commit.sha] });
+      else existingCommit.commits.push(commit.sha);
     }
   }
 
@@ -74,7 +73,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       for (const { title, commits } of categoryGroup) {
         changelog.push(
           `${baseLine}* ${title} (${commits
-            .map((sha) => `${repoUrl}/commit/${sha}`)
+            .map((commitSha) => `${repoUrl}/commit/${commitSha}`)
             .join(",")})`,
         );
       }
