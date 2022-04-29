@@ -215,6 +215,8 @@ Using with custom inputs:
       other: Other Changes
     default-commit-type: Other Changes
     release-name: v1.0.0
+    mention-authors: true
+    mention-new-contributors: true
     include-compare: true
     semver: true
 ```

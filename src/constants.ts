@@ -20,6 +20,7 @@ export interface LogI {
 }
 
 export interface ReferenceI {
+  author?: string;
   commit: string;
   pr?: string;
 }

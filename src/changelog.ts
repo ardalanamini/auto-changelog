@@ -1,8 +1,8 @@
-import { ChangelogInputI, COMMIT_REGEX, LogsI } from "./constants";
+import { ChangelogInputI, COMMIT_REGEX, LogsI, ReferenceI } from "./constants";
 
 export async function generate(input: ChangelogInputI): Promise<string> {
   const { octokit, owner, repo, sha, tagRef, inputs } = input;
-  const { commitTypes, defaultCommitType } = inputs;
+  const { commitTypes, defaultCommitType, mentionAuthors } = inputs;
 
   const repoUrl = `https://github.com/${owner}/${repo}`;
   const commits: LogsI = {};
@@ -45,9 +45,14 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       const existingCommit = logs.find((commit) => commit.title === title);
 
-      if (existingCommit == null) {
-        logs.push({ title, references: [{ commit: commit.sha, pr }] });
-      } else existingCommit.references.push({ commit: commit.sha, pr });
+      const reference: ReferenceI = {
+        author: mentionAuthors ? commit.author?.login : undefined,
+        commit: commit.sha,
+        pr,
+      };
+
+      if (existingCommit == null) logs.push({ title, references: [reference] });
+      else existingCommit.references.push(reference);
     }
   }
 
@@ -77,7 +82,9 @@ export async function generate(input: ChangelogInputI): Promise<string> {
               (reference) =>
                 `${
                   reference.pr == null ? "" : `${repoUrl}/pull/${reference.pr} `
-                }${repoUrl}/commit/${reference.commit}`,
+                }${repoUrl}/commit/${reference.commit}${
+                  reference.author == null ? "" : ` by @${reference.author}`
+                }`,
             )
             .join(", ")})`,
         );
