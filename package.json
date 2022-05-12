@@ -36,7 +36,7 @@
     "@actions/core": "^1.8.0",
     "@actions/github": "^5.0.1",
     "joi": "^17.6.0",
-    "marked": "^4.0.14",
+    "marked": "^4.0.15",
     "semver": "^7.3.7",
     "yaml": "^2.0.1"
   },
