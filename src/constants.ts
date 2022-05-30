@@ -2,7 +2,7 @@ import type { GitHub } from "@actions/github/lib/utils";
 import type { SemVer } from "semver";
 
 export const COMMIT_REGEX =
-  /^(?<type>[^)]*)(?:\((?<category>[^)]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^\]]+?)]|)\s*$/;
+  /^(?<type>[^:()]*)(?:\((?<category>[^()]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
 
 export interface TypesI {
   [type: string]: string;
