@@ -1,5 +1,5 @@
 import SemVer from "semver";
-import type { TagInputI, TagResultI } from "./constants.js";
+import { TagInputI, TagResultI } from "./constants.js";
 
 export async function getTagSha(input: TagInputI): Promise<TagResultI> {
   const { octokit, owner, repo, sha, semver, prerelease } = input;
@@ -18,7 +18,12 @@ export async function getTagSha(input: TagInputI): Promise<TagResultI> {
     } of data) {
       if (sha === tagSha) continue;
 
-      if (semver == null) return { sha: tagSha, name };
+      if (semver == null) {
+        return {
+          sha: tagSha,
+          name,
+        };
+      }
 
       const tagSemver = SemVer.parse(name, { includePrerelease: true });
 
@@ -26,7 +31,10 @@ export async function getTagSha(input: TagInputI): Promise<TagResultI> {
 
       if (tagSemver.prerelease.length > 0 && !prerelease) continue;
 
-      return { sha: tagSha, name };
+      return {
+        sha: tagSha,
+        name,
+      };
     }
   }
 

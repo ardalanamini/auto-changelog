@@ -1,0 +1,16 @@
+env:
+  es2021: true
+  node: true
+extends:
+  - eslint:recommended
+  - noir
+  - plugin:@typescript-eslint/recommended
+  - noir/typescript
+parser: '@typescript-eslint/parser'
+parserOptions:
+  project: ./tsconfig.json
+  ecmaVersion: latest
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+rules: {}

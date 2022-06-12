@@ -1,10 +1,21 @@
-import { ChangelogInputI, COMMIT_REGEX, LogsI, ReferenceI } from "./constants";
+import { COMMIT_REGEX, ChangelogInputI, LogsI, ReferenceI } from "./constants";
+
+function trim(value: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (value == null) return value;
+
+  return value.trim().replace(/ {2,}/g, " ");
+}
+
+function unique(value: string[]): string[] {
+  return [...new Set(value)];
+}
 
 export async function generate(input: ChangelogInputI): Promise<string> {
   const { octokit, owner, repo, sha, tagRef, inputs } = input;
   const { commitTypes, defaultCommitType, mentionAuthors } = inputs;
 
-  const repoUrl = `https://github.com/${owner}/${repo}`;
+  const repoUrl = `https://github.com/${ owner }/${ repo }`;
   const commits: LogsI = {};
 
   paginator: for await (const { data } of octokit.paginate.iterator(
@@ -21,9 +32,7 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       const message = commit.commit.message.split("\n")[0];
 
-      // eslint-disable-next-line prefer-const
-      let { type, category, title, pr, flag } =
-        COMMIT_REGEX.exec(message)?.groups ?? {};
+      let { type, category, title, pr, flag } = COMMIT_REGEX.exec(message)?.groups ?? {};
 
       if (!title) continue;
 
@@ -31,28 +40,37 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       if (flag === "ignore") continue;
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       type = commitTypes[trim(type)] ?? defaultCommitType;
 
       category = category ? trim(category) : "";
 
       title = trim(title);
 
-      if (commits[type] == null) commits[type] = {};
+      let types = commits[type];
 
-      if (commits[type][category] == null) commits[type][category] = [];
+      if (types == null) types = commits[type] = {};
 
-      const logs = commits[type][category];
+      let logs = types[category];
 
-      const existingCommit = logs.find((commit) => commit.title === title);
+      if (logs == null) logs = types[category] = [];
+
+      const existingCommit = logs.find(log => log.title === title);
 
       const reference: ReferenceI = {
-        author: mentionAuthors ? commit.author?.login : undefined,
+        author: mentionAuthors ? commit.author?.login : null,
         commit: commit.sha,
         pr,
       };
 
-      if (existingCommit == null) logs.push({ title, references: [reference] });
-      else existingCommit.references.push(reference);
+      if (existingCommit == null) {
+        logs.push({
+          title,
+          references: [reference],
+        });
+      } else {
+        existingCommit.references.push(reference);
+      }
     }
   }
 
@@ -63,31 +81,27 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
     if (typeGroup == null) return changelog;
 
-    changelog.push(`## ${type}`);
+    changelog.push(`## ${ type }`);
 
     const categories = Object.keys(typeGroup).sort();
 
     for (const category of categories) {
-      const categoryGroup = typeGroup[category];
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const categoryGroup = typeGroup[category]!;
       const defaultCategory = category.length === 0;
 
-      if (!defaultCategory) changelog.push(`* **${category}:**`);
+      if (!defaultCategory) changelog.push(`* **${ category }:**`);
 
       const baseLine = defaultCategory ? "" : "  ";
 
       for (const { title, references } of categoryGroup) {
-        changelog.push(
-          `${baseLine}* ${title} (${references
-            .map(
-              (reference) =>
-                `${
-                  reference.pr == null ? "" : `${repoUrl}/pull/${reference.pr} `
-                }${repoUrl}/commit/${reference.commit}${
-                  reference.author == null ? "" : ` by @${reference.author}`
-                }`,
-            )
-            .join(", ")})`,
-        );
+        changelog.push(`${ baseLine }* ${ title } (${ references
+          .map(reference => `${
+            reference.pr == null ? "" : `${ repoUrl }/pull/${ reference.pr } `
+          }${ repoUrl }/commit/${ reference.commit }${
+            reference.author == null ? "" : ` by @${ reference.author }`
+          }`)
+          .join(", ") })`);
       }
     }
 
@@ -95,14 +109,4 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
     return changelog;
   }, []).join("\n");
-}
-
-function trim(value: string): string {
-  if (value == null) return value;
-
-  return value.trim().replace(/ {2,}/g, " ");
-}
-
-function unique(value: string[]): string[] {
-  return [...new Set(value)];
 }

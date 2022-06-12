@@ -1,12 +1,12 @@
-import { info, setFailed, setOutput } from "@actions/core";
-import { context, getOctokit } from "@actions/github";
-import { marked } from "marked";
 import SemVer from "semver";
-import { getTagSha } from "./tag.js";
 import { generate } from "./changelog.js";
+import { getTagSha } from "./tag.js";
+import { marked } from "marked";
+import { context, getOctokit } from "@actions/github";
 import { getInputs, getToken } from "./context.js";
+import { info, setFailed, setOutput } from "@actions/core";
 
-async function run() {
+async function run(): Promise<void> {
   const inputs = await getInputs();
 
   const octokit = getOctokit(getToken());
@@ -21,10 +21,11 @@ async function run() {
   if (inputs.semver) {
     semver = SemVer.parse(inputs.releaseName, { includePrerelease: true });
 
-    if (semver == null)
-      return setFailed(
-        `Expected a semver compatible releaseName, got "${inputs.releaseName}" instead.`,
-      );
+    if (semver == null) {
+      setFailed(`Expected a semver compatible releaseName, got "${ inputs.releaseName }" instead.`);
+
+      return;
+    }
   }
 
   let prerelease = false;
@@ -53,31 +54,26 @@ async function run() {
     const { data } = await octokit.rest.repos.generateReleaseNotes({
       owner,
       repo,
-      tag_name: inputs.releaseName,
+      tag_name         : inputs.releaseName,
       previous_tag_name: tagName,
     });
 
     const tokens = marked.lexer(data.body);
 
-    const index = tokens.findIndex(
-      (token) => token.type === "heading" && token.text === "New Contributors",
-    );
+    const index = tokens.findIndex(token => token.type === "heading" && token.text === "New Contributors");
 
     const token = tokens[index + 1];
 
-    if (token.type === "list")
-      changelog += `\n\n## New Contributors\n${token.raw}\n`;
+    if (token.type === "list") changelog += `\n\n## New Contributors\n${ token.raw }\n`;
   }
 
-  if (inputs.includeCompare && tagName != null) {
-    changelog += `\n\n**Full Changelog**: https://github.com/${owner}/${repo}/compare/${tagName}...${inputs.releaseName}`;
-  }
+  if (inputs.includeCompare && tagName != null) changelog += `\n\n**Full Changelog**: https://github.com/${ owner }/${ repo }/compare/${ tagName }...${ inputs.releaseName }`;
 
-  info(`-> prerelease: ${prerelease}`);
+  info(`-> prerelease: ${ prerelease }`);
 
   setOutput("prerelease", prerelease);
 
-  info(`-> changelog: "${changelog}"`);
+  info(`-> changelog: "${ changelog }"`);
 
   setOutput("changelog", changelog);
 }
