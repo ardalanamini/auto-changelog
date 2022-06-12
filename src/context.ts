@@ -1,7 +1,7 @@
-import { getInput, getBooleanInput } from "@actions/core";
 import Joi from "joi";
 import YAML from "yaml";
 import { ActionInputsI, TypesI } from "./constants";
+import { getBooleanInput, getInput } from "@actions/core";
 
 export function getToken(): string {
   return getInput("github-token", { required: true });
@@ -23,12 +23,12 @@ export async function getInputs(): Promise<ActionInputsI> {
       commitTypes: Joi.object<TypesI>()
         .pattern(Joi.string(), Joi.string())
         .required(),
-      defaultCommitType: Joi.string().required(),
-      releaseName: Joi.string().required(),
-      mentionAuthors: Joi.boolean().required(),
+      defaultCommitType     : Joi.string().required(),
+      releaseName           : Joi.string().required(),
+      mentionAuthors        : Joi.boolean().required(),
       mentionNewContributors: Joi.boolean().required(),
-      includeCompare: Joi.boolean().required(),
-      semver: Joi.boolean().required(),
+      includeCompare        : Joi.boolean().required(),
+      semver                : Joi.boolean().required(),
     })
     .validateAsync({
       commitTypes,

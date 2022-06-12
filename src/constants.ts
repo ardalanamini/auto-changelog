@@ -1,26 +1,20 @@
-import type { GitHub } from "@actions/github/lib/utils";
-import type { SemVer } from "semver";
+import { GitHub } from "@actions/github/lib/utils";
+import { SemVer } from "semver";
 
-export const COMMIT_REGEX =
-  /^(?<type>[^:()]*)(?:\((?<category>[^()]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
+export const COMMIT_REGEX
+  = /^(?<type>[^:()]*)(?:\((?<category>[^()]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
 
-export interface TypesI {
-  [type: string]: string;
-}
+export type TypesI = Record<string, string>;
 
-export interface LogsI {
-  [type: string]: {
-    [category: string]: LogI[];
-  };
-}
+export type LogsI = Record<string, Record<string, LogI[] | undefined> | undefined>;
 
 export interface LogI {
-  title: string;
   references: ReferenceI[];
+  title: string;
 }
 
 export interface ReferenceI {
-  author?: string;
+  author?: string | null;
   commit: string;
   pr?: string;
 }
@@ -28,32 +22,32 @@ export interface ReferenceI {
 export interface TagInputI {
   octokit: InstanceType<typeof GitHub>;
   owner: string;
-  repo: string;
-  sha: string;
-  semver: SemVer | null;
   prerelease: boolean;
+  repo: string;
+  semver: SemVer | null;
+  sha: string;
 }
 
 export interface TagResultI {
-  sha?: string;
   name?: string;
+  sha?: string;
 }
 
 export interface ChangelogInputI {
+  inputs: ActionInputsI;
   octokit: InstanceType<typeof GitHub>;
   owner: string;
   repo: string;
   sha: string;
   tagRef?: string;
-  inputs: ActionInputsI;
 }
 
 export interface ActionInputsI {
   commitTypes: TypesI;
   defaultCommitType: string;
-  releaseName: string;
+  includeCompare: boolean;
   mentionAuthors: boolean;
   mentionNewContributors: boolean;
-  includeCompare: boolean;
+  releaseName: string;
   semver: boolean;
 }
