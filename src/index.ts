@@ -19,7 +19,8 @@ async function run(): Promise<void> {
   let semver: SemVer.SemVer | null = null;
 
   if (inputs.semver) {
-    semver = SemVer.parse(inputs.releaseName, { includePrerelease: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    semver = SemVer.parse(inputs.releaseName, { includePrerelease: true } as any);
 
     if (semver == null) {
       setFailed(`Expected a semver compatible releaseName, got "${ inputs.releaseName }" instead.`);

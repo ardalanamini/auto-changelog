@@ -25,7 +25,8 @@ export async function getTagSha(input: TagInputI): Promise<TagResultI> {
         };
       }
 
-      const tagSemver = SemVer.parse(name, { includePrerelease: true });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tagSemver = SemVer.parse(name, { includePrerelease: true } as any);
 
       if (tagSemver == null || semver.compare(tagSemver) <= 0) continue;
 
