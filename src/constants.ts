@@ -4,6 +4,10 @@ import { SemVer } from "semver";
 export const COMMIT_REGEX
   = /^(?<type>[^:()]*)(?:\((?<category>[^()]*?)\)|): *(?<title>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
 
+export const APP_AUTHOR_SUFFIX = "[bot]";
+
+export const APP_AUTHOR_SUFFIX_LENGTH = APP_AUTHOR_SUFFIX.length;
+
 export type TypesI = Record<string, string>;
 
 export type LogsI = Record<string, Record<string, LogI[] | undefined> | undefined>;
