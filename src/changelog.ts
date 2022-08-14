@@ -1,4 +1,11 @@
-import { COMMIT_REGEX, ChangelogInputI, LogsI, ReferenceI } from "./constants";
+import {
+  APP_AUTHOR_SUFFIX,
+  APP_AUTHOR_SUFFIX_LENGTH,
+  COMMIT_REGEX,
+  ChangelogInputI,
+  LogsI,
+  ReferenceI,
+} from "./constants";
 
 function trim(value: string): string {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -98,8 +105,18 @@ export async function generate(input: ChangelogInputI): Promise<string> {
         changelog.push(`${ baseLine }* ${ title } (${ references
           .map(reference => `${
             reference.pr == null ? "" : `${ repoUrl }/pull/${ reference.pr } `
-          }${ repoUrl }/commit/${ reference.commit }${
-            reference.author == null ? "" : ` by @${ reference.author }`
+          }${
+            repoUrl
+          }/commit/${
+            reference.commit
+          }${
+            reference.author == null
+              ? ""
+              : (
+                  reference.author.endsWith(APP_AUTHOR_SUFFIX)
+                    ? ` by [@${ reference.author }](https://github.com/apps/${ reference.author.slice(0, -APP_AUTHOR_SUFFIX_LENGTH) })`
+                    : ` by @${ reference.author }`
+                )
           }`)
           .join(", ") })`);
       }
