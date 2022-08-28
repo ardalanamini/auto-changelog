@@ -34,7 +34,8 @@ async function run(): Promise<void> {
 
   if (semver != null) {
     prerelease = semver.prerelease.length > 0;
-    releaseId = semver.prerelease[0] as string;
+
+    if (prerelease) releaseId = semver.prerelease[0] as string;
   }
 
   const { sha: tagRef, name: tagName } = await getTagSha({
