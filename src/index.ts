@@ -30,8 +30,12 @@ async function run(): Promise<void> {
   }
 
   let prerelease = false;
+  let releaseId = "latest";
 
-  if (semver != null) prerelease = semver.prerelease.length > 0;
+  if (semver != null) {
+    prerelease = semver.prerelease.length > 0;
+    releaseId = semver.prerelease[0] as string;
+  }
 
   const { sha: tagRef, name: tagName } = await getTagSha({
     octokit,
@@ -73,6 +77,10 @@ async function run(): Promise<void> {
   info(`-> prerelease: ${ prerelease }`);
 
   setOutput("prerelease", prerelease);
+
+  info(`-> release-id: ${ releaseId }`);
+
+  setOutput("release-id", releaseId);
 
   info(`-> changelog: "${ changelog }"`);
 
