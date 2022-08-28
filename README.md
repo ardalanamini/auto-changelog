@@ -19,6 +19,7 @@ Automatic Changelog generator
 - [Outputs](#outputs)
   - [Changelog](#changelog)
   - [Pre-release](#prerelease)
+  - [Release ID](#release-id)
 - [Example Usage](#example-usage)
 
 ## Usage
@@ -179,6 +180,12 @@ The generated changelog.
 Indicates whether it's a pre-release or not.
 
 > if semver is set to `true`, otherwise this output will always return `false`.
+
+#### `release-id`
+
+The pre-release id in case of prerelease being `true`, `latest` otherwise. (e.g. `alpha`, `beta`, `rc`, `canary`)
+
+> if semver is set to `true`, otherwise this output will always return `latest`.
 
 ### Example Usage
 
