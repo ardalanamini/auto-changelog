@@ -44,7 +44,7 @@
     "@types/marked": "^4.0.3",
     "@types/semver": "^7.3.12",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
-    "@typescript-eslint/parser": "^5.33.0",
+    "@typescript-eslint/parser": "^5.42.0",
     "@vercel/ncc": "^0.34.0",
     "eslint": "^8.22.0",
     "eslint-config-noir": "^1.2.1",
