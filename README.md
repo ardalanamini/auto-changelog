@@ -149,6 +149,30 @@ _Default:_
 true
 ```
 
+#### `include-pr-links`
+
+**(Optional)**
+
+Include GitHub pull request links at each log if applicable.
+
+_Default:_
+
+```yaml
+true
+```
+
+#### `include-commit-links`
+
+**(Optional)**
+
+Include GitHub commit links at each log.
+
+_Default:_
+
+```yaml
+true
+```
+
 #### `semver`
 
 **(Optional)**
@@ -225,5 +249,7 @@ Using with custom inputs:
     mention-authors: true
     mention-new-contributors: true
     include-compare: true
+    include-pr-lints: true
+    include-commit-lints: true
     semver: true
 ```

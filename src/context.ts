@@ -16,6 +16,8 @@ export async function getInputs(): Promise<ActionInputsI> {
     required: true,
   });
   const includeCompare = getBooleanInput("include-compare", { required: true });
+  const includePRLinks = getBooleanInput("include-pr-links", { required: true });
+  const includeCommitLinks = getBooleanInput("include-commit-links", { required: true });
   const semver = getBooleanInput("semver", { required: true });
 
   return Joi.object<ActionInputsI, true>()
@@ -28,6 +30,8 @@ export async function getInputs(): Promise<ActionInputsI> {
       mentionAuthors        : Joi.boolean().required(),
       mentionNewContributors: Joi.boolean().required(),
       includeCompare        : Joi.boolean().required(),
+      includePRLinks        : Joi.boolean().required(),
+      includeCommitLinks    : Joi.boolean().required(),
       semver                : Joi.boolean().required(),
     })
     .validateAsync({
@@ -37,6 +41,8 @@ export async function getInputs(): Promise<ActionInputsI> {
       mentionAuthors,
       mentionNewContributors,
       includeCompare,
+      includePRLinks,
+      includeCommitLinks,
       semver,
     });
 }

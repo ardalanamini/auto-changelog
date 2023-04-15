@@ -19,8 +19,8 @@ export interface LogI {
 
 export interface ReferenceI {
   author?: string | null;
-  commit: string;
-  pr?: string;
+  commit: string | null;
+  pr?: string | null;
 }
 
 export interface TagInputI {
@@ -49,7 +49,9 @@ export interface ChangelogInputI {
 export interface ActionInputsI {
   commitTypes: TypesI;
   defaultCommitType: string;
+  includeCommitLinks: boolean;
   includeCompare: boolean;
+  includePRLinks: boolean;
   mentionAuthors: boolean;
   mentionNewContributors: boolean;
   releaseName: string;
