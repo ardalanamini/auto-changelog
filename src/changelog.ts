@@ -20,7 +20,7 @@ function unique(value: string[]): string[] {
 
 export async function generate(input: ChangelogInputI): Promise<string> {
   const { octokit, owner, repo, sha, tagRef, inputs } = input;
-  const { commitTypes, defaultCommitType, mentionAuthors } = inputs;
+  const { commitTypes, defaultCommitType, mentionAuthors, includePRLinks, includeCommitLinks } = inputs;
 
   const repoUrl = `https://github.com/${ owner }/${ repo }`;
   const commits: LogsI = {};
@@ -66,8 +66,8 @@ export async function generate(input: ChangelogInputI): Promise<string> {
 
       const reference: ReferenceI = {
         author: mentionAuthors ? commit.author?.login : null,
-        commit: commit.sha,
-        pr,
+        commit: includeCommitLinks ? commit.sha : null,
+        pr    : includePRLinks ? pr : null,
       };
 
       if (existingCommit == null) {
@@ -102,23 +102,29 @@ export async function generate(input: ChangelogInputI): Promise<string> {
       const baseLine = defaultCategory ? "" : "  ";
 
       for (const { title, references } of categoryGroup) {
-        changelog.push(`${ baseLine }* ${ title } (${ references
-          .map(reference => `${
-            reference.pr == null ? "" : `${ repoUrl }/pull/${ reference.pr } `
-          }${
-            repoUrl
-          }/commit/${
-            reference.commit
-          }${
-            reference.author == null
-              ? ""
-              : (
-                  reference.author.endsWith(APP_AUTHOR_SUFFIX)
-                    ? ` by [@${ reference.author }](https://github.com/apps/${ reference.author.slice(0, -APP_AUTHOR_SUFFIX_LENGTH) })`
-                    : ` by @${ reference.author }`
-                )
-          }`)
-          .join(", ") })`);
+        let log = `${ baseLine }* ${ title }`;
+
+        const links: string[] = [];
+
+        for (const { pr, commit, author } of references) {
+          const link: string[] = [];
+
+          if (pr != null) link.push(`${ repoUrl }/pull/${ pr }`);
+
+          if (commit != null) link.push(`${ repoUrl }/commit/${ commit }`);
+
+          if (author != null) {
+            // eslint-disable-next-line max-depth
+            if (author.endsWith(APP_AUTHOR_SUFFIX)) link.push(`by [@${ author }](https://github.com/apps/${ author.slice(0, -APP_AUTHOR_SUFFIX_LENGTH) })`);
+            else link.push(`by @${ author }`);
+          }
+
+          if (link.length > 0) links.push(link.join(" "));
+        }
+
+        if (links.length > 0) log += ` (${ links.join(", ") })`;
+
+        changelog.push(log);
       }
     }
 

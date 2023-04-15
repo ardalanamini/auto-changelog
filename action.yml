@@ -59,6 +59,16 @@ inputs:
     required: true
     default: 'true'
 
+  include-pr-links:
+    description: Include GitHub pull request links at each log if applicable
+    required: true
+    default: 'true'
+
+  include-commit-links:
+    description: Include GitHub commit links at each log
+    required: true
+    default: 'true'
+
   semver:
     description: Enable semver based version comparison
     required: true
