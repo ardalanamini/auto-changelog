@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2023 Ardalan Amini
+ * Copyright (c) 2023 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,13 @@
  *
  */
 
-import { setFailed } from "@actions/core";
-import { generateChangelog } from "./changelog.js";
-import { generateFooter } from "./footer.js";
-import { getTagInfo } from "./tag.js";
-import { setChangelog, setPrerelease, setReleaseId } from "./utils/index.js";
+import { getInput } from "@actions/core";
+import { cache } from "./cache.js";
 
-async function run(): Promise<void> {
-  const { prerelease, releaseId, previous } = await getTagInfo();
-
-  setPrerelease(prerelease);
-
-  setReleaseId(releaseId);
-
-  let changelog = await generateChangelog(previous?.sha);
-
-  changelog += await generateFooter(previous?.name);
-
-  setChangelog(changelog);
+export function input<T = string>(
+  name: string,
+  parser: (value: string) => T = (value): T => value as T,
+  required = true,
+): T {
+  return cache(name, () => parser(getInput(name, { required })));
 }
-
-run().catch(setFailed);
