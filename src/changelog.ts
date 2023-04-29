@@ -23,138 +23,175 @@
  *
  */
 
+import { debug } from "@actions/core";
 import {
-  APP_AUTHOR_SUFFIX,
-  APP_AUTHOR_SUFFIX_LENGTH,
-  type ChangelogInputI,
-  COMMIT_REGEX,
-  type LogsI,
-  type ReferenceI,
-} from "./constants";
+  commitTypes,
+  defaultCommitType,
+  includeCommitLinks,
+  includePRLinks,
+  mentionAuthors,
+  octokit,
+  parseCommitMessage,
+  repository,
+  sha,
+} from "./utils/index.js";
 
-function trim(value: string): string {
+interface TypeGroupI {
+  scopes: ScopeGroupI[];
+  type: string;
+}
+
+interface ScopeGroupI {
+  logs: LogI[];
+  scope: string;
+}
+
+interface LogI {
+  description: string;
+  references: string[];
+}
+
+function trim<T extends string | undefined>(value: T): T {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (value == null) return value;
 
-  return value.trim().replace(/ {2,}/g, " ");
+  return value.trim().replace(/ {2,}/g, " ") as never;
 }
 
 function unique(value: string[]): string[] {
   return [...new Set(value)];
 }
 
-export async function generate(input: ChangelogInputI): Promise<string> {
-  const { octokit, owner, repo, sha, tagRef, inputs } = input;
-  const { commitTypes, defaultCommitType, mentionAuthors, includePRLinks, includeCommitLinks } = inputs;
+function sortBy<T>(array: T[], property: keyof T): T[] {
+  return array.sort((a, b) => (a[property] as string).localeCompare(b[property] as string));
+}
 
-  const repoUrl = `https://github.com/${ owner }/${ repo }`;
-  const commits: LogsI = {};
+export async function generateChangelog(lastSha?: string): Promise<string> {
+  const { paginate, rest } = octokit();
+  const { owner, repo, url } = repository();
+  const defaultType = defaultCommitType();
+  const typeMap = commitTypes();
 
-  paginator: for await (const { data } of octokit.paginate.iterator(
-    octokit.rest.repos.listCommits,
+  const iterator = paginate.iterator(
+    rest.repos.listCommits,
     {
       per_page: 100,
+      sha     : sha(),
       owner,
       repo,
-      sha,
     },
-  )) {
+  );
+
+  const typeGroups: TypeGroupI[] = [];
+
+  paginator: for await (const { data } of iterator) {
     for (const commit of data) {
-      if (commit.sha === tagRef) break paginator;
+      if (commit.sha === lastSha) break paginator;
 
       const message = commit.commit.message.split("\n")[0];
 
-      let { type, category, title, pr, flag } = COMMIT_REGEX.exec(message)?.groups ?? {};
+      debug(`commit message -> ${ message }`);
 
-      if (!title) continue;
+      let { type, scope, description, pr, flag } = parseCommitMessage(message);
+
+      if (!description) continue;
+
+      description = trim(description);
 
       flag = trim(flag);
 
       if (flag === "ignore") continue;
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      type = commitTypes[trim(type)] ?? defaultCommitType;
+      type = typeMap[trim(type ?? "")] ?? defaultType;
 
-      category = category ? trim(category) : "";
+      let typeGroup = typeGroups.find(record => record.type === type);
 
-      title = trim(title);
+      if (typeGroup == null) {
+        typeGroup = {
+          type,
+          scopes: [],
+        };
 
-      let types = commits[type];
-
-      types ??= commits[type] = {};
-
-      let logs = types[category];
-
-      logs ??= types[category] = [];
-
-      const existingCommit = logs.find(log => log.title === title);
-
-      const reference: ReferenceI = {
-        author: mentionAuthors ? commit.author?.login : null,
-        commit: includeCommitLinks ? commit.sha : null,
-        pr    : includePRLinks ? pr : null,
-      };
-
-      if (existingCommit == null) {
-        logs.push({
-          title,
-          references: [reference],
-        });
-      } else {
-        existingCommit.references.push(reference);
+        typeGroups.push(typeGroup);
       }
+
+      scope = trim(scope ?? "");
+
+      let scopeGroup = typeGroup.scopes.find(record => record.scope === scope);
+
+      if (scopeGroup == null) {
+        scopeGroup = {
+          scope,
+          logs: [],
+        };
+
+        typeGroup.scopes.push(scopeGroup);
+      }
+
+      let log = scopeGroup.logs.find(record => record.description === description);
+
+      if (log == null) {
+        log = {
+          description,
+          references: [],
+        };
+
+        scopeGroup.logs.push(log);
+      }
+
+      const reference: string[] = [];
+
+      if (pr && includePRLinks()) reference.push(`${ url }/issues/${ pr }`);
+
+      if (includeCommitLinks()) reference.push(`${ url }/commit/${ commit.sha }`);
+
+      if (commit.author?.login && mentionAuthors()) reference.push(`by @${ commit.author.login }`);
+
+      if (reference.length > 0) log.references.push(reference.join(" "));
     }
   }
 
-  const TYPES = unique([...Object.values(commitTypes), defaultCommitType]);
+  const types = unique(Object.values(typeMap).concat(defaultType));
 
-  return TYPES.reduce<string[]>((changelog, type) => {
-    const typeGroup = commits[type];
+  const changelog: string[] = [];
 
-    if (typeGroup == null) return changelog;
+  for (const type of types) {
+    const typeGroup = typeGroups.find(log => log.type === type);
+
+    if (typeGroup == null) continue;
 
     changelog.push(`## ${ type }`);
 
-    const categories = Object.keys(typeGroup).sort();
+    sortBy(typeGroup.scopes, "scope");
 
-    for (const category of categories) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const categoryGroup = typeGroup[category]!;
-      const defaultCategory = category.length === 0;
+    for (const { scope, logs } of typeGroup.scopes) {
+      let prefix = "";
 
-      if (!defaultCategory) changelog.push(`* **${ category }:**`);
+      if (scope.length > 0) {
+        changelog.push(`* **${ scope }:**`);
 
-      const baseLine = defaultCategory ? "" : "  ";
+        prefix = "  ";
+      }
 
-      for (const { title, references } of categoryGroup) {
-        let log = `${ baseLine }* ${ title }`;
+      for (const { description, references } of logs) {
+        let line = `${ prefix }* ${ description }`;
 
-        const links: string[] = [];
+        if (references.length > 0) line += ` (${ references.join(", ") })`;
 
-        for (const { pr, commit, author } of references) {
-          const link: string[] = [];
-
-          if (pr != null) link.push(`${ repoUrl }/pull/${ pr }`);
-
-          if (commit != null) link.push(`${ repoUrl }/commit/${ commit }`);
-
-          if (author != null) {
-            // eslint-disable-next-line max-depth
-            if (author.endsWith(APP_AUTHOR_SUFFIX)) link.push(`by [@${ author }](https://github.com/apps/${ author.slice(0, -APP_AUTHOR_SUFFIX_LENGTH) })`);
-            else link.push(`by @${ author }`);
-          }
-
-          if (link.length > 0) links.push(link.join(" "));
-        }
-
-        if (links.length > 0) log += ` (${ links.join(", ") })`;
-
-        changelog.push(log);
+        changelog.push(line);
       }
     }
 
     changelog.push("");
+  }
 
-    return changelog;
-  }, []).join("\n");
+  return changelog.join("\n");
+}
+
+export interface ChangelogRecordI {
+  description: string;
+  references: string[];
+  scope: string;
+  type: string;
 }

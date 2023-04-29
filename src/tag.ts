@@ -23,45 +23,77 @@
  *
  */
 
-import { parse as parseSemVer } from "semver";
-import { type TagInputI, type TagResultI } from "./constants.js";
+import { type SemVer } from "semver";
+import { octokit, parseSemVer, releaseName, repository, semver, sha } from "./utils/index.js";
 
-export async function getTagSha(input: TagInputI): Promise<TagResultI> {
-  const { octokit, owner, repo, sha, semver, prerelease } = input;
+export interface TagInfoI {
+  prerelease: boolean;
 
-  for await (const { data } of octokit.paginate.iterator(
-    octokit.rest.repos.listTags,
+  previous?: {
+    name: string;
+    sha: string;
+  };
+
+  releaseId: string;
+}
+
+export async function getTagInfo(): Promise<TagInfoI> {
+  const { paginate, rest } = octokit();
+  const { owner, repo } = repository();
+
+  const info: TagInfoI = {
+    releaseId : "latest",
+    prerelease: false,
+  };
+
+  let semVer: SemVer | null = null;
+
+  if (semver()) {
+    semVer = parseSemVer();
+
+    if (semVer == null) throw new Error(`Expected a semver compatible releaseName, got "${ releaseName() }" instead.`);
+
+    info.prerelease = semVer.prerelease.length > 0;
+
+    if (info.prerelease) info.releaseId = `${ semVer.prerelease[0] }`;
+  }
+
+  const iterator = paginate.iterator(
+    rest.repos.listTags,
     {
       per_page: 100,
       owner,
       repo,
     },
-  )) {
-    for (const {
-      name,
-      commit: { sha: tagSha },
-    } of data) {
-      if (sha === tagSha) continue;
+  );
 
-      if (semver == null) {
-        return {
-          sha: tagSha,
+  loop: for await (const { data } of iterator) {
+    for (const { name, commit } of data) {
+      if (sha() === commit.sha) continue;
+
+      if (semVer == null) {
+        info.previous = {
           name,
+          sha: commit.sha,
         };
+
+        break loop;
       }
 
-      const tagSemver = parseSemVer(name, { includePrerelease: true } as never);
+      const version = parseSemVer(name);
 
-      if (tagSemver == null || semver.compare(tagSemver) <= 0) continue;
+      if (version == null || semVer.compare(version) <= 0) continue;
 
-      if (tagSemver.prerelease.length > 0 && !prerelease) continue;
+      if (version.prerelease.length > 0 && !info.prerelease) continue;
 
-      return {
-        sha: tagSha,
+      info.previous = {
         name,
+        sha: commit.sha,
       };
+
+      break loop;
     }
   }
 
-  return {};
+  return info;
 }
