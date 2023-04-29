@@ -23,8 +23,26 @@
  *
  */
 
-const REGEX = /^(?<type>[^:()]*)(?:\((?<scope>[^()]*?)\)|): *(?<description>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
+const REGEX = /^(?<type>[^!:()]*)(?:\((?<scope>[^!()]*?)\)|)(?<breaking>!?): *(?<description>.+?) *(?:\(#(?<pr>[1-9]\d*?)\)|) *(?:\[(?<flag>[^[\]]*?)]|)\s*$/;
 
-export function parseCommitMessage(message: string): { description?: string; flag?: string; pr?: `${ number }`; scope?: string; type?: string } {
-  return REGEX.exec(message)?.groups ?? {};
+export function parseCommitMessage(message: string): ParsedCommitMessageI {
+  const { description, flag, pr, scope, type, breaking } = REGEX.exec(message)?.groups ?? {};
+
+  return {
+    breaking: !!breaking,
+    description,
+    flag,
+    pr,
+    scope,
+    type,
+  };
+}
+
+export interface ParsedCommitMessageI {
+  breaking: boolean;
+  description?: string;
+  flag?: string;
+  pr?: string;
+  scope?: string;
+  type?: string;
 }

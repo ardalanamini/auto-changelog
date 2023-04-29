@@ -48,6 +48,7 @@ interface ScopeGroupI {
 }
 
 interface LogI {
+  breaking: boolean;
   description: string;
   references: string[];
 }
@@ -97,7 +98,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
       debug(`commit message -> ${ message }`);
 
-      let { type, scope, description, pr, flag } = parseCommitMessage(message);
+      let { type, scope, description, pr, flag, breaking } = parseCommitMessage(message);
 
       if (!description) continue;
 
@@ -138,6 +139,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
       if (log == null) {
         log = {
+          breaking,
           description,
           references: [],
         };
@@ -179,8 +181,8 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
         prefix = "  ";
       }
 
-      for (const { description, references } of logs) {
-        let line = `${ prefix }* ${ description }`;
+      for (const { breaking, description, references } of logs) {
+        let line = `${ prefix }* ${ breaking ? "**breaking: **" : "" }${ description }`;
 
         if (references.length > 0) line += ` (${ references.join(", ") })`;
 
