@@ -24,12 +24,12 @@
   "main": "dist/index.js",
   "scripts": {
     "lint": "eslint src",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "pnpm lint -- --fix",
     "lint:format": "prettier --write src",
     "build": "tsc",
-    "build:watch": "npm run build -- --watch",
+    "build:watch": "pnpm build -- --watch",
     "package": "ncc build --out action --minify --source-map --license licenses.txt",
-    "all": "npm run lint:fix && npm run build && npm run package",
+    "all": "pnpm lint:fix && pnpm build && pnpm package",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
