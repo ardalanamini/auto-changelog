@@ -182,7 +182,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
       }
 
       for (const { breaking, description, references } of logs) {
-        let line = `${ prefix }* ${ breaking ? "**breaking: **" : "" }${ description }`;
+        let line = `${ prefix }* ${ breaking ? "**breaking:** " : "" }${ description }`;
 
         if (references.length > 0) line += ` (${ references.join(", ") })`;
 
