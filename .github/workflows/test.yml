@@ -16,28 +16,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Cache
-        uses: actions/cache@v3
+      - name: Use PNPM
+        uses: pnpm/action-setup@v2
         with:
-          path: '**/node_modules'
-          key: ${{ matrix.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          version: 8
 
       - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
+          cache: pnpm
           node-version: 16
 
       - name: Install dependencies
-        run: npm i --no-fund
+        run: pnpm i
 
       - name: Check code styles
-        run: npm run lint
+        run: pnpm lint
 
       - name: Build using TypeScript
-        run: npm run build
+        run: pnpm build
 
       - name: Package using ncc
-        run: npm run package
+        run: pnpm package
 
   test: # make sure the action works on a clean machine without building
     name: Test

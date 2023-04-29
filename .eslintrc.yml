@@ -1,16 +1,11 @@
 env:
-  es2021: true
+  es2022: true
   node: true
 extends:
-  - eslint:recommended
-  - noir
-  - plugin:@typescript-eslint/recommended
-  - noir/typescript
-parser: '@typescript-eslint/parser'
+  - noir/all
 parserOptions:
   project: ./tsconfig.json
   ecmaVersion: latest
   sourceType: module
-plugins:
-  - '@typescript-eslint'
-rules: {}
+rules:
+  import/extensions: off
