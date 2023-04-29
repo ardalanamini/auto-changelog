@@ -150,10 +150,25 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
       const reference: string[] = [];
 
       if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
+      else if (shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
 
-      if ((!pr || !shouldIncludePRLinks) && shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
+      const username = commit.author?.login;
 
-      if (commit.author?.login && shouldMentionAuthors) reference.push(`by @${ commit.author.login }`);
+      if (username && shouldMentionAuthors) {
+        const mention = `by @${ username }`;
+
+        reference.push(mention);
+
+        const lastReference = log.references[log.references.length - 1];
+
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (lastReference?.endsWith(mention)) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          log.references.push(log.references.pop()!.replace(mention, `& ${ reference.join(" ") }`));
+
+          continue;
+        }
+      }
 
       if (reference.length > 0) log.references.push(reference.join(" "));
     }
