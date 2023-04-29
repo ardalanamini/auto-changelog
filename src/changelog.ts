@@ -71,6 +71,9 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   const { owner, repo, url } = repository();
   const defaultType = defaultCommitType();
   const typeMap = commitTypes();
+  const shouldIncludePRLinks = includePRLinks();
+  const shouldIncludeCommitLinks = includeCommitLinks();
+  const shouldMentionAuthors = mentionAuthors();
 
   const iterator = paginate.iterator(
     rest.repos.listCommits,
@@ -142,11 +145,11 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
       const reference: string[] = [];
 
-      if (pr && includePRLinks()) reference.push(`${ url }/issues/${ pr }`);
+      if (pr && shouldIncludePRLinks) reference.push(`${ url }/issues/${ pr }`);
 
-      if (includeCommitLinks()) reference.push(`${ url }/commit/${ commit.sha }`);
+      if ((!pr || !shouldIncludePRLinks) && shouldIncludeCommitLinks) reference.push(`${ url }/commit/${ commit.sha }`);
 
-      if (commit.author?.login && mentionAuthors()) reference.push(`by @${ commit.author.login }`);
+      if (commit.author?.login && shouldMentionAuthors) reference.push(`by @${ commit.author.login }`);
 
       if (reference.length > 0) log.references.push(reference.join(" "));
     }
