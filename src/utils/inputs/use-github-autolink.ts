@@ -23,14 +23,8 @@
  *
  */
 
-export * from "./commit-types.js";
-export * from "./default-commit-type.js";
-export * from "./include-compare-link.js";
-export * from "./include-commit-links.js";
-export * from "./include-pr-links.js";
-export * from "./mention-authors.js";
-export * from "./mention-new-contributors.js";
-export * from "./release-name.js";
-export * from "./semver.js";
-export * from "./token.js";
-export * from "./use-github-autolink.js";
+import { booleanInput } from "../boolean-input.js";
+
+export function useGithubAutolink(): boolean {
+  return booleanInput("use-github-autolink");
+}

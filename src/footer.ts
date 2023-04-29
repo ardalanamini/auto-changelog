@@ -24,7 +24,14 @@
  */
 
 import { marked } from "marked";
-import { includeCompareLink, mentionNewContributors, octokit, releaseName, repository } from "./utils/index.js";
+import {
+  includeCompareLink,
+  mentionNewContributors,
+  octokit,
+  releaseName,
+  repository,
+  useGithubAutolink,
+} from "./utils/index.js";
 
 export async function generateFooter(previousTagName?: string): Promise<string> {
   const { owner, repo, url } = repository();
@@ -53,7 +60,11 @@ export async function generateFooter(previousTagName?: string): Promise<string> 
     if (markdownToken.type === "list") footer.push(`## New Contributors\n${ markdownToken.raw }\n`);
   }
 
-  if (includeCompareLink() && previousTagName) footer.push(`**Full Changelog**: ${ url }/compare/${ previousTagName }...${ tagName }`);
+  if (includeCompareLink() && previousTagName) {
+    const link = useGithubAutolink() ? `${ url }/compare/${ previousTagName }...${ tagName }` : `\`[${ previousTagName }...${ tagName }](${ url }/compare/${ previousTagName }...${ tagName })\``;
+
+    footer.push(`**Full Changelog**: ${ link }`);
+  }
 
   if (footer.length > 0) footer.unshift("");
 

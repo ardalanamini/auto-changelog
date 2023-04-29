@@ -34,6 +34,7 @@ import {
   parseCommitMessage,
   repository,
   sha,
+  useGithubAutolink,
 } from "./utils/index.js";
 
 interface TypeGroupI {
@@ -74,6 +75,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   const shouldIncludePRLinks = includePRLinks();
   const shouldIncludeCommitLinks = includeCommitLinks();
   const shouldMentionAuthors = mentionAuthors();
+  const shouldUseGithubAutolink = useGithubAutolink();
 
   const iterator = paginate.iterator(
     rest.repos.listCommits,
@@ -145,9 +147,9 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
       const reference: string[] = [];
 
-      if (pr && shouldIncludePRLinks) reference.push(`${ url }/issues/${ pr }`);
+      if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
 
-      if ((!pr || !shouldIncludePRLinks) && shouldIncludeCommitLinks) reference.push(`${ url }/commit/${ commit.sha }`);
+      if ((!pr || !shouldIncludePRLinks) && shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
 
       if (commit.author?.login && shouldMentionAuthors) reference.push(`by @${ commit.author.login }`);
 
@@ -190,11 +192,4 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   }
 
   return changelog.join("\n");
-}
-
-export interface ChangelogRecordI {
-  description: string;
-  references: string[];
-  scope: string;
-  type: string;
 }

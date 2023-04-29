@@ -16,6 +16,7 @@ Automatic Changelog generator
   - [Mention New Contributors](#mention-new-contributors)
   - [Include GitHub Compare Link](#include-compare-link)
   - [SemVer Compatibility](#semver)
+  - [Use GitHub Autolink](#use-github-autolink)
 - [Outputs](#outputs)
   - [Changelog](#changelog)
   - [Pre-release](#prerelease)
@@ -193,6 +194,18 @@ _Default:_
 true
 ```
 
+#### `use-github-autolink`
+
+**(Optional)**
+
+Use [GitHub Autolink](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/autolinked-references-and-urls).
+
+_Default:_
+
+```yaml
+true
+```
+
 ### Outputs
 
 #### `changelog`
@@ -252,4 +265,5 @@ Using with custom inputs:
     include-pr-lints: true
     include-commit-lints: true
     semver: true
+    use-github-autolink: true
 ```

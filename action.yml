@@ -74,6 +74,11 @@ inputs:
     required: true
     default: 'true'
 
+  use-github-autolink:
+    description: Use GitHub Autolink
+    required: true
+    default: 'true'
+
 outputs:
 
   changelog:
