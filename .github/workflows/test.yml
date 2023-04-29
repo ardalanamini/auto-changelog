@@ -69,5 +69,5 @@ jobs:
           default-commit-type: Default Type
           mention-authors: false
           mention-new-contributors: false
-          include-compare: false
+          include-compare-link: false
           semver: false

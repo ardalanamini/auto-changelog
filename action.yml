@@ -54,7 +54,7 @@ inputs:
     required: true
     default: 'true'
 
-  include-compare:
+  include-compare-link:
     description: Include GitHub compare at the bottom of the changelog (Full Changelog)
     required: true
     default: 'true'

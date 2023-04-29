@@ -26,5 +26,5 @@
 import { booleanInput } from "../boolean-input.js";
 
 export function includeCompareLink(): boolean {
-  return booleanInput("include-compare");
+  return booleanInput("include-compare-link");
 }

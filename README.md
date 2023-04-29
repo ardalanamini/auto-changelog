@@ -14,7 +14,7 @@ Automatic Changelog generator
   - [Release Name](#release-name)
   - [Mention Authors](#mention-authors)
   - [Mention New Contributors](#mention-new-contributors)
-  - [Include GitHub Compare](#include-compare)
+  - [Include GitHub Compare Link](#include-compare-link)
   - [SemVer Compatibility](#semver)
 - [Outputs](#outputs)
   - [Changelog](#changelog)
@@ -135,7 +135,7 @@ _Default:_
 true
 ```
 
-#### `include-compare`
+#### `include-compare-link`
 
 **(Optional)**
 
@@ -248,7 +248,7 @@ Using with custom inputs:
     release-name: v1.0.0
     mention-authors: true
     mention-new-contributors: true
-    include-compare: true
+    include-compare-link: true
     include-pr-lints: true
     include-commit-lints: true
     semver: true
