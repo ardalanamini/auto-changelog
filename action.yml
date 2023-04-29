@@ -19,20 +19,17 @@ inputs:
     description: Commit types
     required: true
     default: |
-      breaking: Breaking Changes
       feat: New Features
       fix: Bug Fixes
-      revert: Reverts
+      build: Build System & Dependencies
       perf: Performance Improvements
-      refactor: Refactors
-      deps: Dependencies
-      docs: Documentation Changes
-      style: Code Style Changes
-      build: Build System
-      ci: Continuous Integration
+      docs: Documentation
       test: Tests
+      refactor: Refactors
       chore: Chores
-      other: Other Changes
+      ci: CI
+      style: Code Style
+      revert: Reverts
 
   default-commit-type:
     description: Default commit type to be used when the commit message matches none of the defined types

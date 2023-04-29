@@ -67,23 +67,22 @@ ${{ github.token }}
 
 Commit types.
 
+> The default value is based on the [Conventional Commits Specification](https://www.conventionalcommits.org/en/v1.0.0)
+
 _Default:_
 
 ```yaml
-breaking: Breaking Changes
 feat: New Features
 fix: Bug Fixes
-revert: Reverts
+build: Build System & Dependencies
 perf: Performance Improvements
-refactor: Refactors
-deps: Dependencies
-docs: Documentation Changes
-style: Code Style Changes
-build: Build System
-ci: Continuous Integration
+docs: Documentation
 test: Tests
+refactor: Refactors
 chore: Chores
-other: Other Changes
+ci: CI
+style: Code Style
+revert: Reverts
 ```
 
 #### `default-commit-type`
@@ -243,20 +242,17 @@ Using with custom inputs:
   with:
     github-token: ${{ github.token }}
     commit-types: |
-      breaking: Breaking Changes
       feat: New Features
       fix: Bug Fixes
-      revert: Reverts
+      build: Build System & Dependencies
       perf: Performance Improvements
-      refactor: Refactors
-      deps: Dependencies
-      docs: Documentation Changes
-      style: Code Style Changes
-      build: Build System
-      ci: Continuous Integration
+      docs: Documentation
       test: Tests
+      refactor: Refactors
       chore: Chores
-      other: Other Changes
+      ci: CI
+      style: Code Style
+      revert: Reverts
     default-commit-type: Other Changes
     release-name: v1.0.0
     mention-authors: true
