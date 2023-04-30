@@ -1,19 +1,19 @@
 name: Test
 
-on: # rebuild any PRs and main branch changes
-  push:
+on  : # rebuild any PRs and main branch changes
+  push         :
     branches:
       - master
-  pull_request:
+  pull_request :
   workflow_call:
 
 jobs:
-  build: # make sure build/ci work properly
-    name: Build
+  build           : # make sure build/ci work properly
+    name   : Build
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps  :
       - uses: actions/checkout@v3
 
       - name: Use PNPM
@@ -24,27 +24,27 @@ jobs:
       - name: Use Node.js 16
         uses: actions/setup-node@v3
         with:
-          cache: pnpm
+          cache       : pnpm
           node-version: 16
 
       - name: Install dependencies
-        run: pnpm i
+        run : pnpm i
 
       - name: Check code styles
-        run: pnpm lint
+        run : pnpm lint
 
       - name: Build using TypeScript
-        run: pnpm build
+        run : pnpm build
 
       - name: Package using ncc
-        run: pnpm package
+        run : pnpm package
 
-  test: # make sure the action works on a clean machine without building
-    name: Test
+  test            : # make sure the action works on a clean machine without building
+    name   : Test
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps  :
       - uses: actions/checkout@v3
 
       - name: Changelog
@@ -53,21 +53,21 @@ jobs:
           semver: ${{ startsWith(github.ref, 'refs/tags/') }}
 
   test-with-inputs: # make sure the action works on a clean machine without building
-    name: Test with inputs
+    name   : Test with inputs
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps  :
       - uses: actions/checkout@v3
 
       - name: Changelog
         uses: ./
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          commit-types: |
+          github-token            : ${{ secrets.GITHUB_TOKEN }}
+          commit-types            : |
             feat: Feature
-          default-commit-type: Default Type
-          mention-authors: false
+          default-commit-type     : Default Type
+          mention-authors         : false
           mention-new-contributors: false
-          include-compare-link: false
-          semver: false
+          include-compare-link    : false
+          semver                  : false

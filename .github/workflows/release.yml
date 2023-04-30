@@ -1,40 +1,40 @@
 name: Release
 
-on:
+on  :
   push:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+*'
 
 jobs:
-  test:
+  test   :
     uses: ./.github/workflows/test.yml
 
   release:
-    name: Create Release
+    name       : Create Release
 
     concurrency: github-release
 
     environment:
       name: release
-      url: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+      url : https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}
 
-    runs-on: ubuntu-latest
+    runs-on    : ubuntu-latest
 
-    needs:
+    needs      :
       - test
 
-    steps:
+    steps      :
       - uses: actions/checkout@v3
 
       - name: Changelog
         uses: ardalanamini/auto-changelog@master
-        id: changelog
+        id  : changelog
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
-        env:
+        env :
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          body: |
+          body      : |
             ${{ steps.changelog.outputs.changelog }}
           prerelease: ${{ steps.changelog.outputs.prerelease }}

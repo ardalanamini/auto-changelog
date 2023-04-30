@@ -36,7 +36,8 @@ type(category): description [flag]
 
   > The changelogs will be in the same order as `commit-types` input.
 
-  > If the `type` doesn't match any of the provided `commit-types` input keys, The `default-commit-type` input will be used instead.
+  > If the `type` doesn't match any of the provided `commit-types` input keys, The `default-commit-type` input will be
+  used instead.
 
 - The `category` is optional and can be anything of your choice.
 
@@ -73,17 +74,17 @@ Commit types.
 _Default:_
 
 ```yaml
-feat: New Features
-fix: Bug Fixes
-build: Build System & Dependencies
-perf: Performance Improvements
-docs: Documentation
-test: Tests
+feat    : New Features
+fix     : Bug Fixes
+build   : Build System & Dependencies
+perf    : Performance Improvements
+docs    : Documentation
+test    : Tests
 refactor: Refactors
-chore: Chores
-ci: CI
-style: Code Style
-revert: Reverts
+chore   : Chores
+ci      : CI
+style   : Code Style
+revert  : Reverts
 ```
 
 #### `default-commit-type`
@@ -245,7 +246,7 @@ Using with default inputs:
 ```yaml
 - name: Changelog
   uses: ardalanamini/auto-changelog@v4
-  id: changelog
+  id  : changelog
 ```
 
 Using with custom inputs:
@@ -253,10 +254,10 @@ Using with custom inputs:
 ```yaml
 - name: Changelog
   uses: ardalanamini/auto-changelog@v4
-  id: changelog
+  id  : changelog
   with:
-    github-token: ${{ github.token }}
-    commit-types: |
+    github-token            : ${{ github.token }}
+    commit-types            : |
       feat: New Features
       fix: Bug Fixes
       build: Build System & Dependencies
@@ -268,14 +269,14 @@ Using with custom inputs:
       ci: CI
       style: Code Style
       revert: Reverts
-    default-commit-type: Other Changes
-    release-name: v1.0.0
-    release-name-prefix: ""
-    mention-authors: true
+    default-commit-type     : Other Changes
+    release-name            : v1.0.0
+    release-name-prefix     : ""
+    mention-authors         : true
     mention-new-contributors: true
-    include-compare-link: true
-    include-pr-lints: true
-    include-commit-lints: true
-    semver: true
-    use-github-autolink: true
+    include-compare-link    : true
+    include-pr-lints        : true
+    include-commit-lints    : true
+    semver                  : true
+    use-github-autolink     : true
 ```
