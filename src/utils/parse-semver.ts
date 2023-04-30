@@ -25,10 +25,10 @@
 
 import { parse, type SemVer } from "semver";
 import { cache } from "./cache.js";
-import { releaseName } from "./inputs/index.js";
+import { releaseName, releaseNamePrefix } from "./inputs/index.js";
 
 export function parseSemVer(version = releaseName()): SemVer | null {
-  return cache(`semver-${ version }`, () => parse(version, { includePrerelease: true } as never));
+  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
 }
 
 export { SemVer };

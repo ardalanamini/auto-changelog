@@ -29,6 +29,7 @@ import {
   mentionNewContributors,
   octokit,
   releaseName,
+  releaseNamePrefix,
   repository,
   useGithubAutolink,
 } from "./utils/index.js";
@@ -61,7 +62,9 @@ export async function generateFooter(previousTagName?: string): Promise<string> 
   }
 
   if (includeCompareLink() && previousTagName) {
-    const link = useGithubAutolink() ? `${ url }/compare/${ previousTagName }...${ tagName }` : `\`[${ previousTagName }...${ tagName }](${ url }/compare/${ previousTagName }...${ tagName })\``;
+    let link = `${ url }/compare/${ previousTagName }...${ tagName }`;
+
+    if (!useGithubAutolink() || releaseNamePrefix()) link = `\`[${ previousTagName }...${ tagName }](${ url }/compare/${ previousTagName }...${ tagName })\``;
 
     footer.push(`**Full Changelog**: ${ link }`);
   }

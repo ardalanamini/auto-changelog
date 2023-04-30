@@ -41,6 +41,11 @@ inputs:
     required: true
     default: ${{ github.ref_name }}
 
+  release-name-prefix:
+    description: Release name (version) prefix
+    required: true
+    default: ""
+
   mention-authors:
     description: Mention the author of each commit
     required: true

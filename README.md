@@ -12,6 +12,7 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
+  - [Release Name Prefix](#release-name-prefix)
   - [Mention Authors](#mention-authors)
   - [Mention New Contributors](#mention-new-contributors)
   - [Include GitHub Compare Link](#include-compare-link)
@@ -109,6 +110,20 @@ _Default:_
 
 ```yaml
 ${{ github.ref_name }}
+```
+
+#### `release-name-prefix`
+
+**(Optional)**
+
+Release name (version) prefix.
+
+> Example: For a release name such as `@actions/github/v1.0.0` it would be `@actions/github/`
+
+_Default:_
+
+```yaml
+""
 ```
 
 #### `mention-authors`
@@ -255,6 +270,7 @@ Using with custom inputs:
       revert: Reverts
     default-commit-type: Other Changes
     release-name: v1.0.0
+    release-name-prefix: ""
     mention-authors: true
     mention-new-contributors: true
     include-compare-link: true
