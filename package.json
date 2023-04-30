@@ -1,6 +1,6 @@
 {
   "name": "auto-changelog",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0",
   "private": true,
   "description": "Github Automatic Changelog action",
   "author": {
