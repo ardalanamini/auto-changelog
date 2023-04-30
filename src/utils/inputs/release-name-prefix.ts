@@ -26,5 +26,5 @@
 import { input } from "../input.js";
 
 export function releaseNamePrefix(): string {
-  return input("release-name-prefix");
+  return input("release-name-prefix", value => value || "", false);
 }

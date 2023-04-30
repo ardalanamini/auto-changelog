@@ -43,7 +43,7 @@ inputs:
 
   release-name-prefix:
     description: Release name (version) prefix
-    required: true
+    required: false
     default: ""
 
   mention-authors:
