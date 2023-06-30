@@ -275,8 +275,8 @@ Using with custom inputs:
     mention-authors         : true
     mention-new-contributors: true
     include-compare-link    : true
-    include-pr-lints        : true
-    include-commit-lints    : true
+    include-pr-links        : true
+    include-commit-links    : true
     semver                  : true
     use-github-autolink     : true
 ```
