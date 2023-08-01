@@ -41,7 +41,7 @@
     "yaml": "^2.2.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.1",
+    "@commitlint/cli": "^17.6.7",
     "@commitlint/config-conventional": "^17.6.1",
     "@types/marked": "^4.0.8",
     "@types/semver": "^7.3.13",
