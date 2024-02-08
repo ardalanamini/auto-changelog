@@ -51,6 +51,7 @@ jobs:
         uses: ./
         with:
           semver: ${{ startsWith(github.ref, 'refs/tags/') }}
+          mention-new-contributors: ${{ github.ref_protected }}
 
   test-with-inputs: # make sure the action works on a clean machine without building
     name   : Test with inputs
