@@ -63,7 +63,6 @@ jobs:
       - name: Changelog
         uses: ./
         with:
-          github-token            : ${{ secrets.GITHUB_TOKEN }}
           commit-types            : |
             feat: Feature
           default-commit-type     : Default Type
