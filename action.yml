@@ -93,5 +93,5 @@ outputs:
     description: The pre-release id in case of prerelease being true, latest otherwise (if semver is set to true, otherwise this output will always return latest)
 
 runs:
-  using: node16
+  using: node20
   main: action/index.js
