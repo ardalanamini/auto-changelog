@@ -1,4 +1,3 @@
-#!/usr/bin/env sh
 #
 # MIT License
 #
@@ -23,8 +22,6 @@
 # SOFTWARE.
 #
 #
-
-. "$(dirname -- "$0")/_/husky.sh"
 
 pnpm lint:fix
 
