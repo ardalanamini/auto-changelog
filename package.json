@@ -38,7 +38,7 @@
     "@actions/github": "^6.0.0",
     "marked": "^12.0.0",
     "semver": "^7.6.0",
-    "yaml": "^2.3.4"
+    "yaml": "^2.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.6.0",
