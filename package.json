@@ -34,27 +34,27 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@actions/core": "^1.10.1",
+    "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0",
-    "marked": "^12.0.0",
-    "semver": "^7.6.0",
-    "yaml": "^2.3.4"
+    "marked": "^12.0.2",
+    "semver": "^7.6.3",
+    "yaml": "^2.6.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.6.0",
-    "@commitlint/config-conventional": "^18.6.0",
-    "@commitlint/types": "^18.6.1",
-    "@types/semver": "^7.5.6",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "@vercel/ncc": "^0.38.1",
-    "eslint": "^8.56.0",
-    "eslint-config-noir": "^1.4.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "husky": "^9.0.10",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@commitlint/types": "^19.5.0",
+    "@types/semver": "^7.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vercel/ncc": "^0.38.2",
+    "eslint": "^8.57.1",
+    "eslint-config-noir": "^1.5.2",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.6",
     "is-ci": "^3.0.1",
-    "prettier": "^3.2.5",
-    "typescript": "^5.3.3"
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3"
   }
 }
