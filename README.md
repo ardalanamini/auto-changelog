@@ -252,23 +252,23 @@ Using with default inputs:
 Using with custom inputs:
 
 ```yaml
-- name: Changelog
-  uses: ardalanamini/auto-changelog@v4
+- uses: ardalanamini/auto-changelog@v4
   id  : changelog
+  name: Changelog
   with:
     github-token            : ${{ github.token }}
     commit-types            : |
-      feat: New Features
-      fix: Bug Fixes
-      build: Build System & Dependencies
-      perf: Performance Improvements
-      docs: Documentation
-      test: Tests
+      feat    : New Features
+      fix     : Bug Fixes
+      build   : Build System & Dependencies
+      perf    : Performance Improvements
+      docs    : Documentation
+      test    : Tests
       refactor: Refactors
-      chore: Chores
-      ci: CI
-      style: Code Style
-      revert: Reverts
+      chore   : Chores
+      ci      : CI
+      style   : Code Style
+      revert  : Reverts
     default-commit-type     : Other Changes
     release-name            : v1.0.0
     release-name-prefix     : ""
