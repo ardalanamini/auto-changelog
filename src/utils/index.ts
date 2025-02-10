@@ -23,8 +23,6 @@
  *
  */
 
-export * from "./inputs/index.js";
-export * from "./outputs/index.js";
 export * from "./boolean-input.js";
 export * from "./cache.js";
 export * from "./input.js";

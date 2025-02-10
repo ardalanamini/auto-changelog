@@ -23,8 +23,8 @@
  *
  */
 
-import { input } from "../input.js";
+import { input } from "../utils/input.js";
 
-export function defaultCommitType(): string {
-  return input("default-commit-type");
+export function releaseName(): string {
+  return input("release-name");
 }

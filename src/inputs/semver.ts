@@ -23,9 +23,8 @@
  *
  */
 
-import YAML from "yaml";
-import { input } from "../input.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function commitTypes(): Record<string, string> {
-  return input("commit-types", value => YAML.parse(value));
+export function semver(): boolean {
+  return booleanInput("semver");
 }

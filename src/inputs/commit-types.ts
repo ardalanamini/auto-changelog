@@ -23,8 +23,9 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import YAML from "yaml";
+import { input } from "../utils/input.js";
 
-export function includeCommitLinks(): boolean {
-  return booleanInput("include-commit-links");
+export function commitTypes(): Record<string, string> {
+  return input("commit-types", value => YAML.parse(value));
 }

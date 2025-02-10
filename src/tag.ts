@@ -24,7 +24,8 @@
  */
 
 import { type SemVer } from "semver";
-import { octokit, parseSemVer, releaseName, repository, semver, sha } from "./utils/index.js";
+import { releaseName, semver } from "./inputs/index.js";
+import { octokit, parseSemVer, repository, sha } from "./utils/index.js";
 
 export interface TagInfoI {
   prerelease: boolean;

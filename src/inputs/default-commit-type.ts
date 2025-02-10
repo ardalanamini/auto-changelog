@@ -23,8 +23,8 @@
  *
  */
 
-import { output } from "../output.js";
+import { input } from "../utils/input.js";
 
-export function setPrerelease(prerelease: boolean): void {
-  output("prerelease", prerelease);
+export function defaultCommitType(): string {
+  return input("default-commit-type");
 }

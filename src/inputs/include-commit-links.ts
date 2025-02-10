@@ -23,8 +23,8 @@
  *
  */
 
-import { input } from "../input.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function token(): string {
-  return input("github-token");
+export function includeCommitLinks(): boolean {
+  return booleanInput("include-commit-links");
 }

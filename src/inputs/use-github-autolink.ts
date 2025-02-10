@@ -23,8 +23,8 @@
  *
  */
 
-import { output } from "../output.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function setChangelog(changelog: string): void {
-  output("changelog", changelog);
+export function useGithubAutolink(): boolean {
+  return booleanInput("use-github-autolink");
 }

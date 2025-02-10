@@ -23,8 +23,8 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { input } from "../utils/input.js";
 
-export function semver(): boolean {
-  return booleanInput("semver");
+export function releaseNamePrefix(): string {
+  return input("release-name-prefix", value => value || "", false);
 }

@@ -30,12 +30,9 @@ import {
   includeCommitLinks,
   includePRLinks,
   mentionAuthors,
-  octokit,
-  parseCommitMessage,
-  repository,
-  sha,
   useGithubAutolink,
-} from "./utils/index.js";
+} from "./inputs/index.js";
+import { octokit, parseCommitMessage, repository, sha } from "./utils/index.js";
 
 interface TypeGroupI {
   scopes: ScopeGroupI[];

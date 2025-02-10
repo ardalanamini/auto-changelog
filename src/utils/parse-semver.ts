@@ -24,8 +24,8 @@
  */
 
 import { parse, type SemVer } from "semver";
+import { releaseName, releaseNamePrefix } from "../inputs/index.js";
 import { cache } from "./cache.js";
-import { releaseName, releaseNamePrefix } from "./inputs/index.js";
 
 export function parseSemVer(version = releaseName()): SemVer | null {
   return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));

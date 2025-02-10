@@ -23,8 +23,8 @@
  *
  */
 
-import { input } from "../input.js";
+import { output } from "../utils/index.js";
 
-export function releaseNamePrefix(): string {
-  return input("release-name-prefix", value => value || "", false);
+export function setChangelog(changelog: string): void {
+  output("changelog", changelog);
 }
