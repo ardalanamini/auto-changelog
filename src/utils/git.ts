@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,28 +23,29 @@
  *
  */
 
-import { setFailed } from "@actions/core";
-import { generateChangelog } from "./changelog.js";
-import { generateFooter } from "./footer.js";
-import { setChangelog, setPrerelease, setReleaseId } from "./outputs/index.js";
-import { getTagInfo } from "./tag.js";
-import { listTags, output } from "./utils/index.js";
+import { rsort, valid } from "semver";
+import { simpleGit } from "simple-git";
 
-async function run(): Promise<void> {
-  const { prerelease, releaseId, previous } = await getTagInfo();
+const GIT = simpleGit();
 
-  setPrerelease(prerelease);
+export async function listTags(semver = false): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    GIT.tags(["--sort=-creatordate"], (err, res) => {
+      if (err) {
+        reject(err);
 
-  setReleaseId(releaseId);
+        return;
+      }
 
-  // TODO: remove this
-  output("tags", (await listTags()).toString());
+      let tags = res.all;
 
-  let changelog = await generateChangelog(previous?.sha);
+      if (semver) {
+        tags = tags.filter(tag => valid(tag));
 
-  changelog += await generateFooter(previous?.name);
+        tags = rsort(tags);
+      }
 
-  setChangelog(changelog);
+      resolve(tags);
+    });
+  });
 }
-
-run().catch(setFailed);

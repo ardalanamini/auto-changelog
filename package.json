@@ -39,6 +39,7 @@
     "@actions/github": "^6.0.0",
     "marked": "^12.0.2",
     "semver": "^7.6.3",
+    "simple-git": "^3.27.0",
     "yaml": "^2.6.0"
   },
   "devDependencies": {
