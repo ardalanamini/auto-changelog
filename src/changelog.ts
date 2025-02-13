@@ -24,32 +24,9 @@
  */
 
 import { debug } from "@actions/core";
-import {
-  commitTypes,
-  defaultCommitType,
-  includeCommitLinks,
-  includePRLinks,
-  mentionAuthors,
-  useGithubAutolink,
-} from "./inputs/index.js";
+import { commitTypes, defaultCommitType } from "./inputs/index.js";
 import { ChangelogNode } from "./nodes/index.js";
 import { iterateCommits, parseCommitMessage, repository } from "./utils/index.js";
-
-interface TypeGroupI {
-  scopes: ScopeGroupI[];
-  type: string;
-}
-
-interface ScopeGroupI {
-  logs: LogI[];
-  scope: string;
-}
-
-interface LogI {
-  breaking: boolean;
-  description: string;
-  references: string[];
-}
 
 function trim<T extends string | undefined>(value: T): T {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -58,26 +35,12 @@ function trim<T extends string | undefined>(value: T): T {
   return value.trim().replace(/ {2,}/g, " ") as never;
 }
 
-function unique(value: string[]): string[] {
-  return [...new Set(value)];
-}
-
-function sortBy<T>(array: T[], property: keyof T): T[] {
-  return array.sort((a, b) => (a[property] as string).localeCompare(b[property] as string));
-}
-
-export async function generateChangelog(lastSha?: string, newLogic = false): Promise<string> {
-  const { owner, repo, url } = repository();
+export async function generateChangelog(lastSha?: string): Promise<string> {
+  const { owner, repo } = repository();
   const defaultType = defaultCommitType();
   const typeMap = commitTypes();
-  const shouldIncludePRLinks = includePRLinks();
-  const shouldIncludeCommitLinks = includeCommitLinks();
-  const shouldMentionAuthors = mentionAuthors();
-  const shouldUseGithubAutolink = useGithubAutolink();
 
   const changelogNode = (new ChangelogNode);
-
-  const typeGroups: TypeGroupI[] = [];
 
   for await (const commit of iterateCommits(owner, repo)) {
     if (commit.sha === lastSha) break;
@@ -101,112 +64,20 @@ export async function generateChangelog(lastSha?: string, newLogic = false): Pro
 
     const typeNode = changelogNode.addType(type);
 
-    let typeGroup = typeGroups.find(record => record.type === type);
-
-    if (typeGroup == null) {
-      typeGroup = {
-        type,
-        scopes: [],
-      };
-
-      typeGroups.push(typeGroup);
-    }
-
     scope = trim(scope ?? "");
 
     const scopeNode = typeNode.addScope(scope);
 
-    let scopeGroup = typeGroup.scopes.find(record => record.scope === scope);
-
-    if (scopeGroup == null) {
-      scopeGroup = {
-        scope,
-        logs: [],
-      };
-
-      typeGroup.scopes.push(scopeGroup);
-    }
-
     const commitNote = scopeNode.addCommit(description, breaking);
-
-    let log = scopeGroup.logs.find(record => record.description === description);
-
-    if (log == null) {
-      log = {
-        breaking,
-        description,
-        references: [],
-      };
-
-      scopeGroup.logs.push(log);
-    }
 
     const authorNode = commitNote.addAuthor(commit.author?.login);
 
-    const reference: string[] = [];
-
     authorNode.addReference(commit.sha, pr);
-
-    if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
-    else if (shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
-
-    const username = commit.author?.login;
-
-    if (username && shouldMentionAuthors) {
-      const mention = `by @${ username }`;
-
-      reference.push(mention);
-
-      const lastReference = log.references[log.references.length - 1];
-
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (lastReference?.endsWith(mention)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        log.references.push(log.references.pop()!.replace(mention, `& ${ reference.join(" ") }`));
-
-        continue;
-      }
-    }
-
-    if (reference.length > 0) log.references.push(reference.join(" "));
   }
 
-  const types = unique(Object.values(typeMap).concat(defaultType));
+  const changelog = changelogNode.print();
 
-  // TODO: remove
-  if (newLogic) return changelogNode.print() ?? "";
+  if (changelog) return `${ changelog }\n`;
 
-  const changelog: string[] = [];
-
-  for (const type of types) {
-    const typeGroup = typeGroups.find(log => log.type === type);
-
-    if (typeGroup == null) continue;
-
-    changelog.push(`## ${ type }`);
-
-    sortBy(typeGroup.scopes, "scope");
-
-    for (const { scope, logs } of typeGroup.scopes) {
-      let prefix = "";
-
-      if (scope.length > 0) {
-        changelog.push(`* **${ scope }:**`);
-
-        prefix = "  ";
-      }
-
-      for (const { breaking, description, references } of logs) {
-        let line = `${ prefix }* ${ breaking ? "***breaking:*** " : "" }${ description }`;
-
-        if (references.length > 0) line += ` (${ references.join(", ") })`;
-
-        changelog.push(line);
-      }
-    }
-
-    changelog.push("");
-  }
-
-  return changelog.join("\n");
+  return "";
 }

@@ -53,7 +53,13 @@ export class TypeNode extends Node {
 
     const parts: string[] = [`${ prefix }## ${ type }`];
 
-    for (const scope of scopes.values()) {
+    const scopeKeys = [...scopes.keys()].sort((a, b) => a.localeCompare(b));
+
+    for (const key of scopeKeys) {
+      const scope = scopes.get(key);
+
+      if (!scope) continue;
+
       const printedScope = scope.print(prefix);
 
       if (printedScope) parts.push(printedScope);
