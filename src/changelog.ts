@@ -33,7 +33,7 @@ import {
   useGithubAutolink,
 } from "./inputs/index.js";
 import { ChangelogNode } from "./nodes/index.js";
-import { iterateCommits, output, parseCommitMessage, repository } from "./utils/index.js";
+import { iterateCommits, parseCommitMessage, repository } from "./utils/index.js";
 
 interface TypeGroupI {
   scopes: ScopeGroupI[];
@@ -66,7 +66,7 @@ function sortBy<T>(array: T[], property: keyof T): T[] {
   return array.sort((a, b) => (a[property] as string).localeCompare(b[property] as string));
 }
 
-export async function generateChangelog(lastSha?: string): Promise<string> {
+export async function generateChangelog(lastSha?: string, newLogic = false): Promise<string> {
   const { owner, repo, url } = repository();
   const defaultType = defaultCommitType();
   const typeMap = commitTypes();
@@ -174,7 +174,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   const types = unique(Object.values(typeMap).concat(defaultType));
 
   // TODO: remove
-  output("new-changelog", changelogNode.print());
+  if (newLogic) return changelogNode.print() ?? "";
 
   const changelog: string[] = [];
 

@@ -28,6 +28,7 @@ import { generateChangelog } from "./changelog.js";
 import { generateFooter } from "./footer.js";
 import { setChangelog, setPrerelease, setReleaseId } from "./outputs/index.js";
 import { getTagInfo } from "./tag.js";
+import { output } from "./utils/index.js";
 
 async function run(): Promise<void> {
   const { prerelease, releaseId, previous } = await getTagInfo();
@@ -39,6 +40,15 @@ async function run(): Promise<void> {
   let changelog = await generateChangelog(previous?.sha);
 
   changelog += await generateFooter(previous?.name);
+
+  // TODO: remove
+  {
+    let newChangelog = await generateChangelog(previous?.sha, true);
+
+    newChangelog += await generateFooter(previous?.name);
+
+    output("new-changelog", newChangelog);
+  }
 
   setChangelog(changelog);
 }
