@@ -32,7 +32,7 @@ import {
   mentionAuthors,
   useGithubAutolink,
 } from "./inputs/index.js";
-import { octokit, parseCommitMessage, repository, sha } from "./utils/index.js";
+import { iterateCommits, parseCommitMessage, repository } from "./utils/index.js";
 
 interface TypeGroupI {
   scopes: ScopeGroupI[];
@@ -66,7 +66,6 @@ function sortBy<T>(array: T[], property: keyof T): T[] {
 }
 
 export async function generateChangelog(lastSha?: string): Promise<string> {
-  const { paginate, rest } = octokit();
   const { owner, repo, url } = repository();
   const defaultType = defaultCommitType();
   const typeMap = commitTypes();
@@ -75,100 +74,88 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   const shouldMentionAuthors = mentionAuthors();
   const shouldUseGithubAutolink = useGithubAutolink();
 
-  const iterator = paginate.iterator(
-    rest.repos.listCommits,
-    {
-      per_page: 100,
-      sha     : sha(),
-      owner,
-      repo,
-    },
-  );
-
   const typeGroups: TypeGroupI[] = [];
 
-  paginator: for await (const { data } of iterator) {
-    for (const commit of data) {
-      if (commit.sha === lastSha) break paginator;
+  for await (const commit of iterateCommits(owner, repo)) {
+    if (commit.sha === lastSha) break;
 
-      const message = commit.commit.message.split("\n")[0];
+    const message = commit.commit.message.split("\n")[0];
 
-      debug(`commit message -> ${ message }`);
+    debug(`commit message -> ${ message }`);
 
-      let { type, scope, description, pr, flag, breaking } = parseCommitMessage(message);
+    let { type, scope, description, pr, flag, breaking } = parseCommitMessage(message);
 
-      if (!description) continue;
+    if (!description) continue;
 
-      description = trim(description);
+    description = trim(description);
 
-      flag = trim(flag);
+    flag = trim(flag);
 
-      if (flag === "ignore") continue;
+    if (flag === "ignore") continue;
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    type = typeMap[trim(type ?? "")] ?? defaultType;
+
+    let typeGroup = typeGroups.find(record => record.type === type);
+
+    if (typeGroup == null) {
+      typeGroup = {
+        type,
+        scopes: [],
+      };
+
+      typeGroups.push(typeGroup);
+    }
+
+    scope = trim(scope ?? "");
+
+    let scopeGroup = typeGroup.scopes.find(record => record.scope === scope);
+
+    if (scopeGroup == null) {
+      scopeGroup = {
+        scope,
+        logs: [],
+      };
+
+      typeGroup.scopes.push(scopeGroup);
+    }
+
+    let log = scopeGroup.logs.find(record => record.description === description);
+
+    if (log == null) {
+      log = {
+        breaking,
+        description,
+        references: [],
+      };
+
+      scopeGroup.logs.push(log);
+    }
+
+    const reference: string[] = [];
+
+    if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
+    else if (shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
+
+    const username = commit.author?.login;
+
+    if (username && shouldMentionAuthors) {
+      const mention = `by @${ username }`;
+
+      reference.push(mention);
+
+      const lastReference = log.references[log.references.length - 1];
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      type = typeMap[trim(type ?? "")] ?? defaultType;
+      if (lastReference?.endsWith(mention)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        log.references.push(log.references.pop()!.replace(mention, `& ${ reference.join(" ") }`));
 
-      let typeGroup = typeGroups.find(record => record.type === type);
-
-      if (typeGroup == null) {
-        typeGroup = {
-          type,
-          scopes: [],
-        };
-
-        typeGroups.push(typeGroup);
+        continue;
       }
-
-      scope = trim(scope ?? "");
-
-      let scopeGroup = typeGroup.scopes.find(record => record.scope === scope);
-
-      if (scopeGroup == null) {
-        scopeGroup = {
-          scope,
-          logs: [],
-        };
-
-        typeGroup.scopes.push(scopeGroup);
-      }
-
-      let log = scopeGroup.logs.find(record => record.description === description);
-
-      if (log == null) {
-        log = {
-          breaking,
-          description,
-          references: [],
-        };
-
-        scopeGroup.logs.push(log);
-      }
-
-      const reference: string[] = [];
-
-      if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
-      else if (shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
-
-      const username = commit.author?.login;
-
-      if (username && shouldMentionAuthors) {
-        const mention = `by @${ username }`;
-
-        reference.push(mention);
-
-        const lastReference = log.references[log.references.length - 1];
-
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (lastReference?.endsWith(mention)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          log.references.push(log.references.pop()!.replace(mention, `& ${ reference.join(" ") }`));
-
-          continue;
-        }
-      }
-
-      if (reference.length > 0) log.references.push(reference.join(" "));
     }
+
+    if (reference.length > 0) log.references.push(reference.join(" "));
   }
 
   const types = unique(Object.values(typeMap).concat(defaultType));

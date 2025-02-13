@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,23 @@
  *
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./git.js";
-export * from "./github.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semver.js";
-export * from "./repository.js";
-export * from "./sha.js";
+import { octokit } from "./octokit.js";
+import { sha } from "./sha.js";
+
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
+export async function *iterateCommits(owner: string, repo: string) {
+  const { paginate, rest } = octokit();
+
+  const iterator = paginate.iterator(
+    rest.repos.listCommits,
+    {
+      per_page: 100,
+      sha     : sha(),
+      owner,
+      repo,
+    },
+  );
+
+  for await (const { data } of iterator) for (const commit of data) yield commit;
+}
