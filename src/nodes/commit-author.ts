@@ -23,15 +23,18 @@
  *
  */
 
+import { mentionAuthors } from "../inputs/index.js";
 import { CommitHashNode } from "./commit-hash.js";
 import { Node } from "./node.js";
 import { PullRequestNode } from "./pull-request.js";
 
 export class CommitAuthorNode extends Node {
 
+  public readonly shouldMentionAuthor = mentionAuthors();
+
   protected readonly references: Array<CommitHashNode | PullRequestNode> = [];
 
-  public constructor(public readonly username: string) {
+  public constructor(public readonly username?: string) {
     super();
   }
 
@@ -47,18 +50,30 @@ export class CommitAuthorNode extends Node {
     return reference;
   }
 
-  public print(): string {
-    const { username, references } = this;
+  public print(): string | null {
+    const { username, references, shouldMentionAuthor } = this;
 
-    const mention = `@${ username }`;
+    const printedReferences: string[] = [];
 
-    if (references.length === 0) return mention;
+    for (const reference of references) {
+      const printedReference = reference.print();
+
+      if (printedReference) printedReferences.push(printedReference);
+    }
 
     const parts: string[] = [];
 
-    for (const reference of references) parts.push(reference.print());
+    if (printedReferences.length > 0) parts.push(printedReferences.join(" & "));
 
-    return `${ parts.join(" & ") } by ${ mention }`;
+    if (shouldMentionAuthor && username) {
+      if (parts.length > 0) parts.push("by");
+
+      parts.push(`@${ username }`);
+    }
+
+    if (parts.length === 0) return null;
+
+    return parts.join(" ");
   }
 
 }

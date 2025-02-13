@@ -30,14 +30,14 @@ export class CommitNode extends Node {
 
   protected readonly authors: CommitAuthorNode[] = [];
 
-  public constructor(public readonly description: string, public readonly breaking: boolean) {
+  public constructor(public readonly description: string, public readonly breaking = false) {
     super();
   }
 
-  public addAuthor(username: string): CommitAuthorNode {
+  public addAuthor(username?: string): CommitAuthorNode {
     const { authors } = this;
 
-    if (authors.length > 0) {
+    if (username && authors.length > 0) {
       const previousAuthor = authors[authors.length - 1];
 
       if (previousAuthor.username === username) return previousAuthor;
@@ -62,9 +62,13 @@ export class CommitNode extends Node {
     if (authors.length > 0) {
       const references: string[] = [];
 
-      for (const author of authors) references.push(author.print());
+      for (const author of authors) {
+        const printedAuthor = author.print();
 
-      parts.push(`(${ references.join(", ") })`);
+        if (printedAuthor) references.push(printedAuthor);
+      }
+
+      if (references.length > 0) parts.push(`(${ references.join(", ") })`);
     }
 
     return `${ prefix }* ${ parts.join(" ") }`;

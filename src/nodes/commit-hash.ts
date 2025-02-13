@@ -23,16 +23,21 @@
  *
  */
 
+import { includePRLinks } from "../inputs/index.js";
 import { Node } from "./node.js";
 
 export class CommitHashNode extends Node {
+
+  public readonly shouldNotPrint = !includePRLinks();
 
   public constructor(public readonly sha: string) {
     super();
   }
 
-  public print(): string {
-    const { sha, shouldUseGithubAutolink, repo } = this;
+  public print(): string | null {
+    const { sha, shouldUseGithubAutolink, repo, shouldNotPrint } = this;
+
+    if (shouldNotPrint) return null;
 
     if (shouldUseGithubAutolink) return sha;
 

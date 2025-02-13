@@ -23,16 +23,21 @@
  *
  */
 
+import { includeCommitLinks } from "../inputs/index.js";
 import { Node } from "./node.js";
 
 export class PullRequestNode extends Node {
+
+  public readonly shouldNotPrint = !includeCommitLinks();
 
   public constructor(public readonly pr: string) {
     super();
   }
 
-  public print(): string {
-    const { pr, shouldUseGithubAutolink, repo } = this;
+  public print(): string | null {
+    const { pr, shouldUseGithubAutolink, repo, shouldNotPrint } = this;
+
+    if (shouldNotPrint) return null;
 
     if (shouldUseGithubAutolink) return `#${ pr }`;
 

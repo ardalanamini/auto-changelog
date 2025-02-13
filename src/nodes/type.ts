@@ -23,6 +23,7 @@
  *
  */
 
+import { defaultCommitType } from "../inputs/index.js";
 import { Node } from "./node.js";
 import { ScopeNode } from "./scope.js";
 
@@ -30,7 +31,7 @@ export class TypeNode extends Node {
 
   protected readonly scopes = (new Map<string, ScopeNode>);
 
-  public constructor(public readonly type: string) {
+  public constructor(public readonly type = defaultCommitType()) {
     super();
   }
 
@@ -58,6 +59,8 @@ export class TypeNode extends Node {
 
       if (printedScope) parts.push(printedScope);
     }
+
+    if (parts.length === 0) return null;
 
     return parts.join("\n");
   }

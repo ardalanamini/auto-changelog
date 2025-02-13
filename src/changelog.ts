@@ -32,7 +32,8 @@ import {
   mentionAuthors,
   useGithubAutolink,
 } from "./inputs/index.js";
-import { iterateCommits, parseCommitMessage, repository } from "./utils/index.js";
+import { ChangelogNode } from "./nodes/index.js";
+import { iterateCommits, output, parseCommitMessage, repository } from "./utils/index.js";
 
 interface TypeGroupI {
   scopes: ScopeGroupI[];
@@ -74,6 +75,8 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   const shouldMentionAuthors = mentionAuthors();
   const shouldUseGithubAutolink = useGithubAutolink();
 
+  const changelogNode = (new ChangelogNode);
+
   const typeGroups: TypeGroupI[] = [];
 
   for await (const commit of iterateCommits(owner, repo)) {
@@ -96,6 +99,8 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     type = typeMap[trim(type ?? "")] ?? defaultType;
 
+    const typeNode = changelogNode.addType(type);
+
     let typeGroup = typeGroups.find(record => record.type === type);
 
     if (typeGroup == null) {
@@ -109,6 +114,8 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
     scope = trim(scope ?? "");
 
+    const scopeNode = typeNode.addScope(scope);
+
     let scopeGroup = typeGroup.scopes.find(record => record.scope === scope);
 
     if (scopeGroup == null) {
@@ -119,6 +126,8 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
       typeGroup.scopes.push(scopeGroup);
     }
+
+    const commitNote = scopeNode.addCommit(description, breaking);
 
     let log = scopeGroup.logs.find(record => record.description === description);
 
@@ -132,7 +141,11 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
       scopeGroup.logs.push(log);
     }
 
+    const authorNode = commitNote.addAuthor(commit.author?.login);
+
     const reference: string[] = [];
+
+    authorNode.addReference(commit.sha, pr);
 
     if (pr && shouldIncludePRLinks) reference.push(shouldUseGithubAutolink ? `#${ pr }` : `[#${ pr }](${ url }/issues/${ pr })`);
     else if (shouldIncludeCommitLinks) reference.push(shouldUseGithubAutolink ? commit.sha : `\`[${ commit.sha }](${ url }/commit/${ commit.sha })\``);
@@ -159,6 +172,9 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
   }
 
   const types = unique(Object.values(typeMap).concat(defaultType));
+
+  // TODO: remove
+  output("new-changelog", changelogNode.print());
 
   const changelog: string[] = [];
 

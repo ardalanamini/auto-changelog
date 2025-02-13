@@ -55,6 +55,8 @@ export class ChangelogNode extends Node {
       if (printedType) parts.push(printedType);
     }
 
+    if (parts.length === 0) return null;
+
     return parts.join("\n\n");
   }
 
