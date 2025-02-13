@@ -23,7 +23,6 @@
  *
  */
 
-import { defaultCommitType } from "../inputs/index.js";
 import { Node } from "./node.js";
 import { ScopeNode } from "./scope.js";
 
@@ -31,11 +30,11 @@ export class TypeNode extends Node {
 
   protected readonly scopes = (new Map<string, ScopeNode>);
 
-  public constructor(public readonly type = defaultCommitType()) {
+  public constructor(public readonly type: string) {
     super();
   }
 
-  public addScope(scope: string): ScopeNode {
+  public addScope(scope = ""): ScopeNode {
     const { scopes } = this;
 
     if (scopes.has(scope)) return scopes.get(scope)!;

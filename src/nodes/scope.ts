@@ -30,7 +30,7 @@ export class ScopeNode extends Node {
 
   protected readonly commits = (new Map<string, CommitNode>);
 
-  public constructor(public readonly scope: string) {
+  public constructor(public readonly scope = "") {
     super();
   }
 
@@ -53,9 +53,15 @@ export class ScopeNode extends Node {
 
     if (commits.size === 0) return null;
 
-    const parts: string[] = [`${ prefix }* **${ scope }:**`];
+    const parts: string[] = [];
 
-    for (const commit of commits.values()) parts.push(commit.print(`${ prefix }  `));
+    if (scope) {
+      parts.push(`${ prefix }* **${ scope }:**`);
+
+      prefix += "  ";
+    }
+
+    for (const commit of commits.values()) parts.push(commit.print(prefix));
 
     return parts.join("\n");
   }
