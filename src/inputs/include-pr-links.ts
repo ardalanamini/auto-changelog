@@ -23,8 +23,8 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function includeCompareLink(): boolean {
-  return booleanInput("include-compare-link");
+export function includePRLinks(): boolean {
+  return booleanInput("include-pr-links");
 }

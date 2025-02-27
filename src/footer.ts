@@ -27,12 +27,11 @@ import { marked } from "marked";
 import {
   includeCompareLink,
   mentionNewContributors,
-  octokit,
   releaseName,
   releaseNamePrefix,
-  repository,
   useGithubAutolink,
-} from "./utils/index.js";
+} from "./inputs/index.js";
+import { octokit, repository } from "./utils/index.js";
 
 export async function generateFooter(previousTagName?: string): Promise<string> {
   const { owner, repo, url } = repository();

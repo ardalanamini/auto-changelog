@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,29 @@
  *
  */
 
-import { output } from "../output.js";
+import { octokit } from "./octokit.js";
+import { sha } from "./sha.js";
 
-export function setChangelog(changelog: string): void {
-  output("changelog", changelog);
+// eslint-disable-next-line max-len
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
+export async function *iterateCommits(owner: string, repo: string, from?: string) {
+  const { paginate, rest } = octokit();
+
+  const iterator = paginate.iterator(
+    rest.repos.listCommits,
+    {
+      per_page: 100,
+      sha     : sha(),
+      owner,
+      repo,
+    },
+  );
+
+  loop: for await (const { data } of iterator) {
+    for (const commit of data) {
+      if (commit.sha === from) break loop;
+
+      yield commit;
+    }
+  }
 }

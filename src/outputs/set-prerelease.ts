@@ -23,8 +23,8 @@
  *
  */
 
-import { output } from "../output.js";
+import { output } from "../utils/index.js";
 
-export function setReleaseId(releaseId: string): void {
-  output("release-id", releaseId);
+export function setPrerelease(prerelease: boolean): void {
+  output("prerelease", prerelease);
 }
