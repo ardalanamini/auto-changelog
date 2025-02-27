@@ -24,27 +24,15 @@
  */
 
 import { debug } from "@actions/core";
-import { commitTypes, defaultCommitType } from "./inputs/index.js";
 import { ChangelogNode } from "./nodes/index.js";
-import { iterateCommits, parseCommitMessage, repository } from "./utils/index.js";
-
-function trim<T extends string | undefined>(value: T): T {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (value == null) return value;
-
-  return value.trim().replace(/ {2,}/g, " ") as never;
-}
+import { iterateCommits, parseCommitMessage, repository, trim } from "./utils/index.js";
 
 export async function generateChangelog(lastSha?: string): Promise<string> {
   const { owner, repo } = repository();
-  const defaultType = defaultCommitType();
-  const typeMap = commitTypes();
 
   const changelogNode = (new ChangelogNode);
 
-  for await (const commit of iterateCommits(owner, repo)) {
-    if (commit.sha === lastSha) break;
-
+  for await (const commit of iterateCommits(owner, repo, lastSha)) {
     const message = commit.commit.message.split("\n")[0];
 
     debug(`commit message -> ${ message }`);
@@ -59,12 +47,7 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
     if (flag === "ignore") continue;
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    type = typeMap[trim(type ?? "")] ?? defaultType;
-
     const typeNode = changelogNode.addType(type);
-
-    scope = trim(scope ?? "");
 
     const scopeNode = typeNode.addScope(scope);
 

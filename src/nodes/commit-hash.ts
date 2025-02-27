@@ -23,17 +23,35 @@
  *
  */
 
-import { includePRLinks } from "../inputs/index.js";
+import { includeCommitLinks } from "../inputs/index.js";
 import { Node } from "./node.js";
 
+/**
+ * Represents a node that holds a commit hash (SHA) and provides functionality
+ * for generating formatted strings or links based on its state and the repository context.
+ */
 export class CommitHashNode extends Node {
 
-  public readonly shouldNotPrint = !includePRLinks();
+  public readonly shouldNotPrint = !includeCommitLinks();
 
+  /**
+   * Constructs an instance of the commit hash node with a specified SHA string.
+   *
+   * @param sha - The SHA string associated with this instance.
+   */
   public constructor(public readonly sha: string) {
     super();
   }
 
+  /**
+   * Generates and returns a formatted string based on the current object state.
+   * If `shouldNotPrint` is true, the method returns null.
+   * If `shouldUseGithubAutolink` is true, the method directly returns the `sha` value.
+   * Otherwise,
+   * it returns a markdown-formatted string linking to the GitHub commit URL constructed using `sha` and `repo.url`.
+   *
+   * @returns A formatted string, the `sha` string, or null depending on conditions.
+   */
   public print(): string | null {
     const { sha, shouldUseGithubAutolink, repo, shouldNotPrint } = this;
 

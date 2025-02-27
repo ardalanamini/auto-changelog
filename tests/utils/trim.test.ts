@@ -23,41 +23,33 @@
  *
  */
 
-import { includePRLinks } from "../inputs/index.js";
-import { Node } from "./node.js";
+import { trim } from "../../src/utils/trim.js";
 
-/**
- * Represents a node associated with a pull request or issue link.
- * This class provides functionality to generate formatted links
- * for pull requests or issues based on certain conditions.
- */
-export class PullRequestNode extends Node {
+it("should remove leading and trailing whitespace", () => {
+  expect(trim("  hello  ")).toBe("hello");
+});
 
-  public readonly shouldNotPrint = !includePRLinks();
+it("should replace multiple spaces with a single space", () => {
+  expect(trim("hello   world")).toBe("hello world");
+});
 
-  /**
-   * Constructs an instance of the class with the specified `pr` parameter.
-   *
-   * @param pr - A string representing the parameter to be assigned to the instance.
-   */
-  public constructor(public readonly pr: string) {
-    super();
-  }
+it("should handle null value", () => {
+  expect(trim(null)).toBeNull();
+});
 
-  /**
-   * Generates a formatted string representing a pull request or issue link
-   * based on the method's logic and class properties.
-   *
-   * @returns A string with the formatted pull request link or null if printing is disabled.
-   */
-  public print(): string | null {
-    const { pr, shouldUseGithubAutolink, repo, shouldNotPrint } = this;
+it("should handle undefined value", () => {
+  // eslint-disable-next-line no-undefined
+  expect(trim(undefined as never)).toBeUndefined();
+});
 
-    if (shouldNotPrint) return null;
+it("should handle empty string", () => {
+  expect(trim("")).toBe("");
+});
 
-    if (shouldUseGithubAutolink) return `#${ pr }`;
+it("should handle string with no extra spaces", () => {
+  expect(trim("hello")).toBe("hello");
+});
 
-    return `[#${ pr }](${ repo.url }/issues/${ pr })`;
-  }
-
-}
+it("should handle strings with only spaces", () => {
+  expect(trim("     ")).toBe("");
+});

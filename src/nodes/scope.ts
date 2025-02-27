@@ -26,14 +26,31 @@
 import { CommitNode } from "./commit.js";
 import { Node } from "./node.js";
 
+/**
+ * Represents a scope node within a changelog hierarchy, containing a collection of commit nodes.
+ * A scope node can have an associated scope name and provides functionality to add commits
+ * and generate formatted output with scope and commit details.
+ */
 export class ScopeNode extends Node {
 
   protected readonly commits = (new Map<string, CommitNode>);
 
+  /**
+   * Constructs an instance of the scope node.
+   *
+   * @param scope An optional string value representing the scope.
+   */
   public constructor(public readonly scope = "") {
     super();
   }
 
+  /**
+   * Adds a new commit to the internal collection or retrieves an existing one if it already exists.
+   *
+   * @param message The message associated with the commit.
+   * @param [breaking=false] Indicates whether the commit introduces breaking changes.
+   * @returns The newly added or existing commit node.
+   */
   public addCommit(message: string, breaking = false): CommitNode {
     const { commits } = this;
 
@@ -48,6 +65,12 @@ export class ScopeNode extends Node {
     return commit;
   }
 
+  /**
+   * Generates a formatted string representation of the changelog's scope and commits.
+   *
+   * @param [prefix=""] Optional string to prepend to each line of the output.
+   * @returns A formatted string with scope and commit details, or null if there are no commits.
+   */
   public print(prefix = ""): string | null {
     const { scope, commits } = this;
 

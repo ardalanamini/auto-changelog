@@ -28,7 +28,7 @@ import { sha } from "./sha.js";
 
 // eslint-disable-next-line max-len
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
-export async function *iterateCommits(owner: string, repo: string) {
+export async function *iterateCommits(owner: string, repo: string, from?: string) {
   const { paginate, rest } = octokit();
 
   const iterator = paginate.iterator(
@@ -41,5 +41,11 @@ export async function *iterateCommits(owner: string, repo: string) {
     },
   );
 
-  for await (const { data } of iterator) for (const commit of data) yield commit;
+  loop: for await (const { data } of iterator) {
+    for (const commit of data) {
+      if (commit.sha === from) break loop;
+
+      yield commit;
+    }
+  }
 }

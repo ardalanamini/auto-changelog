@@ -23,20 +23,42 @@
  *
  */
 
+import { trim } from "../utils/index.js";
 import { Node } from "./node.js";
 import { ScopeNode } from "./scope.js";
 
+/**
+ * Represents a node for a specific type that manages associated scopes.
+ * Provides methods to add scopes and retrieve a formatted string representation
+ * of its contents, including associated scopes and their respective commits.
+ */
 export class TypeNode extends Node {
 
   protected readonly scopes = (new Map<string, ScopeNode>);
 
+  /**
+   * Constructs an instance of type node class with a specified type.
+   *
+   * @param type - The commit type associated with the instance.
+   */
   public constructor(public readonly type: string) {
     super();
   }
 
+  /**
+   * Adds a new scope to the scope collection.
+   * If the scope already exists,
+   * the existing scope node is returned instead of creating a new one.
+   *
+   * @param [scope=""] - The name of the scope to be added.
+   * @returns The scope node associated with the added or existing scope.
+   */
   public addScope(scope = ""): ScopeNode {
     const { scopes } = this;
 
+    scope = trim(scope);
+
+    // Reusing the already added scope to group the commits.
     if (scopes.has(scope)) return scopes.get(scope)!;
 
     const commit = new ScopeNode(scope);
@@ -46,6 +68,12 @@ export class TypeNode extends Node {
     return commit;
   }
 
+  /**
+   * Prints the commits and their scopes grouped in this type.
+   *
+   * @param [prefix=""] - A prefix string to prepend to the output.
+   * @returns The formatted string representation, or null if no scopes are available.
+   */
   public print(prefix = ""): string | null {
     const { type, scopes } = this;
 
@@ -53,6 +81,9 @@ export class TypeNode extends Node {
 
     const parts: string[] = [`${ prefix }## ${ type }`];
 
+    /**
+     * Sorting the scopes to have a consistent output order in all changelogs.
+     */
     const scopeKeys = [...scopes.keys()].sort((a, b) => a.localeCompare(b));
 
     for (const key of scopeKeys) {

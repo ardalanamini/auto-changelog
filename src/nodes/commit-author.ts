@@ -28,16 +28,33 @@ import { CommitHashNode } from "./commit-hash.js";
 import { Node } from "./node.js";
 import { PullRequestNode } from "./pull-request.js";
 
+/**
+ * Represents a node for a commit author, containing information about the author
+ * and associated references to commits or pull requests.
+ */
 export class CommitAuthorNode extends Node {
 
   public readonly shouldMentionAuthor = mentionAuthors();
 
   protected readonly references: Array<CommitHashNode | PullRequestNode> = [];
 
+  /**
+   * Initializes a new instance of the commit author node with an optional username.
+   *
+   * @param [username] - The commit author username.
+   */
   public constructor(public readonly username?: string) {
     super();
   }
 
+  /**
+   * Adds a reference to either a pull request or a commit hash.
+   * If a pull request is provided, it takes priority over the commit hash.
+   *
+   * @param sha - The SHA hash of the commit reference.
+   * @param [pr] - The optional pull request identifier.
+   * @returns The created reference node, either a CommitHashNode or a PullRequestNode.
+   */
   public addReference(sha: string, pr?: string): CommitHashNode | PullRequestNode {
     let reference: CommitHashNode | PullRequestNode;
 
@@ -50,8 +67,14 @@ export class CommitAuthorNode extends Node {
     return reference;
   }
 
+  /**
+   * Constructs and returns a formatted string representation based on references and author information.
+   * It combines references and adds author mention if applicable.
+   *
+   * @returns The formatted string representation or null if no parts are available.
+   */
   public print(): string | null {
-    const { username, references, shouldMentionAuthor } = this;
+    const { username, references, repo, shouldMentionAuthor, shouldUseGithubAutolink } = this;
 
     const printedReferences: string[] = [];
 
@@ -68,7 +91,8 @@ export class CommitAuthorNode extends Node {
     if (shouldMentionAuthor && username) {
       if (parts.length > 0) parts.push("by");
 
-      parts.push(`@${ username }`);
+      if (shouldUseGithubAutolink) parts.push(`@${ username }`);
+      else parts.push(`[@${ username }](${ repo.url }/${ username })`);
     }
 
     if (parts.length === 0) return null;

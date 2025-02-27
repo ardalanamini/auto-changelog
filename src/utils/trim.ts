@@ -23,41 +23,8 @@
  *
  */
 
-import { includePRLinks } from "../inputs/index.js";
-import { Node } from "./node.js";
+export function trim<T extends string | null | undefined>(value: T): T {
+  if (!value) return value;
 
-/**
- * Represents a node associated with a pull request or issue link.
- * This class provides functionality to generate formatted links
- * for pull requests or issues based on certain conditions.
- */
-export class PullRequestNode extends Node {
-
-  public readonly shouldNotPrint = !includePRLinks();
-
-  /**
-   * Constructs an instance of the class with the specified `pr` parameter.
-   *
-   * @param pr - A string representing the parameter to be assigned to the instance.
-   */
-  public constructor(public readonly pr: string) {
-    super();
-  }
-
-  /**
-   * Generates a formatted string representing a pull request or issue link
-   * based on the method's logic and class properties.
-   *
-   * @returns A string with the formatted pull request link or null if printing is disabled.
-   */
-  public print(): string | null {
-    const { pr, shouldUseGithubAutolink, repo, shouldNotPrint } = this;
-
-    if (shouldNotPrint) return null;
-
-    if (shouldUseGithubAutolink) return `#${ pr }`;
-
-    return `[#${ pr }](${ repo.url }/issues/${ pr })`;
-  }
-
+  return value.trim().replace(/ {2,}/g, " ") as T;
 }
