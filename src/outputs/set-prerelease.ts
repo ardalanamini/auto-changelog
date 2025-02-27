@@ -23,9 +23,8 @@
  *
  */
 
-import YAML from "yaml";
-import { input } from "../input.js";
+import { output } from "../utils/index.js";
 
-export function commitTypes(): Record<string, string> {
-  return input("commit-types", value => YAML.parse(value));
+export function setPrerelease(prerelease: boolean): void {
+  output("prerelease", prerelease);
 }

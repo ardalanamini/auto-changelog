@@ -23,8 +23,8 @@
  *
  */
 
-import { output } from "../output.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function setPrerelease(prerelease: boolean): void {
-  output("prerelease", prerelease);
+export function includeCommitLinks(): boolean {
+  return booleanInput("include-commit-links");
 }

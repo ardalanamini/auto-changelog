@@ -23,8 +23,8 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { input } from "../utils/input.js";
 
-export function includeCompareLink(): boolean {
-  return booleanInput("include-compare-link");
+export function defaultCommitType(): string {
+  return input("default-commit-type");
 }

@@ -23,10 +23,10 @@
  *
  */
 
-export * from "./inputs/index.js";
-export * from "./outputs/index.js";
 export * from "./boolean-input.js";
 export * from "./cache.js";
+export * from "./git.js";
+export * from "./github.js";
 export * from "./input.js";
 export * from "./octokit.js";
 export * from "./output.js";
@@ -34,3 +34,4 @@ export * from "./parse-commit-message.js";
 export * from "./parse-semver.js";
 export * from "./repository.js";
 export * from "./sha.js";
+export * from "./trim.js";

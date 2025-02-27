@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,24 @@
  *
  */
 
-import { parse, type SemVer } from "semver";
-import { releaseName, releaseNamePrefix } from "../inputs/index.js";
-import { cache } from "./cache.js";
+import { useGithubAutolink } from "../inputs/index.js";
+import { repository } from "../utils/index.js";
 
-export function parseSemVer(version = releaseName()): SemVer | null {
-  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
+/**
+ * Represents the base class for all nodes in the changelog,
+ * providing shared functionality and requiring implementation of a print method.
+ */
+export abstract class Node {
+
+  public readonly repo = repository();
+
+  public readonly shouldUseGithubAutolink = useGithubAutolink();
+
+  /**
+   * Outputs a string representation of the changelog node.
+   *
+   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
+   */
+  public abstract print(): string | null;
+
 }
-
-export { SemVer };

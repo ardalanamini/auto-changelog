@@ -23,8 +23,8 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { output } from "../utils/index.js";
 
-export function includeCommitLinks(): boolean {
-  return booleanInput("include-commit-links");
+export function setReleaseId(releaseId: string): void {
+  output("release-id", releaseId);
 }

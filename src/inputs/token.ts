@@ -23,7 +23,7 @@
  *
  */
 
-import { input } from "../input.js";
+import { input } from "../utils/input.js";
 
 export function token(): string {
   return input("github-token");

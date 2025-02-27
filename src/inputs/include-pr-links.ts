@@ -23,8 +23,8 @@
  *
  */
 
-import { output } from "../output.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function setReleaseId(releaseId: string): void {
-  output("release-id", releaseId);
+export function includePRLinks(): boolean {
+  return booleanInput("include-pr-links");
 }

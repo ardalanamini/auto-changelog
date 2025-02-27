@@ -23,8 +23,8 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function useGithubAutolink(): boolean {
-  return booleanInput("use-github-autolink");
+export function mentionNewContributors(): boolean {
+  return booleanInput("mention-new-contributors");
 }

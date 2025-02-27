@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,49 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { promisify } from "node:util";
+import { rsort, valid } from "semver";
+import {
+  type DefaultLogFields,
+  type ListLogLine,
+  type LogOptions,
+  type LogResult,
+  simpleGit,
+  type TagResult,
+  type TaskOptions,
+} from "simple-git";
 
-export function semver(): boolean {
-  return booleanInput("semver");
+const git = simpleGit();
+
+const tags = promisify<TaskOptions, TagResult>(git.tags);
+
+const log = promisify<TaskOptions | LogOptions, LogResult>(git.log);
+
+const diff = promisify<TaskOptions, string>(git.diff);
+
+export async function listTags(semver = false): Promise<string[]> {
+  let { all } = await tags.call(git, ["--sort=-creatordate"]);
+
+  if (semver) {
+    all = all.filter(tag => valid(tag));
+
+    all = rsort(all);
+  }
+
+  return all;
+}
+
+export async function listCommits(to?: string, from?: string): Promise<ReadonlyArray<DefaultLogFields & ListLogLine>> {
+  const { all } = await log.call(git, {
+    from,
+    to,
+  });
+
+  return all;
+}
+
+export async function listChanges(hash: string): Promise<string[]> {
+  const result = await diff.call(git, ["--name-only", `${ hash }~1`, hash]);
+
+  return result.trim().split("\n");
 }

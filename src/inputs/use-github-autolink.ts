@@ -23,12 +23,8 @@
  *
  */
 
-import { parse, type SemVer } from "semver";
-import { releaseName, releaseNamePrefix } from "../inputs/index.js";
-import { cache } from "./cache.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
-export function parseSemVer(version = releaseName()): SemVer | null {
-  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
+export function useGithubAutolink(): boolean {
+  return booleanInput("use-github-autolink");
 }
-
-export { SemVer };
