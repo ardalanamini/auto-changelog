@@ -26,8 +26,8 @@
 import { setFailed } from "@actions/core";
 import { generateChangelog } from "./changelog.js";
 import { generateFooter } from "./footer.js";
+import { setChangelog, setPrerelease, setReleaseId } from "./outputs/index.js";
 import { getTagInfo } from "./tag.js";
-import { setChangelog, setPrerelease, setReleaseId } from "./utils/index.js";
 
 async function run(): Promise<void> {
   const { prerelease, releaseId, previous } = await getTagInfo();

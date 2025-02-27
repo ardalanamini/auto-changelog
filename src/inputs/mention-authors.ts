@@ -23,7 +23,7 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { booleanInput } from "../utils/boolean-input.js";
 
 export function mentionAuthors(): boolean {
   return booleanInput("mention-authors");

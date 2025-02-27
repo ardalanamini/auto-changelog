@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,8 @@
  *
  */
 
-import { parse, type SemVer } from "semver";
-import { releaseName, releaseNamePrefix } from "../inputs/index.js";
-import { cache } from "./cache.js";
+export function trim<T extends string | null | undefined>(value: T): T {
+  if (!value) return value;
 
-export function parseSemVer(version = releaseName()): SemVer | null {
-  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
+  return value.trim().replace(/ {2,}/g, " ") as T;
 }
-
-export { SemVer };

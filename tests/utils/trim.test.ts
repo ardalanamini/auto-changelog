@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,33 @@
  *
  */
 
-import { booleanInput } from "../boolean-input.js";
+import { trim } from "../../src/utils/trim.js";
 
-export function useGithubAutolink(): boolean {
-  return booleanInput("use-github-autolink");
-}
+it("should remove leading and trailing whitespace", () => {
+  expect(trim("  hello  ")).toBe("hello");
+});
+
+it("should replace multiple spaces with a single space", () => {
+  expect(trim("hello   world")).toBe("hello world");
+});
+
+it("should handle null value", () => {
+  expect(trim(null)).toBeNull();
+});
+
+it("should handle undefined value", () => {
+  // eslint-disable-next-line no-undefined
+  expect(trim(undefined as never)).toBeUndefined();
+});
+
+it("should handle empty string", () => {
+  expect(trim("")).toBe("");
+});
+
+it("should handle string with no extra spaces", () => {
+  expect(trim("hello")).toBe("hello");
+});
+
+it("should handle strings with only spaces", () => {
+  expect(trim("     ")).toBe("");
+});
