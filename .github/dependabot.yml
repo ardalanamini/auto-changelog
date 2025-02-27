@@ -21,6 +21,6 @@ updates:
       day     : monday
     versioning-strategy: increase
     commit-message     :
-      prefix            : build(deps)
+      prefix: build(deps)
     reviewers          :
       - ardalanamini

@@ -32,7 +32,7 @@
     "package": "ncc build --out action --minify --source-map --license licenses.txt",
     "all": "pnpm lint:fix && pnpm build && pnpm package",
     "test": "node --expose-gc node_modules/jest/bin/jest -c jest.config.ts",
-    "test:coverage": "pnpm test -- --coverage"
+    "test:coverage": "pnpm test --coverage"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
