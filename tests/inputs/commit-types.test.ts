@@ -22,24 +22,42 @@
  * SOFTWARE.
  */
 
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
+import { getInput } from "@actions/core";
+import { commitTypes } from "../../src/inputs";
 
-/**
- * Represents the base class for all nodes in the changelog,
- * providing shared functionality and requiring implementation of a print method.
- */
-export abstract class Node {
+it("should get and parse the \"commit-types\" input", () => {
+  const inputValue = `
+feat    : New Features
+fix     : Bug Fixes
+build   : Build System & Dependencies
+perf    : Performance Improvements
+docs    : Documentation
+test    : Tests
+refactor: Refactors
+chore   : Chores
+ci      : CI
+style   : Code Style
+revert  : Reverts
+`;
 
-  public readonly repo = repository();
+  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
 
-  public readonly shouldUseGithubAutolink = useGitHubAutolink();
+  const result = commitTypes();
 
-  /**
-   * Outputs a string representation of the changelog node.
-   *
-   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
-   */
-  public abstract print(): string | null;
+  expect(result).toEqual({
+    feat    : "New Features",
+    fix     : "Bug Fixes",
+    build   : "Build System & Dependencies",
+    perf    : "Performance Improvements",
+    docs    : "Documentation",
+    test    : "Tests",
+    refactor: "Refactors",
+    chore   : "Chores",
+    ci      : "CI",
+    style   : "Code Style",
+    revert  : "Reverts",
+  });
 
-}
+  expect(getInput).toHaveBeenCalledTimes(1);
+  expect(getInput).toHaveBeenCalledWith("commit-types", { required: true });
+});

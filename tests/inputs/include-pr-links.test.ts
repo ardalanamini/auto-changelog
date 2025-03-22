@@ -22,24 +22,18 @@
  * SOFTWARE.
  */
 
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
+import { getBooleanInput } from "@actions/core";
+import { includePRLinks } from "../../src/inputs";
 
-/**
- * Represents the base class for all nodes in the changelog,
- * providing shared functionality and requiring implementation of a print method.
- */
-export abstract class Node {
+it("should get and parse the \"include-pr-links\" input", () => {
+  const inputValue = true;
 
-  public readonly repo = repository();
+  (getBooleanInput as jest.MockedFn<typeof getBooleanInput>).mockImplementationOnce(() => inputValue);
 
-  public readonly shouldUseGithubAutolink = useGitHubAutolink();
+  const result = includePRLinks();
 
-  /**
-   * Outputs a string representation of the changelog node.
-   *
-   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
-   */
-  public abstract print(): string | null;
+  expect(result).toEqual(inputValue);
 
-}
+  expect(getBooleanInput).toHaveBeenCalledTimes(1);
+  expect(getBooleanInput).toHaveBeenCalledWith("include-pr-links", { required: true });
+});

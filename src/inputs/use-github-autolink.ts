@@ -24,6 +24,6 @@
 
 import { booleanInput } from "../utils/boolean-input.js";
 
-export function useGithubAutolink(): boolean {
+export function useGitHubAutolink(): boolean {
   return booleanInput("use-github-autolink");
 }

@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["commitlint.config.cts", "jest.config.ts", "tests"]
+  "exclude": ["commitlint.config.cts", "jest.config.ts", "tests", "__mocks__"]
 }

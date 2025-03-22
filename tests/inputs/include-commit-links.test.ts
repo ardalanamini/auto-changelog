@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,18 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { getBooleanInput } from "@actions/core";
+import { includeCommitLinks } from "../../src/inputs";
 
-export function token(): string {
-  return input("github-token");
-}
+it("should get and parse the \"include-commit-links\" input", () => {
+  const inputValue = true;
+
+  (getBooleanInput as jest.MockedFn<typeof getBooleanInput>).mockImplementationOnce(() => inputValue);
+
+  const result = includeCommitLinks();
+
+  expect(result).toEqual(inputValue);
+
+  expect(getBooleanInput).toHaveBeenCalledTimes(1);
+  expect(getBooleanInput).toHaveBeenCalledWith("include-commit-links", { required: true });
+});

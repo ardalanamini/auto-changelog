@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2025 Ardalan Amini
+ * Copyright (c) 2023-2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,8 @@
  * SOFTWARE.
  */
 
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
+import { input } from "../utils/input.js";
 
-/**
- * Represents the base class for all nodes in the changelog,
- * providing shared functionality and requiring implementation of a print method.
- */
-export abstract class Node {
-
-  public readonly repo = repository();
-
-  public readonly shouldUseGithubAutolink = useGitHubAutolink();
-
-  /**
-   * Outputs a string representation of the changelog node.
-   *
-   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
-   */
-  public abstract print(): string | null;
-
+export function gitHubToken(): string {
+  return input("github-token");
 }

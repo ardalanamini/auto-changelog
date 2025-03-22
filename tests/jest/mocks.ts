@@ -22,24 +22,4 @@
  * SOFTWARE.
  */
 
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
-
-/**
- * Represents the base class for all nodes in the changelog,
- * providing shared functionality and requiring implementation of a print method.
- */
-export abstract class Node {
-
-  public readonly repo = repository();
-
-  public readonly shouldUseGithubAutolink = useGitHubAutolink();
-
-  /**
-   * Outputs a string representation of the changelog node.
-   *
-   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
-   */
-  public abstract print(): string | null;
-
-}
+jest.mock("@actions/core");

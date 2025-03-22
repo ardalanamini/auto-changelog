@@ -22,24 +22,18 @@
  * SOFTWARE.
  */
 
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
+import { getInput } from "@actions/core";
+import { releaseName } from "../../src/inputs";
 
-/**
- * Represents the base class for all nodes in the changelog,
- * providing shared functionality and requiring implementation of a print method.
- */
-export abstract class Node {
+it("should get and parse the \"release-name\" input", () => {
+  const inputValue = "v1.0.0";
 
-  public readonly repo = repository();
+  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
 
-  public readonly shouldUseGithubAutolink = useGitHubAutolink();
+  const result = releaseName();
 
-  /**
-   * Outputs a string representation of the changelog node.
-   *
-   * @returns The string representation if available, otherwise `null` if no representation exists or is provided.
-   */
-  public abstract print(): string | null;
+  expect(result).toEqual(inputValue);
 
-}
+  expect(getInput).toHaveBeenCalledTimes(1);
+  expect(getInput).toHaveBeenCalledWith("release-name", { required: true });
+});
