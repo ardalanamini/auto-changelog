@@ -28,7 +28,7 @@ import { includeCommitLinks } from "../../src/inputs";
 it("should get and parse the \"include-commit-links\" input", () => {
   const inputValue = true;
 
-  (getBooleanInput as jest.MockedFn<typeof getBooleanInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 
   const result = includeCommitLinks();
 

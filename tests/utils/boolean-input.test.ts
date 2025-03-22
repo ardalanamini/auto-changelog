@@ -23,17 +23,45 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { includeCompareLink } from "../../src/inputs";
+import { booleanInput, cache } from "../../src/utils";
 
-it("should get and parse the \"include-compare-link\" input", () => {
+it("should get and parse a boolean input", () => {
+  const inputName = "foo";
   const inputValue = true;
 
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 
-  const result = includeCompareLink();
+  const result = booleanInput(inputName);
 
   expect(result).toEqual(inputValue);
 
   expect(getBooleanInput).toHaveBeenCalledTimes(1);
-  expect(getBooleanInput).toHaveBeenCalledWith("include-compare-link", { required: true });
+  expect(getBooleanInput).toHaveBeenCalledWith(inputName, { required: true });
+});
+
+it("should get a cached boolean input", () => {
+  const inputName = "foo";
+  const inputValue = true;
+
+  cache(inputName, () => inputValue);
+
+  const result = booleanInput(inputName);
+
+  expect(result).toEqual(inputValue);
+
+  expect(getBooleanInput).toHaveBeenCalledTimes(0);
+});
+
+it("should get and parse an optional boolean input", () => {
+  const inputName = "foo";
+  const inputValue = false;
+
+  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
+
+  const result = booleanInput(inputName, false);
+
+  expect(result).toEqual(inputValue);
+
+  expect(getBooleanInput).toHaveBeenCalledTimes(1);
+  expect(getBooleanInput).toHaveBeenCalledWith(inputName, { required: false });
 });

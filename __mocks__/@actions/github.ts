@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,7 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+const mocked = jest.createMockFromModule<typeof import("@actions/github")>("@actions/github");
 
-export function releaseNamePrefix(): string {
-  return input("release-name-prefix", false);
-}
+export = mocked;

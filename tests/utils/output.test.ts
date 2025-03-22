@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,18 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { info, setOutput } from "@actions/core";
+import { output } from "../../src/utils";
 
-export function releaseNamePrefix(): string {
-  return input("release-name-prefix", false);
-}
+it("should output value", () => {
+  const name = "foo";
+  const value = "bar";
+
+  output(name, value);
+
+  expect(info).toHaveBeenCalledTimes(1);
+  expect(info).toHaveBeenCalledWith(`output -> ${ name }: ${ value }`);
+
+  expect(setOutput).toHaveBeenCalledTimes(1);
+  expect(setOutput).toHaveBeenCalledWith(name, value);
+});

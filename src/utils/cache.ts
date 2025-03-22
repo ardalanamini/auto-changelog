@@ -25,7 +25,7 @@
 const CACHE = (new Map);
 
 export function cache<T>(key: string, value: () => T, overwrite = false): T {
-  if (!CACHE.has(key) || overwrite) CACHE.set(key, value());
+  if (overwrite || !CACHE.has(key)) CACHE.set(key, value());
 
   return CACHE.get(key);
 }

@@ -30,4 +30,4 @@ export function parseSemVer(version = releaseName()): SemVer | null {
   return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
 }
 
-export { SemVer };
+export type { SemVer };

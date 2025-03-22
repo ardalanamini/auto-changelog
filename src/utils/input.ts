@@ -27,8 +27,23 @@ import { cache } from "./cache.js";
 
 export function input<T = string>(
   name: string,
-  parser: (value: string) => T = (value): T => value as T,
+  required?: boolean,
+): T;
+export function input<T = string>(
+  name: string,
+  parser: (value: string) => T,
+  required?: boolean,
+): T;
+export function input<T = string>(
+  name: string,
+  parser: boolean | ((value: string) => T) = (value): T => value as T,
   required = true,
 ): T {
+  if (typeof parser === "boolean") {
+    required = parser;
+
+    parser = (value): T => value as T;
+  }
+
   return cache(name, () => parser(getInput(name, { required })));
 }

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,19 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { context } from "@actions/github";
+import { sha } from "../../src/utils";
 
-export function releaseNamePrefix(): string {
-  return input("release-name-prefix", false);
-}
+it("should get the current commit sha", () => {
+  const shaValue = "3c1177539c1a216084f922ea52e56dd719a25945";
+
+  const original = jest.mocked(context).sha;
+
+  jest.mocked(context).sha = shaValue;
+
+  const result = sha();
+
+  jest.mocked(context).sha = original;
+
+  expect(result).toBe(shaValue);
+});

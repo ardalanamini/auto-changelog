@@ -26,9 +26,9 @@ import { getInput } from "@actions/core";
 import { gitHubToken } from "../../src/inputs";
 
 it("should get and parse the \"github-token\" input", () => {
-  const inputValue = "github-githubToken-value";
+  const inputValue = "github-token-value";
 
-  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = gitHubToken();
 

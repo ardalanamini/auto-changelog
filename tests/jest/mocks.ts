@@ -23,3 +23,4 @@
  */
 
 jest.mock("@actions/core");
+jest.mock("@actions/github");

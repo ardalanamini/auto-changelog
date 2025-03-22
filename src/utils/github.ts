@@ -25,9 +25,7 @@
 import { octokit } from "./octokit.js";
 import { sha } from "./sha.js";
 
-// eslint-disable-next-line max-len
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types,@typescript-eslint/explicit-function-return-type
-export async function *iterateCommits(owner: string, repo: string, from?: string) {
+export async function *iterateCommits(owner: string, repo: string, from?: string): AsyncGenerator<TCommit> {
   const { paginate, rest } = octokit();
 
   const iterator = paginate.iterator(
@@ -47,4 +45,16 @@ export async function *iterateCommits(owner: string, repo: string, from?: string
       yield commit;
     }
   }
+}
+
+export interface TCommit {
+  author?: {
+    login: string;
+  } | null;
+
+  commit: {
+    message: string;
+  };
+
+  sha: string;
 }

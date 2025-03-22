@@ -40,7 +40,7 @@ style   : Code Style
 revert  : Reverts
 `;
 
-  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = commitTypes();
 

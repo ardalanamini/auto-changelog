@@ -28,7 +28,7 @@ import { mentionAuthors } from "../../src/inputs";
 it("should get and parse the \"mention-authors\" input", () => {
   const inputValue = true;
 
-  (getBooleanInput as jest.MockedFn<typeof getBooleanInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 
   const result = mentionAuthors();
 

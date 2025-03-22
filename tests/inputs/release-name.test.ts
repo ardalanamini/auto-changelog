@@ -28,7 +28,7 @@ import { releaseName } from "../../src/inputs";
 it("should get and parse the \"release-name\" input", () => {
   const inputValue = "v1.0.0";
 
-  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = releaseName();
 

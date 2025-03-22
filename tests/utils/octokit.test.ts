@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,30 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { getInput } from "@actions/core";
+import { getOctokit } from "@actions/github";
+import { GitHub } from "@actions/github/lib/utils";
+import { octokit } from "../../src/utils";
 
-export function releaseNamePrefix(): string {
-  return input("release-name-prefix", false);
-}
+it("should get octokit instance", () => {
+  const gitHubTokenInputName = "github-token";
+  const gitHubTokenInputValue = "github-token-value";
+
+  jest.mocked(getInput).mockImplementationOnce((name) => {
+    if (name === gitHubTokenInputName) return gitHubTokenInputValue;
+
+    return "";
+  });
+
+  jest.mocked(getOctokit).mockImplementationOnce(() => new GitHub);
+
+  const result = octokit();
+
+  expect(result).toBeInstanceOf(GitHub);
+
+  expect(getInput).toHaveBeenCalledTimes(1);
+  expect(getInput).toHaveBeenCalledWith(gitHubTokenInputName, { required: true });
+
+  expect(getOctokit).toHaveBeenCalledTimes(1);
+  expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
+});

@@ -28,7 +28,7 @@ import { releaseNamePrefix } from "../../src/inputs";
 it("should get and parse the \"release-name-prefix\" input", () => {
   const inputValue = "@actions/github/";
 
-  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = releaseNamePrefix();
 

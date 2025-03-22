@@ -28,7 +28,7 @@ import { defaultCommitType } from "../../src/inputs";
 it("should get and parse the \"default-commit-type\" input", () => {
   const inputValue = "Other Changes";
 
-  (getInput as unknown as jest.MockedFn<typeof getInput>).mockImplementationOnce(() => inputValue);
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = defaultCommitType();
 
