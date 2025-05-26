@@ -25,4 +25,14 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 const mocked = jest.createMockFromModule<typeof import("@actions/github")>("@actions/github");
 
+if (!Reflect.getOwnPropertyDescriptor(mocked.context, "repo")) {
+  Reflect.defineProperty(mocked.context, "repo", {
+    configurable: true,
+    get         : jest.fn(() => ({
+      owner: "ardalanamini",
+      repo : "auto-changelog",
+    })),
+  });
+}
+
 export = mocked;

@@ -22,25 +22,29 @@
  * SOFTWARE.
  */
 
+import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
-import { repository } from "../../src/utils";
+import { Node } from "../../src/nodes";
 
-it("should get the current commit sha", () => {
+it("should create an instance with common values", () => {
+  const shouldUseGithubAutolink = true;
   const repo = {
     owner: "ardalanamini",
     repo : "auto-changelog",
   };
 
-  const serverUrl = context.serverUrl;
-
-  expect(context.serverUrl).toEqual("https://github.com");
+  jest.mocked(getBooleanInput).mockReturnValueOnce(shouldUseGithubAutolink);
 
   jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
 
-  const result = repository();
 
-  expect(result).toEqual({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const node = (new Node);
+
+  expect(node.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
+  expect(node.repo).toEqual({
     ...repo,
-    url: `${ serverUrl }/${ repo.owner }/${ repo.repo }`,
+    url: `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`,
   });
 });

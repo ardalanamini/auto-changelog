@@ -86,16 +86,14 @@ export class TypeNode extends Node {
     const scopeKeys = [...scopes.keys()].sort((a, b) => a.localeCompare(b));
 
     for (const key of scopeKeys) {
-      const scope = scopes.get(key);
-
-      if (!scope) continue;
+      const scope = scopes.get(key)!;
 
       const printedScope = scope.print(prefix);
 
       if (printedScope) parts.push(printedScope);
     }
 
-    if (parts.length === 0) return null;
+    if (parts.length === 1) return null;
 
     return parts.join("\n");
   }

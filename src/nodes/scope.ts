@@ -53,7 +53,7 @@ export class ScopeNode extends Node {
   public addCommit(message: string, breaking = false): CommitNode {
     const { commits } = this;
 
-    const key = `${ message } ${ breaking }`;
+    const key = `${ breaking } ${ message }`;
 
     if (commits.has(key)) return commits.get(key)!;
 

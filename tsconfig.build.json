@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src"
+  },
   "exclude": ["commitlint.config.cts", "jest.config.ts", "tests", "__mocks__"]
 }

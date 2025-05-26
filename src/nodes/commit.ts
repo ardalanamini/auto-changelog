@@ -79,7 +79,7 @@ export class CommitNode extends Node {
 
     const parts: string[] = [];
 
-    if (breaking) parts.push("***breaking:***");
+    if (breaking) parts.push("***BREAKING:***");
 
     parts.push(description);
 
