@@ -60,11 +60,11 @@ export class TypeNode extends Node {
     // Reusing the already added scope to group the commits.
     if (scopes.has(scope)) return scopes.get(scope)!;
 
-    const commit = new ScopeNode(scope);
+    const scopeNode = new ScopeNode(scope);
 
-    scopes.set(scope, commit);
+    scopes.set(scope, scopeNode);
 
-    return commit;
+    return scopeNode;
   }
 
   /**

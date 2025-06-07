@@ -226,3 +226,62 @@ describe("should print the username & multiple references", () => {
     expect(commitAuthorNode.print()).toBe(`${ reference.print() } & ${ reference2.print() } by [@${ username }](${ url }/${ username })`);
   });
 });
+
+describe("should reuse reference", () => {
+  it("commit sha", () => {
+    jest.mocked(getBooleanInput).mockReturnValue(true);
+
+    const username = "ardalanamini";
+
+    const commitAuthorNode = new CommitAuthorNode(username);
+
+    const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
+
+    const reference1 = commitAuthorNode.addReference(sha);
+    const reference2 = commitAuthorNode.addReference(sha);
+
+    expect(commitAuthorNode).toBeInstanceOf(Node);
+
+    expect(reference1).toEqual(reference2);
+
+    expect(commitAuthorNode.username).toBe(username);
+
+    expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
+    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
+    expect(commitAuthorNode.repo).toEqual({
+      ...repo,
+      url,
+    });
+
+    expect(commitAuthorNode.print()).toBe(`${ sha } by @${ username }`);
+  });
+
+  it("pr number", () => {
+    jest.mocked(getBooleanInput).mockReturnValue(true);
+
+    const username = "ardalanamini";
+
+    const commitAuthorNode = new CommitAuthorNode(username);
+
+    const pr = "1";
+    const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
+
+    const reference1 = commitAuthorNode.addReference(sha, pr);
+    const reference2 = commitAuthorNode.addReference(sha, pr);
+
+    expect(commitAuthorNode).toBeInstanceOf(Node);
+
+    expect(reference1).toEqual(reference2);
+
+    expect(commitAuthorNode.username).toBe(username);
+
+    expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
+    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
+    expect(commitAuthorNode.repo).toEqual({
+      ...repo,
+      url,
+    });
+
+    expect(commitAuthorNode.print()).toBe(`#${ pr } by @${ username }`);
+  });
+});

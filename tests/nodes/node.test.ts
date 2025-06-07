@@ -38,9 +38,14 @@ it("should create an instance with common values", () => {
   jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
 
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  const node = (new Node);
+  class TestNode extends Node {
+
+    public print(): string {
+      return this.repo.repo;
+    }
+
+  }
+  const node = (new TestNode);
 
   expect(node.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
   expect(node.repo).toEqual({

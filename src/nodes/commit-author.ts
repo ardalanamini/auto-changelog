@@ -61,6 +61,14 @@ export class CommitAuthorNode extends Node {
     if (pr) reference = new PullRequestNode(pr);
     else reference = new CommitHashNode(sha);
 
+    // Check if a reference already exists to avoid duplicates
+    for (const existingRef of this.references) {
+      if (
+        (!pr && existingRef instanceof CommitHashNode && existingRef.sha === sha)
+        || (existingRef instanceof PullRequestNode && existingRef.pr === pr)
+      ) return existingRef;
+    }
+
     this.references.push(reference);
 
     return reference;
