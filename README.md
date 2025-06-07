@@ -1,6 +1,7 @@
 # Auto Changelog
 
-[![Test](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml/badge.svg)](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml)
+[![Tests](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml/badge.svg)](https://github.com/ardalanamini/auto-changelog/actions/workflows/test.yml)
+[![Code Coverage](https://codecov.io/gh/ardalanamini/auto-changelog/graph/badge.svg?token=24AMJ5Z480)](https://codecov.io/gh/ardalanamini/auto-changelog)
 
 Automatic Changelog generator
 
