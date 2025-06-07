@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.0",
+    "@actions/github": "^6.0.1",
     "marked": "^15.0.12",
     "semver": "^7.6.3",
     "yaml": "^2.6.0"
