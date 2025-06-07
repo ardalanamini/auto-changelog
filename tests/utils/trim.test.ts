@@ -37,7 +37,7 @@ it("should handle null value", () => {
 });
 
 it("should handle undefined value", () => {
-  // eslint-disable-next-line no-undefined,@typescript-eslint/no-confusing-void-expression
+  // eslint-disable-next-line no-undefined,@typescript-eslint/no-confusing-void-expression,unicorn/no-useless-undefined
   expect(trim(undefined)).toBeUndefined();
 });
 

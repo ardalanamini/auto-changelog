@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { getBooleanInput, getInput } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";

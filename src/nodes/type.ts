@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-import { trim } from "../utils/index.js";
 import { Node } from "./node.js";
 import { ScopeNode } from "./scope.js";
+import { trim } from "../utils/index.js";
 
 /**
  * Represents a node for a specific type that manages associated scopes.

@@ -50,7 +50,7 @@ export async function generateFooter(previousTagName?: string): Promise<string> 
 
     const tokens = marked.lexer(data.body);
 
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     const index = tokens.findIndex(markdownToken => markdownToken.type === "heading" && markdownToken.text === "New Contributors");
 
     const markdownToken = tokens[index + 1];

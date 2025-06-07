@@ -23,9 +23,9 @@
  */
 
 export * from "./changelog.js";
-export * from "./commit.js";
 export * from "./commit-author.js";
 export * from "./commit-hash.js";
+export * from "./commit.js";
 export * from "./node.js";
 export * from "./pull-request.js";
 export * from "./scope.js";

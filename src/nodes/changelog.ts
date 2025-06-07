@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import { commitTypes, defaultCommitType } from "../inputs/index.js";
-import { trim } from "../utils/index.js";
 import { Node } from "./node.js";
 import { TypeNode } from "./type.js";
+import { commitTypes, defaultCommitType } from "../inputs/index.js";
+import { trim } from "../utils/index.js";
 
 /**
  * Represents a changelog node which organizes and processes commit types into structured changelog entries.
@@ -70,14 +70,14 @@ export class ChangelogNode extends Node {
    * @returns A concatenated string of all printed types with the applied prefix, or null if no types are available.
    */
   public print(prefix = ""): string | null {
-    const { types } = this;
+    const { types, typeMap, defaultType } = this;
 
     if (types.size === 0) return null;
 
     /**
      * Using this instead of iterating over the `types` values allows the action users to apply their own custom order.
      */
-    const acceptedTypes = [...new Set(Object.values(this.typeMap).concat(this.defaultType))];
+    const acceptedTypes = [...new Set([...Object.values(typeMap), ...defaultType])];
 
     const parts: string[] = [];
 

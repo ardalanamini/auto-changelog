@@ -163,7 +163,7 @@ it("should print a commit without scope", () => {
 
   expect(commitNode).toBeInstanceOf(CommitNode);
 
-  expect(scopeNode.print()).toBe(`${ commitNode.print() }`);
+  expect(scopeNode.print()).toBe(commitNode.print());
 });
 
 it("should print multiple commits without scope", () => {

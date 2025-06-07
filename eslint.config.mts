@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,19 @@
  * SOFTWARE.
  */
 
-import { parse, type SemVer } from "semver";
-import { releaseName, releaseNamePrefix } from "../inputs/index.js";
-import { cache } from "./cache.js";
+import { globalIgnores } from "eslint/config";
+import gitignore from "eslint-config-flat-gitignore";
+import { configs, smartConfig } from "eslint-config-noir";
 
-export function parseSemVer(version = releaseName()): SemVer | null {
-  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
-}
-
-export type { SemVer };
+export default smartConfig(
+  gitignore(),
+  globalIgnores(["action/*"]),
+  configs.recommended,
+  {
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+    },
+  },
+);

@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { parseSemVer } from "../../src/utils";
+import { parseSemanticVersion } from "../../src/utils";
 
 it("should parse the semver version string", () => {
   const major = 1;
@@ -41,7 +41,7 @@ it("should parse the semver version string", () => {
     return "";
   });
 
-  const result = parseSemVer(raw);
+  const result = parseSemanticVersion(raw);
 
   expect(result).toBeDefined();
   expect(result).toEqual({
@@ -82,7 +82,7 @@ it("should parse the release name by default", () => {
     }
   });
 
-  const result = parseSemVer();
+  const result = parseSemanticVersion();
 
   expect(result).toBeDefined();
   expect(result).toEqual({

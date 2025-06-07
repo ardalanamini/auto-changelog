@@ -25,7 +25,15 @@
 import { context } from "@actions/github";
 import { cache } from "./cache.js";
 
-export function repository(): { owner: string; repo: string; url: string } {
+export interface TRepository {
+  owner: string;
+
+  repo: string;
+
+  url: string;
+}
+
+export function repository(): TRepository {
   return cache("repo", () => {
     const { repo: { owner, repo }, serverUrl } = context;
 

@@ -4,5 +4,6 @@
     "rootDir": "src",
     "tsBuildInfoFile": "./.cache/typescript/tsconfig.build.tsbuildinfo"
   },
-  "exclude": ["commitlint.config.cts", "jest.config.ts", "tests", "__mocks__"]
+  "exclude": [
+    "commitlint.config.cts", "eslint.config.mts", "jest.config.ts", "tests", "action", "__mocks__"]
 }

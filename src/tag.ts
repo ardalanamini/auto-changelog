@@ -24,15 +24,18 @@
 
 import { type SemVer } from "semver";
 import { releaseName, semver } from "./inputs/index.js";
-import { octokit, parseSemVer, repository, sha } from "./utils/index.js";
+import { octokit, parseSemanticVersion as parseSemVersion, repository, sha } from "./utils/index.js";
+
+export interface TRelease {
+  name: string;
+
+  sha: string;
+}
 
 export interface TagInfoI {
   prerelease: boolean;
 
-  previous?: {
-    name: string;
-    sha: string;
-  };
+  previous?: TRelease;
 
   releaseId: string;
 }
@@ -46,16 +49,16 @@ export async function getTagInfo(): Promise<TagInfoI> {
     prerelease: false,
   };
 
-  let semVer: SemVer | null = null;
+  let semanticVersion: SemVer | null = null;
 
   if (semver()) {
-    semVer = parseSemVer();
+    semanticVersion = parseSemVersion();
 
-    if (semVer == null) throw new Error(`Expected a semver compatible releaseName, got "${ releaseName() }" instead.`);
+    if (semanticVersion == null) throw new Error(`Expected a semver compatible releaseName, got "${ releaseName() }" instead.`);
 
-    info.prerelease = semVer.prerelease.length > 0;
+    info.prerelease = semanticVersion.prerelease.length > 0;
 
-    if (info.prerelease) info.releaseId = `${ semVer.prerelease[0] }`;
+    if (info.prerelease) info.releaseId = `${ semanticVersion.prerelease[0] }`;
   }
 
   const iterator = paginate.iterator(
@@ -71,7 +74,7 @@ export async function getTagInfo(): Promise<TagInfoI> {
     for (const { name, commit } of data) {
       if (sha() === commit.sha) continue;
 
-      if (semVer == null) {
+      if (semanticVersion == null) {
         info.previous = {
           name,
           sha: commit.sha,
@@ -80,9 +83,9 @@ export async function getTagInfo(): Promise<TagInfoI> {
         break loop;
       }
 
-      const version = parseSemVer(name);
+      const version = parseSemVersion(name);
 
-      if (version == null || semVer.compare(version) <= 0) continue;
+      if (version == null || semanticVersion.compare(version) <= 0) continue;
 
       if (version.prerelease.length > 0 && !info.prerelease) continue;
 

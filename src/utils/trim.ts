@@ -25,5 +25,6 @@
 export function trim<T extends string | null | undefined>(value: T): T {
   if (!value) return value;
 
-  return value.trim().replace(/ {2,}/g, " ") as T;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  return value.trim().replaceAll(/ {2,}/g, " ") as T;
 }

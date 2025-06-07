@@ -22,30 +22,13 @@
  * SOFTWARE.
  */
 
-import { getInput } from "@actions/core";
+import { type SemVer, parse } from "semver";
 import { cache } from "./cache.js";
+import { releaseName, releaseNamePrefix } from "../inputs/index.js";
 
-export function input(
-  name: string,
-  required?: boolean,
-): string;
-export function input<T = string>(
-  name: string,
-  parser: (value: string) => T,
-  required?: boolean,
-): T;
-export function input<T = string>(
-  name: string,
+export function parseSemanticVersion(version = releaseName()): SemVer | null {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  parser: boolean | ((value: string) => T) = (value): T => value as T,
-  required = true,
-): T {
-  if (typeof parser === "boolean") {
-    required = parser;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    parser = (value): T => value as T;
-  }
-
-  return cache(name, () => parser(getInput(name, { required })));
+  return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
 }
+
+export type { SemVer };

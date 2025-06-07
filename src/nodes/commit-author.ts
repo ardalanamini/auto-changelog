@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import { mentionAuthors } from "../inputs/index.js";
 import { CommitHashNode } from "./commit-hash.js";
 import { Node } from "./node.js";
 import { PullRequestNode } from "./pull-request.js";
+import { mentionAuthors } from "../inputs/index.js";
 
 /**
  * Represents a node for a commit author, containing information about the author
@@ -55,18 +55,15 @@ export class CommitAuthorNode extends Node {
    * @returns The created reference node, either a CommitHashNode or a PullRequestNode.
    */
   public addReference(sha: string, pr?: string): CommitHashNode | PullRequestNode {
-    let reference: CommitHashNode | PullRequestNode;
-
     // PR references take priority over commit hash references
-    if (pr) reference = new PullRequestNode(pr);
-    else reference = new CommitHashNode(sha);
+    const reference = pr ? new PullRequestNode(pr) : new CommitHashNode(sha);
 
     // Check if a reference already exists to avoid duplicates
-    for (const existingRef of this.references) {
+    for (const existingReference of this.references) {
       if (
-        (!pr && existingRef instanceof CommitHashNode && existingRef.sha === sha)
-        || (existingRef instanceof PullRequestNode && existingRef.pr === pr)
-      ) return existingRef;
+        (!pr && existingReference instanceof CommitHashNode && existingReference.sha === sha)
+        || (existingReference instanceof PullRequestNode && existingReference.pr === pr)
+      ) return existingReference;
     }
 
     this.references.push(reference);

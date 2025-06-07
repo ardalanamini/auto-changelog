@@ -29,7 +29,7 @@ export * from "./input.js";
 export * from "./octokit.js";
 export * from "./output.js";
 export * from "./parse-commit-message.js";
-export * from "./parse-semver.js";
+export * from "./parse-semantic-version.js";
 export * from "./repository.js";
 export * from "./sha.js";
 export * from "./trim.js";

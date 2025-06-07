@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { includePRLinks } from "../inputs/index.js";
 import { Node } from "./node.js";
+import { includePRLinks } from "../inputs/index.js";
 
 /**
  * Represents a node associated with a pull request or issue link.

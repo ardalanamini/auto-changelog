@@ -57,7 +57,8 @@ export class CommitNode extends Node {
     // Only reuse authors with known usernames.
     if (username && authors.length > 0) {
       // Only if the last reference is to the same author, reuse the node.
-      const previousAuthor = authors[authors.length - 1];
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+      const previousAuthor = authors.at(-1)!;
 
       if (previousAuthor.username === username) return previousAuthor;
     }

@@ -93,7 +93,9 @@ export default {
   // A set of global variables that need to be available in all test environments
   // globals: {},
 
-  // The maximum amount of workers used to run your tests. Can be specified as % or a number. E.g. maxWorkers: 10% will use 10% of your CPU amount + 1 as the maximum worker number. maxWorkers: 2 will use a maximum of 2 workers.
+  // The maximum amount of workers used to run your tests. Can be specified as % or a number.
+  // E.g. maxWorkers: 10% will use 10% of your CPU amount + 1 as the maximum worker number.
+  // maxWorkers: 2 will use a maximum of 2 workers.
   // maxWorkers: "50%",
 
   // An array of directory names to be searched recursively up from the requiring module's location
@@ -113,12 +115,14 @@ export default {
   //   "node"
   // ],
 
-  // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
+  // A map from regular expressions to module names or to arrays of module names that allow to stub out resources
+  // with a single module
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
 
-  // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
+  // An array of regexp pattern strings, matched against all module paths
+  // before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
 
   // Activates notifications for test results
@@ -136,7 +140,7 @@ export default {
   // Use this configuration option to add custom reporters to Jest
   reporters: ["default", "github-actions"],
 
-  // Automatically reset mock state before every test
+  // Automatically reset the mock state before every test
   // resetMocks: false,
 
   // Reset the module registry before running each individual test
@@ -145,7 +149,7 @@ export default {
   // A path to a custom resolver
   // resolver: undefined,
 
-  // Automatically restore mock state and implementation before every test
+  // Automatically restore the mock state and implementation before every test
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
@@ -207,13 +211,15 @@ export default {
     "^.+\\.[cm]?[jt]sx?$": "@swc/jest",
   },
 
-  // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
+  // An array of regexp pattern strings that are matched against all source file paths,
+  // matched files will skip transformation
   // transformIgnorePatterns: [
   //   "/node_modules/",
   //   "\\.pnp\\.[^\\/]+$"
   // ],
 
-  // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
+  // An array of regexp pattern strings that are matched against all modules
+  // before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
 
   // Indicates whether each individual test should be reported during the run

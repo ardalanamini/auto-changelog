@@ -28,63 +28,63 @@ it("should cache value", () => {
   const name = "foo";
   const value = "bar";
 
-  const fn = jest.fn(() => value);
+  const mockFunction = jest.fn(() => value);
 
-  const firstCallResult = cache(name, fn);
+  const firstCallResult = cache(name, mockFunction);
 
   expect(firstCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(1);
+  expect(mockFunction).toHaveBeenCalledTimes(1);
 
-  fn.mockClear();
+  mockFunction.mockClear();
 
-  const secondCallResult = cache(name, fn);
+  const secondCallResult = cache(name, mockFunction);
 
   expect(secondCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(0);
+  expect(mockFunction).toHaveBeenCalledTimes(0);
 });
 
 it("should overwrite cache value", () => {
   const name = "foo";
   const value = "bar";
 
-  const fn = jest.fn(() => value);
+  const mockFunction = jest.fn(() => value);
 
-  const firstCallResult = cache(name, fn);
+  const firstCallResult = cache(name, mockFunction);
 
   expect(firstCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(1);
+  expect(mockFunction).toHaveBeenCalledTimes(1);
 
-  fn.mockClear();
+  mockFunction.mockClear();
 
-  const secondCallResult = cache(name, fn, true);
+  const secondCallResult = cache(name, mockFunction, true);
 
   expect(secondCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(1);
+  expect(mockFunction).toHaveBeenCalledTimes(1);
 });
 
 it("should clear cache", () => {
   const name = "foo";
   const value = "bar";
 
-  const fn = jest.fn(() => value);
+  const mockFunction = jest.fn(() => value);
 
-  const firstCallResult = cache(name, fn);
+  const firstCallResult = cache(name, mockFunction);
 
   expect(firstCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(1);
+  expect(mockFunction).toHaveBeenCalledTimes(1);
 
-  fn.mockClear();
+  mockFunction.mockClear();
 
   clearCache();
 
-  const secondCallResult = cache(name, fn);
+  const secondCallResult = cache(name, mockFunction);
 
   expect(secondCallResult).toBe(value);
 
-  expect(fn).toHaveBeenCalledTimes(1);
+  expect(mockFunction).toHaveBeenCalledTimes(1);
 });
