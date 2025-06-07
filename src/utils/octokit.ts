@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2023-2025 Ardalan Amini
@@ -20,14 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 import { getOctokit } from "@actions/github";
 import { type GitHub } from "@actions/github/lib/utils.js";
+import { gitHubToken } from "../inputs/index.js";
 import { cache } from "./cache.js";
-import { token } from "./inputs/index.js";
 
 export function octokit(): InstanceType<typeof GitHub> {
-  return cache("octokit", () => getOctokit(token()));
+  return cache("octokit", () => getOctokit(gitHubToken()));
 }

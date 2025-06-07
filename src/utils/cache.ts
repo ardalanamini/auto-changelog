@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2023-2025 Ardalan Amini
@@ -20,13 +20,16 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 const CACHE = (new Map);
 
 export function cache<T>(key: string, value: () => T, overwrite = false): T {
-  if (!CACHE.has(key) || overwrite) CACHE.set(key, value());
+  if (overwrite || !CACHE.has(key)) CACHE.set(key, value());
 
   return CACHE.get(key);
+}
+
+export function clearCache(): void {
+  CACHE.clear();
 }

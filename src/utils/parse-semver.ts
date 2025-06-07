@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2023-2025 Ardalan Amini
@@ -20,15 +20,14 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 import { parse, type SemVer } from "semver";
+import { releaseName, releaseNamePrefix } from "../inputs/index.js";
 import { cache } from "./cache.js";
-import { releaseName, releaseNamePrefix } from "./inputs/index.js";
 
 export function parseSemVer(version = releaseName()): SemVer | null {
   return cache(`semver-${ version }`, () => parse(version.replace(new RegExp(`^${ releaseNamePrefix() }`), ""), { includePrerelease: true } as never));
 }
 
-export { SemVer };
+export type { SemVer };

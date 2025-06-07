@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2020-2025 Ardalan Amini
@@ -20,26 +20,23 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 import { marked } from "marked";
 import {
   includeCompareLink,
   mentionNewContributors,
-  octokit,
   releaseName,
   releaseNamePrefix,
-  repository,
-  useGithubAutolink,
-} from "./utils/index.js";
+  useGitHubAutolink,
+} from "./inputs/index.js";
+import { octokit, repository } from "./utils/index.js";
 
 export async function generateFooter(previousTagName?: string): Promise<string> {
   const { owner, repo, url } = repository();
   const tagName = releaseName();
 
   const footer: string[] = [];
-
 
   if (mentionNewContributors()) {
     const { rest } = octokit();
@@ -64,7 +61,7 @@ export async function generateFooter(previousTagName?: string): Promise<string> 
   if (includeCompareLink() && previousTagName) {
     let link = `${ url }/compare/${ previousTagName }...${ tagName }`;
 
-    if (!useGithubAutolink() || releaseNamePrefix()) link = `\`[${ previousTagName }...${ tagName }](${ url }/compare/${ previousTagName }...${ tagName })\``;
+    if (!useGitHubAutolink() || releaseNamePrefix()) link = `\`[${ previousTagName }...${ tagName }](${ url }/compare/${ previousTagName }...${ tagName })\``;
 
     footer.push(`**Full Changelog**: ${ link }`);
   }

@@ -25,6 +25,8 @@
 
 pnpm lint:fix
 
+pnpm test:types
+
 pnpm build
 
 pnpm package

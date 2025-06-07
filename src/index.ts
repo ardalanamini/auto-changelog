@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2020-2025 Ardalan Amini
@@ -20,27 +20,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
+/* istanbul ignore file */
+
 import { setFailed } from "@actions/core";
-import { generateChangelog } from "./changelog.js";
-import { generateFooter } from "./footer.js";
-import { getTagInfo } from "./tag.js";
-import { setChangelog, setPrerelease, setReleaseId } from "./utils/index.js";
+import { generate } from "./generate.js";
 
-async function run(): Promise<void> {
-  const { prerelease, releaseId, previous } = await getTagInfo();
-
-  setPrerelease(prerelease);
-
-  setReleaseId(releaseId);
-
-  let changelog = await generateChangelog(previous?.sha);
-
-  changelog += await generateFooter(previous?.name);
-
-  setChangelog(changelog);
-}
-
-run().catch(setFailed);
+generate().catch(setFailed);

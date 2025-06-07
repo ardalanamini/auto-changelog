@@ -1,4 +1,4 @@
-/*
+/**
  * MIT License
  *
  * Copyright (c) 2020-2025 Ardalan Amini
@@ -20,11 +20,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  */
 
 import { type SemVer } from "semver";
-import { octokit, parseSemVer, releaseName, repository, semver, sha } from "./utils/index.js";
+import { releaseName, semver } from "./inputs/index.js";
+import { octokit, parseSemVer, repository, sha } from "./utils/index.js";
 
 export interface TagInfoI {
   prerelease: boolean;
