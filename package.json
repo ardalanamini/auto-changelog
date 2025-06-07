@@ -9,7 +9,7 @@
     "url": "https://ardalanamini.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/ardalanamini/auto-changelog#readme",
+  "homepage": "https://github.com/marketplace/actions/auto-changelog",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ardalanamini/auto-changelog.git"

@@ -32,9 +32,9 @@ export default defineConfig({
   },
   output: {
     file     : "action/index.js",
-    minify   : true,
     format   : "module",
     esModule : true,
     sourcemap: true,
+    minify   : true,
   },
 });
