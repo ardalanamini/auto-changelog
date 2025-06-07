@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,21 @@
  * SOFTWARE.
  */
 
-/* istanbul ignore file */
+import { generateChangelog } from "./changelog.js";
+import { generateFooter } from "./footer.js";
+import { setChangelog, setPrerelease, setReleaseId } from "./outputs/index.js";
+import { getTagInfo } from "./tag.js";
 
-import { setFailed } from "@actions/core";
-import { generate } from "./generate.js";
+export async function generate(): Promise<void> {
+  const { prerelease, releaseId, previous } = await getTagInfo();
 
-generate().catch(setFailed);
+  setPrerelease(prerelease);
+
+  setReleaseId(releaseId);
+
+  let changelog = await generateChangelog(previous?.sha);
+
+  changelog += await generateFooter(previous?.name);
+
+  setChangelog(changelog);
+}

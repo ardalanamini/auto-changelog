@@ -38,7 +38,6 @@ export async function generateFooter(previousTagName?: string): Promise<string> 
 
   const footer: string[] = [];
 
-
   if (mentionNewContributors()) {
     const { rest } = octokit();
 

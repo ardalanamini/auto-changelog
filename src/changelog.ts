@@ -38,9 +38,9 @@ export async function generateChangelog(lastSha?: string): Promise<string> {
 
     let { type, scope, description, pr, flag, breaking } = parseCommitMessage(message);
 
-    if (!description) continue;
-
     description = trim(description);
+
+    if (!description) continue;
 
     flag = trim(flag);
 
