@@ -38,7 +38,7 @@
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",
     "marked": "^15.0.12",
-    "semver": "^7.6.3",
+    "semver": "^7.7.2",
     "yaml": "^2.8.0"
   },
   "devDependencies": {
@@ -48,7 +48,7 @@
     "@swc/core": "^1.11.31",
     "@swc/jest": "^0.2.38",
     "@types/jest": "^29.5.14",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.0",
     "@vercel/ncc": "^0.38.2",
     "eslint": "^9.28.0",
     "eslint-config-flat-gitignore": "^2.1.0",
