@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { context } from "@actions/github";
 import { useGitHubAutolink } from "../inputs/index.js";
 import { repository } from "../utils/index.js";
 
@@ -32,6 +33,8 @@ import { repository } from "../utils/index.js";
 export abstract class Node {
 
   public readonly repo = repository();
+
+  public readonly serverUrl = context.serverUrl;
 
   public readonly shouldUseGithubAutolink = useGitHubAutolink();
 

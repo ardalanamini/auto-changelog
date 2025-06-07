@@ -25,7 +25,7 @@
 import { context } from "@actions/github";
 import { repository } from "../../src/utils";
 
-it("should get the current commit sha", () => {
+it("should get the repository information with constructed URL", () => {
   const repo = {
     owner: "ardalanamini",
     repo : "auto-changelog",
@@ -33,7 +33,7 @@ it("should get the current commit sha", () => {
 
   const serverUrl = context.serverUrl;
 
-  expect(context.serverUrl).toEqual("https://github.com");
+  expect(serverUrl).toEqual("https://github.com");
 
   jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
 

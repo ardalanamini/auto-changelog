@@ -26,11 +26,10 @@ import { info, setOutput } from "@actions/core";
 import { setReleaseId } from "../../src/outputs";
 
 it("should output \"release-id\" value", () => {
+  const outputName = "release-id";
   const outputValue = "latest";
 
   setReleaseId(outputValue);
-
-  const outputName = "release-id";
 
   expect(info).toHaveBeenCalledTimes(1);
   expect(info).toHaveBeenCalledWith(`output -> ${ outputName }: ${ outputValue }`);

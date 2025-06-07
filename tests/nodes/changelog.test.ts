@@ -64,7 +64,7 @@ it("should create an instance with common values", () => {
     url,
   });
 
-  expect(changelogNode.print()).toBe(null);
+  expect(changelogNode.print()).toBeNull();
 });
 
 it("should not print anything", () => {
@@ -89,7 +89,7 @@ it("should not print anything", () => {
   expect(typeNode).toBeInstanceOf(TypeNode);
   expect(scopeNode).toBeInstanceOf(ScopeNode);
 
-  expect(changelogNode.print()).toBe(null);
+  expect(changelogNode.print()).toBeNull();
 });
 
 it("should print commit changelog", () => {

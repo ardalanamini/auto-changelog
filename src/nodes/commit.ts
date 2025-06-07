@@ -46,6 +46,7 @@ export class CommitNode extends Node {
 
   /**
    * Adds a new author or retrieves the previous author if the username matches the last one.
+   * This optimization helps group consecutive commits by the same author efficiently.
    *
    * @param [username] - The username of the author to add.
    * @returns The added or retrieved author node instance.

@@ -25,7 +25,7 @@
 import { info, setOutput } from "@actions/core";
 import { setChangelog } from "../../src/outputs";
 
-it("should output \"changelog\" value", () => {
+it("should log and set the changelog output", () => {
   const outputValue = "Changelog Value";
 
   setChangelog(outputValue);

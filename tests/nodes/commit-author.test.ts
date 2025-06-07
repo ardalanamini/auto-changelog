@@ -30,7 +30,8 @@ const repo = {
   owner: "ardalanamini",
   repo : "auto-changelog",
 };
-const url = `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`;
+const serverUrl = context.serverUrl;
+const url = `${ serverUrl }/${ repo.owner }/${ repo.repo }`;
 
 beforeEach(() => {
   jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
@@ -84,7 +85,7 @@ it("should print the username with the link (not using autolink)", () => {
   expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
   expect(commitAuthorNode.shouldUseGithubAutolink).toBe(false);
 
-  expect(commitAuthorNode.print()).toBe(`[@${ username }](${ url }/${ username })`);
+  expect(commitAuthorNode.print()).toBe(`[@${ username }](${ serverUrl }/${ username })`);
 });
 
 describe("should print the username & commit sha", () => {
@@ -125,7 +126,7 @@ describe("should print the username & commit sha", () => {
 
     expect(reference).toBeInstanceOf(CommitHashNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ url }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ serverUrl }/${ username })`);
   });
 });
 
@@ -169,7 +170,7 @@ describe("should print the username & pr (prioritized over commit sha)", () => {
 
     expect(reference).toBeInstanceOf(PullRequestNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ url }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ serverUrl }/${ username })`);
   });
 });
 
@@ -223,7 +224,7 @@ describe("should print the username & multiple references", () => {
     expect(reference).toBeInstanceOf(PullRequestNode);
     expect(reference2).toBeInstanceOf(CommitHashNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } & ${ reference2.print() } by [@${ username }](${ url }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } & ${ reference2.print() } by [@${ username }](${ serverUrl }/${ username })`);
   });
 });
 

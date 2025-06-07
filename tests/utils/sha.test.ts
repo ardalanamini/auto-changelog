@@ -38,3 +38,26 @@ it("should get the current commit sha", () => {
 
   expect(result).toBe(shaValue);
 });
+
+it("should cache the sha value", () => {
+  const shaValue: string = "3c1177539c1a216084f922ea52e56dd719a25945";
+  const original = jest.mocked(context).sha;
+
+  jest.mocked(context).sha = shaValue;
+
+  // The first call should access context.sha
+  const result1 = sha();
+
+  // Change the mocked value
+  jest.mocked(context).sha = "different-sha";
+
+  // Second call should return cached value, not the new mocked value
+  const result2 = sha();
+
+  jest.mocked(context).sha = original;
+
+  expect(result1).toBe(shaValue);
+
+  // Should be cached
+  expect(result2).toBe(shaValue);
+});

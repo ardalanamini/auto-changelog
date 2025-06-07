@@ -25,9 +25,7 @@
 import { getBooleanInput } from "@actions/core";
 import { includePRLinks } from "../../src/inputs";
 
-it("should get and parse the \"include-pr-links\" input", () => {
-  const inputValue = true;
-
+it.each([true, false])("should retrieve the \"include-pr-links\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 
   const result = includePRLinks();

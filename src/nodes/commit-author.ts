@@ -81,7 +81,7 @@ export class CommitAuthorNode extends Node {
    * @returns The formatted string representation or null if no parts are available.
    */
   public print(): string | null {
-    const { username, references, repo, shouldMentionAuthor, shouldUseGithubAutolink } = this;
+    const { username, references, serverUrl, shouldMentionAuthor, shouldUseGithubAutolink } = this;
 
     const printedReferences: string[] = [];
 
@@ -99,7 +99,7 @@ export class CommitAuthorNode extends Node {
       if (parts.length > 0) parts.push("by");
 
       if (shouldUseGithubAutolink) parts.push(`@${ username }`);
-      else parts.push(`[@${ username }](${ repo.url }/${ username })`);
+      else parts.push(`[@${ username }](${ serverUrl }/${ username })`);
     }
 
     if (parts.length === 0) return null;

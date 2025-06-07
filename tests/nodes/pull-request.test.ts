@@ -72,6 +72,7 @@ it("should not print anything", () => {
 });
 
 it("should print the pr with the link (not using autolink)", () => {
+  // Enable PR links but disable GitHub autolink to test manual link generation
   jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
 
   const pr = "197";

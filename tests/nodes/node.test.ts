@@ -48,6 +48,7 @@ it("should create an instance with common values", () => {
   const node = (new TestNode);
 
   expect(node.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
+  expect(node.serverUrl).toBe(context.serverUrl);
   expect(node.repo).toEqual({
     ...repo,
     url: `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`,

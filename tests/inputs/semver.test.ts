@@ -25,9 +25,7 @@
 import { getBooleanInput } from "@actions/core";
 import { semver } from "../../src/inputs";
 
-it("should get and parse the \"semver\" input", () => {
-  const inputValue = true;
-
+it.each([true, false])("should get and parse the \"semver\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 
   const result = semver();

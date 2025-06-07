@@ -93,6 +93,7 @@ export class TypeNode extends Node {
       if (printedScope) parts.push(printedScope);
     }
 
+    // If only the header exists with no scope content, return null
     if (parts.length === 1) return null;
 
     return parts.join("\n");

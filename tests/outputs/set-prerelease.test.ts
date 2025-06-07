@@ -25,9 +25,7 @@
 import { info, setOutput } from "@actions/core";
 import { setPrerelease } from "../../src/outputs";
 
-it("should output \"prerelease\" value", () => {
-  const outputValue = true;
-
+it.each([true, false])("should output \"prerelease\" value as %j", (outputValue) => {
   setPrerelease(outputValue);
 
   const outputName = "prerelease";
