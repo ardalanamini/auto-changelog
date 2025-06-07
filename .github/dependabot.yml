@@ -10,8 +10,6 @@ updates:
       day     : monday
     commit-message   :
       prefix: ci(deps)
-    reviewers        :
-      - ardalanamini
 
   # Maintain dependencies for NPM
   - package-ecosystem  : npm
@@ -22,5 +20,3 @@ updates:
     versioning-strategy: increase
     commit-message     :
       prefix: build(deps)
-    reviewers          :
-      - ardalanamini
