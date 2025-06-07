@@ -89,6 +89,11 @@ jobs:
       - name: Run unit tests
         run : pnpm test:coverage
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   live-test            : # make sure the action works on a clean machine without building
     name   : Live Test
 
