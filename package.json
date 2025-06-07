@@ -21,6 +21,9 @@
     "actions",
     "changelog"
   ],
+  "engines": {
+    "node": ">= 20"
+  },
   "main": "dist/index.js",
   "scripts": {
     "prepare": "is-ci || husky",
