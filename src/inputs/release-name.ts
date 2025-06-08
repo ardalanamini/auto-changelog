@@ -24,6 +24,11 @@
 
 import { input } from "#utils/input";
 
+/**
+ * Retrieves the release name from user input.
+ *
+ * @returns The value entered for the "release-name" input.
+ */
 export function releaseName(): string {
   return input("release-name");
 }

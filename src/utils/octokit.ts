@@ -27,6 +27,13 @@ import { type GitHub } from "@actions/github/lib/utils.js";
 import { gitHubToken } from "#inputs";
 import { cache } from "./cache.js";
 
+/**
+ * Returns a cached, authenticated GitHub client instance.
+ *
+ * The client is initialized using the current GitHub token and reused across calls to avoid redundant instantiations.
+ *
+ * @returns An authenticated {@link GitHub} client instance.
+ */
 export function octokit(): InstanceType<typeof GitHub> {
   return cache("octokit", () => getOctokit(gitHubToken()));
 }
