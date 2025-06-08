@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { defaultCommitType } from "../../src/inputs";
+import { defaultCommitType } from "#inputs";
 
 it("should get and parse the \"default-commit-type\" input", () => {
   const inputValue = "Other Changes";

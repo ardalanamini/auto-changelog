@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { output } from "../utils/index.js";
+import { output } from "#utils";
 
+/**
+ * Sets the prerelease status by outputting the given boolean value.
+ *
+ * @param prerelease - Indicates whether the prerelease flag should be set.
+ */
 export function setPrerelease(prerelease: boolean): void {
   output("prerelease", prerelease);
 }

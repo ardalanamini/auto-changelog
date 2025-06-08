@@ -23,8 +23,8 @@
  */
 
 import { type SemVer } from "semver";
-import { releaseName, semver } from "./inputs/index.js";
-import { octokit, parseSemanticVersion as parseSemVersion, repository, sha } from "./utils/index.js";
+import { releaseName, semver } from "#inputs";
+import { octokit, parseSemanticVersion as parseSemVersion, repository, sha } from "#utils";
 
 export interface TRelease {
   name: string;

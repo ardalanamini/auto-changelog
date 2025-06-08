@@ -23,7 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { booleanInput, cache } from "../../src/utils";
+import { booleanInput, cache } from "#utils";
 
 it("should get and parse a boolean input", () => {
   const inputName = "foo";

@@ -23,7 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { includeCommitLinks } from "../../src/inputs";
+import { includeCommitLinks } from "#inputs";
 
 it.each([true, false])("should get and parse the \"include-commit-links\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);

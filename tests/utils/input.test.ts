@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { cache, input } from "../../src/utils";
+import { cache, input } from "#utils";
 
 it("should get input value", () => {
   const name = "foo";

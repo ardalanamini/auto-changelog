@@ -24,7 +24,7 @@
 
 import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
-import { CommitNode, Node, ScopeNode, TypeNode } from "../../src/nodes";
+import { CommitNode, Node, ScopeNode, TypeNode } from "#nodes";
 
 const repo = {
   owner: "ardalanamini",

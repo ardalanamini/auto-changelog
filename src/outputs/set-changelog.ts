@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { output } from "../utils/index.js";
+import { output } from "#utils";
 
+/**
+ * Sets the changelog content for output.
+ *
+ * @param changelog - The changelog text to be recorded.
+ */
 export function setChangelog(changelog: string): void {
   output("changelog", changelog);
 }

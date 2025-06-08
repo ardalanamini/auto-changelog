@@ -23,7 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { mentionNewContributors } from "../../src/inputs";
+import { mentionNewContributors } from "#inputs";
 
 it.each([true, false])("should get and parse the \"mention-new-contributors\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);

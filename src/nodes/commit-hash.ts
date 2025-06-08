@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
+import { includeCommitLinks } from "#inputs";
 import { Node } from "./node.js";
-import { includeCommitLinks } from "../inputs/index.js";
 
 /**
  * Represents a node that holds a commit hash (SHA) and provides functionality

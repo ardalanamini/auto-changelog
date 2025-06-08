@@ -23,7 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
-import { setChangelog } from "../../src/outputs";
+import { setChangelog } from "#outputs";
 
 it("should log and set the changelog output", () => {
   const outputValue = "Changelog Value";

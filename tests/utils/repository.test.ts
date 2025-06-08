@@ -23,7 +23,7 @@
  */
 
 import { context } from "@actions/github";
-import { repository } from "../../src/utils";
+import { repository } from "#utils";
 
 it("should get the repository information with constructed URL", () => {
   const repo = {

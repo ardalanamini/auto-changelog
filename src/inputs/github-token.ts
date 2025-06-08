@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { input } from "#utils/input";
 
+/**
+ * Retrieves the GitHub authentication token from user input or configuration.
+ *
+ * @returns The GitHub token as a string.
+ */
 export function gitHubToken(): string {
   return input("github-token");
 }

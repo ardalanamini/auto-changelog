@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether pull request links should be included based on the "include-pr-links" input.
+ *
+ * @returns `true` if pull request links should be included; otherwise, `false`.
+ */
 export function includePRLinks(): boolean {
   return booleanInput("include-pr-links");
 }

@@ -29,9 +29,18 @@ import {
   releaseName,
   releaseNamePrefix,
   useGitHubAutolink,
-} from "./inputs/index.js";
-import { octokit, repository } from "./utils/index.js";
+} from "#inputs";
+import { octokit, repository } from "#utils";
 
+/**
+ * Generates a markdown-formatted footer for a release note, optionally including new contributors and a changelog link.
+ *
+ * If enabled by configuration, the footer may include a "New Contributors" section extracted
+ * from GitHub-generated release notes and a "Full Changelog" link comparing the previous and current release tags.
+ *
+ * @param previousTagName - The previous release tag to compare against, if available.
+ * @returns The formatted footer string, or an empty string if no sections are included.
+ */
 export async function generateFooter(previousTagName?: string): Promise<string> {
   const { owner, repo, url } = repository();
   const tagName = releaseName();

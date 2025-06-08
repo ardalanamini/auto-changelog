@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether the compare link should be included based on the "include-compare-link" input.
+ *
+ * @returns `true` if the compare link should be included; otherwise, `false`.
+ */
 export function includeCompareLink(): boolean {
   return booleanInput("include-compare-link");
 }

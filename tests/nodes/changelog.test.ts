@@ -25,7 +25,7 @@
 import { getBooleanInput, getInput } from "@actions/core";
 import { context } from "@actions/github";
 import YAML from "yaml";
-import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "../../src/nodes";
+import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "#nodes";
 
 const repo = {
   owner: "ardalanamini",

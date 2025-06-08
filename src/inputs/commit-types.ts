@@ -23,8 +23,15 @@
  */
 
 import YAML from "yaml";
-import { input } from "../utils/input.js";
+import { input } from "#utils/input";
 
+/**
+ * Retrieves and parses the "commit-types" input as a mapping of commit type keys to descriptions.
+ *
+ * @returns An object mapping commit type identifiers to their descriptions.
+ *
+ * @throws {import("yaml").YAMLParseError} If the "commit-types" input is not valid YAML.
+ */
 export function commitTypes(): Record<string, string> {
   return input("commit-types", value => YAML.parse(value));
 }

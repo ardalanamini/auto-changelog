@@ -25,7 +25,7 @@
 import { getInput } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
-import { octokit } from "../../src/utils";
+import { octokit } from "#utils";
 
 it("should get octokit instance", () => {
   const gitHubTokenInputName = "github-token";

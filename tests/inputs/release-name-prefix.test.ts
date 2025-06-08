@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { releaseNamePrefix } from "../../src/inputs";
+import { releaseNamePrefix } from "#inputs";
 
 it("should get and parse the \"release-name-prefix\" input", () => {
   const inputValue = "@actions/github/";

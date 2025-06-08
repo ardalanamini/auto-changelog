@@ -23,7 +23,7 @@
  */
 
 import { context } from "@actions/github";
-import { sha } from "../../src/utils";
+import { sha } from "#utils";
 
 it("should get the current commit sha", () => {
   const shaValue = "3c1177539c1a216084f922ea52e56dd719a25945";

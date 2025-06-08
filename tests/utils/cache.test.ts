@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { cache, clearCache } from "../../src/utils";
+import { cache, clearCache } from "#utils";
 
 it("should cache value", () => {
   const name = "foo";

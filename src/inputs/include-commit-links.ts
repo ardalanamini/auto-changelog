@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether commit links should be included based on the "include-commit-links" input.
+ *
+ * @returns `true` if commit links should be included; otherwise, `false`.
+ */
 export function includeCommitLinks(): boolean {
   return booleanInput("include-commit-links");
 }

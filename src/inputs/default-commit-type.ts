@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { input } from "#utils/input";
 
+/**
+ * Retrieves the default commit type from user or environment input.
+ *
+ * @returns The default commit type as a string.
+ */
 export function defaultCommitType(): string {
   return input("default-commit-type");
 }

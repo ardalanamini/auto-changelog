@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { output } from "../utils/index.js";
+import { output } from "#utils";
 
+/**
+ * Sets the release ID by passing it to the output handler.
+ *
+ * @param releaseId - The release identifier to register.
+ */
 export function setReleaseId(releaseId: string): void {
   output("release-id", releaseId);
 }

@@ -22,8 +22,13 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether new contributors should be mentioned based on configuration.
+ *
+ * @returns `true` if mentioning new contributors is enabled; otherwise, `false`.
+ */
 export function mentionNewContributors(): boolean {
   return booleanInput("mention-new-contributors");
 }
