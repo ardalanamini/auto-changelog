@@ -23,7 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { includePRLinks } from "../../src/inputs";
+import { includePRLinks } from "#inputs";
 
 it.each([true, false])("should retrieve the \"include-pr-links\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);

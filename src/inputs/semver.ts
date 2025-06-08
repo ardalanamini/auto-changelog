@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
 export function semver(): boolean {
   return booleanInput("semver");

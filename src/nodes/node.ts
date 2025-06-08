@@ -23,8 +23,8 @@
  */
 
 import { context } from "@actions/github";
-import { useGitHubAutolink } from "../inputs/index.js";
-import { repository } from "../utils/index.js";
+import { useGitHubAutolink } from "#inputs";
+import { repository } from "#utils";
 
 /**
  * Represents the base class for all nodes in the changelog,

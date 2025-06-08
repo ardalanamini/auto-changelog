@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { output } from "../utils/index.js";
+import { output } from "#utils";
 
 export function setChangelog(changelog: string): void {
   output("changelog", changelog);

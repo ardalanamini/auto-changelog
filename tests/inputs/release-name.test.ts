@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { releaseName } from "../../src/inputs";
+import { releaseName } from "#inputs";
 
 it("should get and parse the \"release-name\" input", () => {
   const inputValue = "v1.0.0";

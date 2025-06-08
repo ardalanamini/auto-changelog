@@ -26,7 +26,7 @@ import { getInput } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
 import fetchMock from "fetch-mock";
-import { iterateCommits } from "../../src/utils";
+import { iterateCommits } from "#utils";
 
 it("should iterate over commits", async () => {
   const repo = {

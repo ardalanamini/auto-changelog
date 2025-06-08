@@ -23,7 +23,7 @@
  */
 
 /* eslint-disable no-undefined */
-import { parseCommitMessage } from "../../src/utils";
+import { parseCommitMessage } from "#utils";
 
 describe("acceptable commit message formats", () => {
   it("should parse the commit message with breaking false", () => {

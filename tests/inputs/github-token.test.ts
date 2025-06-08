@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { gitHubToken } from "../../src/inputs";
+import { gitHubToken } from "#inputs";
 
 it("should get and parse the \"github-token\" input", () => {
   const inputValue = "github-token-value";

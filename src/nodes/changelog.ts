@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
+import { commitTypes, defaultCommitType } from "#inputs";
+import { trim } from "#utils";
 import { Node } from "./node.js";
 import { TypeNode } from "./type.js";
-import { commitTypes, defaultCommitType } from "../inputs/index.js";
-import { trim } from "../utils/index.js";
 
 /**
  * Represents a changelog node which organizes and processes commit types into structured changelog entries.

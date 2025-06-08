@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { trim } from "../../src/utils/trim.js";
+import { trim } from "#utils";
 
 it("should remove leading and trailing whitespace", () => {
   expect(trim("  hello  ")).toBe("hello");

@@ -23,7 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
-import { includeCompareLink } from "../../src/inputs";
+import { includeCompareLink } from "#inputs";
 
 it.each([true, false])("should get and parse the \"include-compare-link\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);

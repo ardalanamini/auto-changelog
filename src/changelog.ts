@@ -23,8 +23,8 @@
  */
 
 import { debug } from "@actions/core";
-import { ChangelogNode } from "./nodes/index.js";
-import { iterateCommits, parseCommitMessage, repository, trim } from "./utils/index.js";
+import { ChangelogNode } from "#nodes";
+import { iterateCommits, parseCommitMessage, repository, trim } from "#utils";
 
 export async function generateChangelog(lastSha?: string): Promise<string> {
   const { owner, repo } = repository();

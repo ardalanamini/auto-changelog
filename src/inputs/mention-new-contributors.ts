@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
 export function mentionNewContributors(): boolean {
   return booleanInput("mention-new-contributors");

@@ -24,7 +24,7 @@
 
 import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
-import { Node } from "../../src/nodes";
+import { Node } from "#nodes";
 
 it("should create an instance with common values", () => {
   const shouldUseGithubAutolink = true;

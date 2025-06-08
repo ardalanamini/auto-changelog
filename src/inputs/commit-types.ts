@@ -23,7 +23,7 @@
  */
 
 import YAML from "yaml";
-import { input } from "../utils/input.js";
+import { input } from "#utils/input";
 
 export function commitTypes(): Record<string, string> {
   return input("commit-types", value => YAML.parse(value));

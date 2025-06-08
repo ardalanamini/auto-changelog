@@ -29,8 +29,8 @@ import {
   releaseName,
   releaseNamePrefix,
   useGitHubAutolink,
-} from "./inputs/index.js";
-import { octokit, repository } from "./utils/index.js";
+} from "#inputs";
+import { octokit, repository } from "#utils";
 
 export async function generateFooter(previousTagName?: string): Promise<string> {
   const { owner, repo, url } = repository();

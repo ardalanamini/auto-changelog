@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
+import { mentionAuthors } from "#inputs";
 import { CommitHashNode } from "./commit-hash.js";
 import { Node } from "./node.js";
 import { PullRequestNode } from "./pull-request.js";
-import { mentionAuthors } from "../inputs/index.js";
 
 /**
  * Represents a node for a commit author, containing information about the author

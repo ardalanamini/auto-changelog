@@ -23,7 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
-import { output } from "../../src/utils";
+import { output } from "#utils";
 
 it("should output value", () => {
   const name = "foo";

@@ -22,6 +22,6 @@
  * SOFTWARE.
  */
 
-import { clearCache } from "../../src/utils";
+import { clearCache } from "#utils";
 
 afterEach(() => clearCache());

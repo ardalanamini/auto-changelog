@@ -23,7 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
-import { setPrerelease } from "../../src/outputs";
+import { setPrerelease } from "#outputs";
 
 it.each([true, false])("should output \"prerelease\" value as %j", (outputValue) => {
   setPrerelease(outputValue);

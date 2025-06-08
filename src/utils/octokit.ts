@@ -24,8 +24,8 @@
 
 import { getOctokit } from "@actions/github";
 import { type GitHub } from "@actions/github/lib/utils.js";
+import { gitHubToken } from "#inputs";
 import { cache } from "./cache.js";
-import { gitHubToken } from "../inputs/index.js";
 
 export function octokit(): InstanceType<typeof GitHub> {
   return cache("octokit", () => getOctokit(gitHubToken()));

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
 export function includePRLinks(): boolean {
   return booleanInput("include-pr-links");

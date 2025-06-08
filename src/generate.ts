@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
+import { setChangelog, setPrerelease, setReleaseId } from "#outputs";
 import { generateChangelog } from "./changelog.js";
 import { generateFooter } from "./footer.js";
-import { setChangelog, setPrerelease, setReleaseId } from "./outputs/index.js";
 import { getTagInfo } from "./tag.js";
 
 export async function generate(): Promise<void> {

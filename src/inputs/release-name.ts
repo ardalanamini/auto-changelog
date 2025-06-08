@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { input } from "../utils/input.js";
+import { input } from "#utils/input";
 
 export function releaseName(): string {
   return input("release-name");

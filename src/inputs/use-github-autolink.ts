@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
 export function useGitHubAutolink(): boolean {
   return booleanInput("use-github-autolink");

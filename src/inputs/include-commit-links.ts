@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "../utils/boolean-input.js";
+import { booleanInput } from "#utils/boolean-input";
 
 export function includeCommitLinks(): boolean {
   return booleanInput("include-commit-links");

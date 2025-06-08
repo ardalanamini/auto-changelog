@@ -23,7 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
-import { parseSemanticVersion } from "../../src/utils";
+import { parseSemanticVersion } from "#utils";
 
 it("should parse the semver version string", () => {
   const major = 1;

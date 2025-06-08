@@ -23,7 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
-import { setReleaseId } from "../../src/outputs";
+import { setReleaseId } from "#outputs";
 
 it("should output \"release-id\" value", () => {
   const outputName = "release-id";
