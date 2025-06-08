@@ -24,6 +24,11 @@
 
 import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Returns whether GitHub autolink functionality is enabled based on the "use-github-autolink" input.
+ *
+ * @returns `true` if GitHub autolink is enabled; otherwise, `false`.
+ */
 export function useGitHubAutolink(): boolean {
   return booleanInput("use-github-autolink");
 }

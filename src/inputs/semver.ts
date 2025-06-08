@@ -24,6 +24,11 @@
 
 import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether the "semver" input is enabled.
+ *
+ * @returns `true` if the "semver" input is set to a truthy value; otherwise, `false`.
+ */
 export function semver(): boolean {
   return booleanInput("semver");
 }

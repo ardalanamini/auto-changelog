@@ -24,6 +24,11 @@
 
 import { input } from "#utils/input";
 
+/**
+ * Retrieves the configured release name prefix.
+ *
+ * @returns The value associated with the "release-name-prefix" input, or an empty string if not set.
+ */
 export function releaseNamePrefix(): string {
   return input("release-name-prefix", false);
 }

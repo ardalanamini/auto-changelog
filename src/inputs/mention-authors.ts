@@ -24,6 +24,11 @@
 
 import { booleanInput } from "#utils/boolean-input";
 
+/**
+ * Determines whether authors should be mentioned based on the "mention-authors" input.
+ *
+ * @returns `true` if author mentions are enabled; otherwise, `false`.
+ */
 export function mentionAuthors(): boolean {
   return booleanInput("mention-authors");
 }
