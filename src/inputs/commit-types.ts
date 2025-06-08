@@ -30,7 +30,7 @@ import { input } from "#utils/input";
  *
  * @returns An object mapping commit type identifiers to their descriptions.
  *
- * @throws {YAMLSyntaxError} If the "commit-types" input is not valid YAML.
+ * @throws {import("yaml").YAMLParseError} If the "commit-types" input is not valid YAML.
  */
 export function commitTypes(): Record<string, string> {
   return input("commit-types", value => YAML.parse(value));

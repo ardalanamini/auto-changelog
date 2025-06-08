@@ -30,7 +30,8 @@ import { getTagInfo } from "./tag.js";
 /**
  * Generates and sets release metadata and changelog content based on the latest tag information.
  *
- * Retrieves tag details, updates prerelease status and release ID, generates the changelog and footer, and sets the complete changelog output.
+ * Retrieves tag details, updates prerelease status and release ID, generates the changelog and footer,
+ * and sets the complete changelog output.
  */
 export async function generate(): Promise<void> {
   const { prerelease, releaseId, previous } = await getTagInfo();

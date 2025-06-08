@@ -29,9 +29,10 @@ import { iterateCommits, parseCommitMessage, repository, trim } from "#utils";
 /**
  * Generates a changelog string from commit history, grouping entries by type, scope, and author.
  *
- * Iterates over repository commits starting from an optional commit SHA, parses commit messages, and organizes them into a hierarchical changelog structure.
+ * Iterates over repository commits starting from an optional commit SHA,
+ * parses commit messages, and organizes them into a hierarchical changelog structure.
  * Commits with empty descriptions or flagged as "ignore" are excluded.
- * The resulting changelog is returned as a formatted string, or an empty string if no valid entries are found.
+ * The resulting changelog is returned as a formatted string or an empty string if no valid entries are found.
  *
  * @param lastSha - Optional SHA of the last processed commit; if provided, only newer commits are included.
  * @returns The formatted changelog string, or an empty string if there are no relevant commits.
