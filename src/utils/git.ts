@@ -22,29 +22,49 @@
  * SOFTWARE.
  */
 
+import { promisify } from "node:util";
 import { rsort, valid } from "semver";
-import { simpleGit } from "simple-git";
+import {
+  type DefaultLogFields,
+  type ListLogLine,
+  type LogOptions,
+  type LogResult,
+  type TagResult,
+  type TaskOptions,
+  simpleGit,
+} from "simple-git";
 
-const GIT = simpleGit();
+const git = simpleGit();
+
+const tags = promisify<TaskOptions, TagResult>(git.tags);
+
+const log = promisify<TaskOptions | LogOptions, LogResult>(git.log);
+
+const diff = promisify<TaskOptions, string>(git.diff);
 
 export async function listTags(semver = false): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    GIT.tags(["--sort=-creatordate"], (error, result) => {
-      if (error) {
-        reject(error);
+  let { all } = await tags.call(git, ["--sort=-creatordate"]);
 
-        return;
-      }
+  if (semver) {
+    all = all.filter(tag => valid(tag));
 
-      let tags = result.all;
+    all = rsort(all);
+  }
 
-      if (semver) {
-        tags = tags.filter(tag => valid(tag));
+  return all;
+}
 
-        tags = rsort(tags);
-      }
-
-      resolve(tags);
-    });
+export async function listCommits(to?: string, from?: string): Promise<ReadonlyArray<DefaultLogFields & ListLogLine>> {
+  const { all } = await log.call(git, {
+    from,
+    to,
   });
+
+  return all;
+}
+
+export async function listChanges(hash: string): Promise<string[]> {
+  const result = await diff.call(git, ["--name-only", `${ hash }~1`, hash]);
+
+  return result.trim().split("\n");
 }
