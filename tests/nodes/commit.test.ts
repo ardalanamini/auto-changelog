@@ -22,23 +22,11 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
+import { useGitHubAutolink } from "#inputs";
 import { CommitAuthorNode, CommitHashNode, CommitNode, Node } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-const url = `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`;
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
 it("should print a commit description only", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const commitNode = new CommitNode(description);
@@ -48,18 +36,16 @@ it("should print a commit description only", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(false);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(commitNode.repo).toEqual({
-    ...repo,
-    url,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(commitNode.print()).toBe(`* ${ description }`);
 });
 
 it("should print a commit description with prefix", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const commitNode = new CommitNode(description);
@@ -67,7 +53,7 @@ it("should print a commit description with prefix", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(false);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   const prefix = "  ";
 
@@ -75,8 +61,6 @@ it("should print a commit description with prefix", () => {
 });
 
 it("should print a breaking commit description only", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const commitNode = new CommitNode(description, true);
@@ -84,14 +68,12 @@ it("should print a breaking commit description only", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(true);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   expect(commitNode.print()).toBe(`* ***BREAKING:*** ${ description }`);
 });
 
 it("should print the commit description and its author", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const username = "ardalanamini";
@@ -103,7 +85,7 @@ it("should print the commit description and its author", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(false);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   expect(author).toBeInstanceOf(CommitAuthorNode);
 
@@ -111,8 +93,6 @@ it("should print the commit description and its author", () => {
 });
 
 it("should print the commit description and its multiple authors", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const username = "ardalanamini";
@@ -126,7 +106,7 @@ it("should print the commit description and its multiple authors", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(false);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   expect(author).toBeInstanceOf(CommitAuthorNode);
   expect(author2).toBeInstanceOf(CommitAuthorNode);
@@ -135,8 +115,6 @@ it("should print the commit description and its multiple authors", () => {
 });
 
 it("it should reuse the same author node for same authors", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const username = "ardalanamini";
@@ -155,7 +133,7 @@ it("it should reuse the same author node for same authors", () => {
   expect(commitNode.description).toBe(description);
   expect(commitNode.breaking).toBe(false);
 
-  expect(commitNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   expect(author).toBeInstanceOf(CommitAuthorNode);
   expect(reference).toBeInstanceOf(CommitHashNode);

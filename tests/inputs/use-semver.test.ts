@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,19 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+import { getBooleanInput } from "@actions/core";
+import { useSemver } from "#inputs";
+
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
+it.each([true, false])("should get and parse the \"semver\" input as %j", (inputValue) => {
+  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
+
+  const result = useSemver();
+
+  expect(result).toEqual(inputValue);
+
+  expect(getBooleanInput).toHaveBeenCalledTimes(1);
+  expect(getBooleanInput).toHaveBeenCalledWith("semver", { required: true });
+});
