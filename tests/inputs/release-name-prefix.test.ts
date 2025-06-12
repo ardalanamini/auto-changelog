@@ -25,6 +25,9 @@
 import { getInput } from "@actions/core";
 import { releaseNamePrefix } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it("should get and parse the \"release-name-prefix\" input", () => {
   const inputValue = "@actions/github/";
 

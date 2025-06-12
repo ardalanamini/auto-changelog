@@ -22,22 +22,11 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
+import { includeCommitLinks, useGitHubAutolink } from "#inputs";
 import { CommitHashNode, Node } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
-it("should print the sha only to be autolinked", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
+it("should print the sha only to be auto linked", () => {
   const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
 
   const commitHashNode = new CommitHashNode(sha);
@@ -46,18 +35,22 @@ it("should print the sha only to be autolinked", () => {
 
   expect(commitHashNode.sha).toBe(sha);
 
-  expect(commitHashNode.shouldNotPrint).toBe(false);
-  expect(commitHashNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitHashNode.shouldNotPrint).toBe(!includeCommitLinks());
+  expect(commitHashNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(commitHashNode.repo).toEqual({
-    ...repo,
-    url: `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(commitHashNode.print()).toBe(sha);
 });
 
 it("should not print anything", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(false);
+  const shouldIncludeCommitLinks = false;
+  const shouldUseGithubAutolink = false;
+
+  jest.mocked(includeCommitLinks).mockReturnValueOnce(shouldIncludeCommitLinks);
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
   const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
 
@@ -65,14 +58,16 @@ it("should not print anything", () => {
 
   expect(commitHashNode.sha).toBe(sha);
 
-  expect(commitHashNode.shouldNotPrint).toBe(true);
-  expect(commitHashNode.shouldUseGithubAutolink).toBe(false);
+  expect(commitHashNode.shouldNotPrint).toBe(!shouldIncludeCommitLinks);
+  expect(commitHashNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
   expect(commitHashNode.print()).toBeNull();
 });
 
 it("should print the sha with the link (not using autolink)", () => {
-  jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+  const shouldUseGithubAutolink = false;
+
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
   const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
 
@@ -81,8 +76,8 @@ it("should print the sha with the link (not using autolink)", () => {
   expect(commitHashNode.sha).toBe(sha);
 
   expect(commitHashNode.shouldNotPrint).toBe(false);
-  expect(commitHashNode.shouldUseGithubAutolink).toBe(false);
+  expect(commitHashNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  expect(commitHashNode.print()).toBe(`[\`${ sha.slice(0, 7) }\`](${ context.serverUrl }/${ repo.owner }/${ repo.repo }/commit/${ sha })`);
+  expect(commitHashNode.print()).toBe(`[\`${ sha.slice(0, 7) }\`](${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }/commit/${ sha })`);
 });

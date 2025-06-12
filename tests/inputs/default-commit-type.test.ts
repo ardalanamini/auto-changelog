@@ -25,6 +25,9 @@
 import { getInput } from "@actions/core";
 import { defaultCommitType } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it("should get and parse the \"default-commit-type\" input", () => {
   const inputValue = "Other Changes";
 

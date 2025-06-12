@@ -24,3 +24,6 @@
 
 jest.mock("@actions/core");
 jest.mock("@actions/github");
+
+// Mock all inputs by default
+jest.mock("#inputs");

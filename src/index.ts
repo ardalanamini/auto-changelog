@@ -25,6 +25,7 @@
 /* istanbul ignore file */
 
 import { setFailed } from "@actions/core";
-import { generate } from "./generate.js";
+import { api } from "#apis";
 
-generate().catch(setFailed);
+api().generate()
+  .catch(setFailed);

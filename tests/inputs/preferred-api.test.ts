@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,33 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+import { getInput } from "@actions/core";
+import { API } from "#constants";
+import { preferredApi } from "#inputs";
+
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
+it(`should get and parse the "preferred-api" input`, () => {
+  const inputValue = API.GITHUB;
+
+  jest.mocked(getInput).mockReturnValueOnce(inputValue);
+
+  const result = preferredApi();
+
+  expect(result).toEqual(inputValue);
+
+  expect(getInput).toHaveBeenCalledTimes(1);
+  expect(getInput).toHaveBeenCalledWith("preferred-api", { required: true });
+});
+
+it("should throw an error for invalid API value", () => {
+  const inputValue = "InvalidAPI";
+
+  jest.mocked(getInput).mockReturnValue(inputValue);
+
+  expect(() => preferredApi()).toThrow(TypeError);
+  expect(() => preferredApi()).toThrow(`Unexpected api input: "${ inputValue }" (expected one of "Git", "GitHub")`);
+
+  expect(getInput).toHaveBeenCalledWith("preferred-api", { required: true });
+});

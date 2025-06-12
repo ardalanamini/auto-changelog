@@ -22,16 +22,6 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
-import { semver } from "#inputs";
-
-it.each([true, false])("should get and parse the \"semver\" input as %j", (inputValue) => {
-  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
-
-  const result = semver();
-
-  expect(result).toEqual(inputValue);
-
-  expect(getBooleanInput).toHaveBeenCalledTimes(1);
-  expect(getBooleanInput).toHaveBeenCalledWith("semver", { required: true });
-});
+export * from "./api.js";
+export * from "./factory.js";
+export * from "./github.js";
