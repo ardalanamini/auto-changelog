@@ -84,5 +84,5 @@ it("should print the sha with the link (not using autolink)", () => {
   expect(commitHashNode.shouldUseGithubAutolink).toBe(false);
 
   // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-  expect(commitHashNode.print()).toBe(`\`[${ sha.slice(0, 7) }](${ context.serverUrl }/${ repo.owner }/${ repo.repo }/commit/${ sha })\``);
+  expect(commitHashNode.print()).toBe(`[${ sha.slice(0, 7) }](${ context.serverUrl }/${ repo.owner }/${ repo.repo }/commit/${ sha })`);
 });
