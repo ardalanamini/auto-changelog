@@ -138,7 +138,7 @@ it("should generate the changelog footer with the full changelog link", async ()
 
   const result = await generateFooter(info.previous.name);
 
-  expect(result).toEqual(`\n\n**Full Changelog**: \`[${ info.previous.name }...${ releaseNameInputValue }](${ url }/compare/${ info.previous.name }...${ releaseNameInputValue })\``);
+  expect(result).toEqual(`\n\n**Full Changelog**: [\`${ info.previous.name }...${ releaseNameInputValue }\`](${ url }/compare/${ info.previous.name }...${ releaseNameInputValue })`);
 
   expect(getInput).toHaveBeenCalledTimes(1);
 
