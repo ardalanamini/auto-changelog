@@ -245,6 +245,10 @@ The pre-release id in case of prerelease being `true`, `latest` otherwise. (e.g.
 Using with default inputs:
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - name: Changelog
   uses: ardalanamini/auto-changelog@v4
   id  : changelog
@@ -253,6 +257,10 @@ Using with default inputs:
 Using with custom inputs:
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - uses: ardalanamini/auto-changelog@v4
   id  : changelog
   name: Changelog
