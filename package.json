@@ -61,7 +61,7 @@
     "eslint": "^9.28.0",
     "eslint-config-flat-gitignore": "^2.1.0",
     "eslint-config-noir": "^3.0.0",
-    "fetch-mock": "^12.5.2",
+    "fetch-mock": "^12.5.3",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
     "jest": "^29.7.0",
