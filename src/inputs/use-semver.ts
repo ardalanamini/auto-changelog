@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+import { booleanInput } from "#utils/boolean-input";
+
+/**
+ * Determines whether the "semver" input is enabled.
+ *
+ * @returns `true` if the "semver" input is set to a truthy value; otherwise, `false`.
+ */
+export function useSemver(): boolean {
+  return booleanInput("semver");
+}

@@ -23,8 +23,8 @@
  */
 
 import { type SemVer, parse } from "semver";
+import { releaseName, releaseNamePrefix } from "#inputs";
 import { cache } from "./cache.js";
-import { releaseName, releaseNamePrefix } from "../inputs/index.js";
 
 export function parseSemanticVersion(version = releaseName()): SemVer | null {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion

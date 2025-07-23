@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-import { getInput } from "@actions/core";
+import { releaseName, releaseNamePrefix } from "#inputs";
 import { parseSemanticVersion } from "#utils";
 
-it("should parse the semver version string", () => {
+it("should parse the useSemver version string", () => {
   const major = 1;
   const minor = 2;
   const patch = 3;
@@ -33,13 +33,9 @@ it("should parse the semver version string", () => {
   const prereleaseVersion = 4;
   const version = `${ major }.${ minor }.${ patch }-${ prerelease }.${ prereleaseVersion }`;
   const raw = `v${ version }`;
-  const releaseNamePrefix = "@actions/github/";
+  const releaseNamePrefixValue = "@actions/github/";
 
-  jest.mocked(getInput).mockImplementationOnce((name) => {
-    if (name === "release-name-prefix") return releaseNamePrefix;
-
-    return "";
-  });
+  jest.mocked(releaseNamePrefix).mockReturnValueOnce(releaseNamePrefixValue);
 
   const result = parseSemanticVersion(raw);
 
@@ -57,8 +53,7 @@ it("should parse the semver version string", () => {
     version,
   });
 
-  expect(getInput).toHaveBeenCalledTimes(1);
-  expect(getInput).toHaveBeenCalledWith("release-name-prefix", { required: false });
+  expect(releaseNamePrefix).toHaveBeenCalledTimes(1);
 });
 
 it("should parse the release name by default", () => {
@@ -69,18 +64,10 @@ it("should parse the release name by default", () => {
   const prereleaseVersion = 4;
   const version = `${ major }.${ minor }.${ patch }-${ prerelease }.${ prereleaseVersion }`;
   const raw = `v${ version }`;
-  const releaseNamePrefix = "@actions/github/";
+  const releaseNamePrefixValue = "@actions/github/";
 
-  jest.mocked(getInput).mockImplementation((name) => {
-    switch (name) {
-      case "release-name":
-        return raw;
-      case "release-name-prefix":
-        return releaseNamePrefix;
-      default:
-        return "";
-    }
-  });
+  jest.mocked(releaseName).mockReturnValueOnce(raw);
+  jest.mocked(releaseNamePrefix).mockReturnValueOnce(releaseNamePrefixValue);
 
   const result = parseSemanticVersion();
 
@@ -98,7 +85,6 @@ it("should parse the release name by default", () => {
     version,
   });
 
-  expect(getInput).toHaveBeenCalledTimes(2);
-  expect(getInput).toHaveBeenNthCalledWith(1, "release-name", { required: true });
-  expect(getInput).toHaveBeenNthCalledWith(2, "release-name-prefix", { required: false });
+  expect(releaseName).toHaveBeenCalledTimes(1);
+  expect(releaseNamePrefix).toHaveBeenCalledTimes(1);
 });

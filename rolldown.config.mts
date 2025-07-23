@@ -32,7 +32,7 @@ export default defineConfig({
   },
   output: {
     file     : "action/index.js",
-    format   : "module",
+    format   : "commonjs",
     esModule : true,
     sourcemap: true,
     minify   : true,

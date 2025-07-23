@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+import { type API, ACCEPTED_APIS, ACCEPTED_APIS_STRING } from "#constants";
+import { input } from "#utils/input";
+
+export function preferredApi(): API {
+  return input<API>("preferred-api", (value) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    if (ACCEPTED_APIS.has(value)) return value as never;
+
+    throw new TypeError(`Unexpected api input: "${ value }" (expected one of ${ ACCEPTED_APIS_STRING })`);
+  });
+}

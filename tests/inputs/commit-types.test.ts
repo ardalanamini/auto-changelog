@@ -25,6 +25,9 @@
 import { getInput } from "@actions/core";
 import { commitTypes } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it("should get and parse the \"commit-types\" input", () => {
   const inputValue = `
 feat    : New Features

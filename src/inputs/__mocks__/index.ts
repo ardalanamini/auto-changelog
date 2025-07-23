@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,16 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+export * from "./commit-types.js";
+export * from "./default-commit-type.js";
+export * from "./github-token.js";
+export * from "./include-commit-links.js";
+export * from "./include-compare-link.js";
+export * from "./include-pr-links.js";
+export * from "./mention-authors.js";
+export * from "./mention-new-contributors.js";
+export * from "./preferred-api.js";
+export * from "./release-name-prefix.js";
+export * from "./release-name.js";
+export * from "./use-github-autolink.js";
+export * from "./use-semver.js";
