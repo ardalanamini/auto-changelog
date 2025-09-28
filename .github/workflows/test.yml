@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
         uses: pnpm/action-setup@v4
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
         uses: pnpm/action-setup@v4
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
         uses: pnpm/action-setup@v4
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
         uses: pnpm/action-setup@v4
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Changelog
         uses: ./
@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps  :
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Changelog
         uses: ./
