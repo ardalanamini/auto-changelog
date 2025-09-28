@@ -27,10 +27,8 @@ import { defineConfig } from "rolldown";
 export default defineConfig({
   input   : "src/index.ts",
   platform: "node",
-  resolve : {
-    tsconfigFilename: "tsconfig.build.json",
-  },
-  output: {
+  tsconfig: "tsconfig.build.json",
+  output  : {
     file     : "action/index.js",
     format   : "module",
     esModule : true,
