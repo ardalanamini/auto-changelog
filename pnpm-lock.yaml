@@ -58,8 +58,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0(@typescript-eslint/parser@8.32.1(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)
       fetch-mock:
-        specifier: 12.5.2
-        version: 12.5.2
+        specifier: 12.5.4
+        version: 12.5.4
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -1571,8 +1571,8 @@ packages:
       picomatch:
         optional: true
 
-  fetch-mock@12.5.2:
-    resolution: {integrity: sha512-b5KGDFmdmado2MPQjZl6ix3dAG3iwCitb0XQwN72y2s9VnWZ3ObaGNy+bkpm1390foiLDybdJ7yjRGKD36kATw==}
+  fetch-mock@12.5.4:
+    resolution: {integrity: sha512-zeECXue5losbXbbnHYzLDl0ZKLnuyRmLZ3auSJISoCnKiOGXNJA6nRiRa4qxI9pyQqeTgHL5d0Ryz+3CUliLOw==}
     engines: {node: '>=18.11.0'}
 
   file-entry-cache@8.0.0:
@@ -4558,7 +4558,7 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
-  fetch-mock@12.5.2:
+  fetch-mock@12.5.4:
     dependencies:
       '@types/glob-to-regexp': 0.4.4
       dequal: 2.0.3
