@@ -44,7 +44,7 @@ ${e.format(t)}
 `)||/[ \t]\n|\n[ \t]/.test(e))return o(e,t);let a=t.indent||(i(e)?`  `:``),s=`'`+e.replace(/'/g,`''`).replace(/\n+/g,`$&\n${a}`)+`'`;return t.implicitKey?s:n.foldFlowLines(s,a,n.FOLD_FLOW,r(t,!1))}function c(e,t){let{singleQuote:n}=t.options,r;if(n===!1)r=o;else{let t=e.includes(`"`),i=e.includes(`'`);r=t&&!i?s:i&&!t?o:n?s:o}return r(e,t)}let l;try{l=RegExp(`(^|(?<!
 ))
 +(?!
-|$)`,`g`)}catch{l=/\n+(?!\n|$)/g}function u({comment:e,type:o,value:s},u,d,f){let{blockQuote:p,commentString:m,lineWidth:h}=u.options;if(!p||/\n[\t ]+$/.test(s)||/^\s*$/.test(s))return c(s,u);let g=u.indent||(u.forceBlockIndent||i(s)?`  `:``),_=p===`literal`?!0:p===`folded`||o===t.Scalar.BLOCK_FOLDED?!1:o===t.Scalar.BLOCK_LITERAL?!0:!a(s,h,g.length);if(!s)return _?`|
+|$)`,`g`)}catch{l=/\n+(?!\n|$)/g}function u({comment:e,type:o,value:s},u,d,f){let{blockQuote:p,commentString:m,lineWidth:h}=u.options;if(!p||/\n[\t ]+$/.test(s))return c(s,u);let g=u.indent||(u.forceBlockIndent||i(s)?`  `:``),_=p===`literal`?!0:p===`folded`||o===t.Scalar.BLOCK_FOLDED?!1:o===t.Scalar.BLOCK_LITERAL?!0:!a(s,h,g.length);if(!s)return _?`|
 `:`>
 `;let v,y;for(y=s.length;y>0;--y){let e=s[y-1];if(e!==`
 `&&e!==`	`&&e!==` `)break}let b=s.substring(y),x=b.indexOf(`
