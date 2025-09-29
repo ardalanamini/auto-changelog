@@ -30,7 +30,7 @@ export default defineConfig({
   tsconfig: "tsconfig.build.json",
   output  : {
     file     : "action/index.js",
-    format   : "module",
+    format   : "commonjs",
     esModule : true,
     sourcemap: true,
     minify   : true,

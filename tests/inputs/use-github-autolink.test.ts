@@ -25,6 +25,9 @@
 import { getBooleanInput } from "@actions/core";
 import { useGitHubAutolink } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it.each([true, false])("should retrieve the \"use-github-autolink\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+export type API = typeof API[keyof typeof API];
+
+export const API = {
+  GIT   : "Git",
+  GITHUB: "GitHub",
+} as const;
+
+export const ACCEPTED_APIS = new Set<string>(Object.values(API));
+
+export const ACCEPTED_APIS_STRING = [...ACCEPTED_APIS].map(value => `"${ value }"`).join(", ");

@@ -22,23 +22,10 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
 import { CommitNode, Node, ScopeNode, TypeNode } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-const url = `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`;
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
 it("should not print anything when no scopes/commits are added", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const typeNode = new TypeNode(commitType);
@@ -49,16 +36,14 @@ it("should not print anything when no scopes/commits are added", () => {
 
   expect(typeNode.shouldUseGithubAutolink).toBe(true);
   expect(typeNode.repo).toEqual({
-    ...repo,
-    url,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(typeNode.print()).toBeNull();
 });
 
 it("should not print anything when no commits are added", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const scope = "commit-scope";
@@ -77,8 +62,6 @@ it("should not print anything when no commits are added", () => {
 });
 
 it("should print a type & its scope/commit", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const scope = "commit-scope";
@@ -103,8 +86,6 @@ it("should print a type & its scope/commit", () => {
 });
 
 it("should reuse the same scope (in the case the breaking matches as well)", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const scope = "commit-scope";
@@ -139,8 +120,6 @@ it("should reuse the same scope (in the case the breaking matches as well)", () 
 });
 
 it("should print a type & its scope/commit with prefix", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const scope = "commit-scope";
@@ -167,8 +146,6 @@ it("should print a type & its scope/commit with prefix", () => {
 });
 
 it("should print a type & its multiple scope/commits", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const commitType = "commit-type";
 
   const scope = "commit-scope";

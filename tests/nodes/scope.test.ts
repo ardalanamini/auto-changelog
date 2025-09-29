@@ -22,23 +22,10 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
 import { CommitNode, Node, ScopeNode } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-const url = `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`;
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
 it("should not print anything", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const scope = "commit-scope";
 
   const scopeNode = new ScopeNode(scope);
@@ -49,16 +36,14 @@ it("should not print anything", () => {
 
   expect(scopeNode.shouldUseGithubAutolink).toBe(true);
   expect(scopeNode.repo).toEqual({
-    ...repo,
-    url,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(scopeNode.print()).toBeNull();
 });
 
 it("should print a scope & its commit", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const scope = "commit-scope";
 
   const description = "ci: update test workflow";
@@ -77,8 +62,6 @@ it("should print a scope & its commit", () => {
 });
 
 it("should reuse the same commit message (in the case the breaking matches as well)", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const scope = "commit-scope";
 
   const description = "ci: update test workflow";
@@ -104,8 +87,6 @@ it("should reuse the same commit message (in the case the breaking matches as we
 });
 
 it("should print a scope & its commit with prefix", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const scope = "commit-scope";
 
   const description = "ci: update test workflow";
@@ -126,8 +107,6 @@ it("should print a scope & its commit with prefix", () => {
 });
 
 it("should print a scope & its multiple commits", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const scope = "commit-scope";
 
   const description = "ci: update test workflow";
@@ -149,8 +128,6 @@ it("should print a scope & its multiple commits", () => {
 });
 
 it("should print a commit without scope", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
 
   const scopeNode = (new ScopeNode);
@@ -167,8 +144,6 @@ it("should print a commit without scope", () => {
 });
 
 it("should print multiple commits without scope", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const description = "ci: update test workflow";
   const description2 = "chore: update copyright year";
 

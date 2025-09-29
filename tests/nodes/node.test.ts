@@ -22,22 +22,11 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
+import { useGitHubAutolink } from "#inputs";
 import { Node } from "#nodes";
 
 it("should create an instance with common values", () => {
-  const shouldUseGithubAutolink = true;
-  const repo = {
-    owner: "ardalanamini",
-    repo : "auto-changelog",
-  };
-
-  jest.mocked(getBooleanInput).mockReturnValueOnce(shouldUseGithubAutolink);
-
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-
-
   class TestNode extends Node {
 
     public print(): string {
@@ -47,10 +36,10 @@ it("should create an instance with common values", () => {
   }
   const node = (new TestNode);
 
-  expect(node.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
+  expect(node.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(node.serverUrl).toBe(context.serverUrl);
   expect(node.repo).toEqual({
-    ...repo,
-    url: `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`,
+    ...context.repo,
+    url: `${ node.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 });

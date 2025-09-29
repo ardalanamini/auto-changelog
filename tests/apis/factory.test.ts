@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,30 @@
  * SOFTWARE.
  */
 
-export * from "./boolean-input.js";
-export * from "./cache.js";
-export * from "./input.js";
-export * from "./octokit.js";
-export * from "./output.js";
-export * from "./parse-commit-message.js";
-export * from "./parse-semantic-version.js";
-export * from "./repository.js";
-export * from "./sha.js";
-export * from "./trim.js";
+import { GitHubAPI, api } from "#apis";
+import { API } from "#constants";
+import { preferredApi } from "#inputs";
+
+it("should return a GitHubAPI instance when preferred API is GitHub", () => {
+  jest.mocked(preferredApi).mockReturnValueOnce(API.GITHUB);
+
+  const result = api();
+
+  expect(result).toBeInstanceOf(GitHubAPI);
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+});
+
+it("should throw an error for unsupported API", () => {
+  // This is a bit of a hack since TypeScript won't allow us to assign an invalid value to API
+  // But in runtime, this could happen if the validation in preferredApi somehow fails
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  jest.mocked(preferredApi).mockReturnValue("UnsupportedAPI" as never);
+
+  expect(() => api()).toThrow(Error);
+
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+
+  expect(() => api()).toThrow("Unsupported API: UnsupportedAPI");
+
+  expect(preferredApi).toHaveBeenCalledTimes(2);
+});
