@@ -96,7 +96,7 @@ export abstract class APIBase {
    * @returns The formatted changelog string, or an empty string if there are no relevant commits.
    */
   public async generateChangelog(lastSha?: string): Promise<string> {
-    const changelogNode = (new ChangelogNode);
+    const changelogNode = new ChangelogNode();
 
     for await (const commit of this.iterateCommits(lastSha)) {
       const message = commit.commit.message.split("\n")[0];
@@ -182,11 +182,13 @@ export abstract class APIBase {
     return info;
   }
 
-  public abstract getNewContributors(): Promise<string | null>;
+  public abstract getNewContributors(previousTagName?: string): Promise<string | null>;
 
   public abstract getPreviousTag(): Promise<TTag | null>;
 
   public abstract iterateCommits(fromSHA?: string): AsyncGenerator<TCommit>;
+
+  protected abstract listNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor>;
 
 }
 
@@ -215,3 +217,11 @@ export interface TTagInfo {
 
   releaseId: string;
 }
+
+export type TNewContributor = {
+  username: string;
+} | {
+  email: string;
+
+  name: string;
+};

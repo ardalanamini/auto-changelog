@@ -38,7 +38,7 @@ export class ChangelogNode extends Node {
 
   public readonly typeMap = commitTypes();
 
-  protected readonly types = (new Map<string, TypeNode>);
+  protected readonly types = new Map<string, TypeNode>();
 
   /**
    * Adds a new type or retrieves an existing one from the already added types.

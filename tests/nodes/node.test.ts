@@ -34,7 +34,7 @@ it("should create an instance with common values", () => {
     }
 
   }
-  const node = (new TestNode);
+  const node = new TestNode();
 
   expect(node.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(node.serverUrl).toBe(context.serverUrl);

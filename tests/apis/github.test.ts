@@ -62,7 +62,7 @@ describe("getNewContributors", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getNewContributors(fromSha);
 
@@ -106,7 +106,7 @@ describe("getNewContributors", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getNewContributors(fromSha);
 
@@ -150,7 +150,7 @@ describe("getNewContributors", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getNewContributors(fromSha);
 
@@ -205,7 +205,7 @@ describe("getPreviousTag", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getPreviousTag();
 
@@ -255,7 +255,7 @@ describe("getPreviousTag", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getPreviousTag();
 
@@ -281,7 +281,7 @@ describe("getPreviousTag", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = await githubAPI.getPreviousTag();
 
@@ -334,7 +334,7 @@ describe("iterateCommits", () => {
 
     jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
 
-    const githubAPI = (new GitHubAPI);
+    const githubAPI = new GitHubAPI();
 
     const result = githubAPI.iterateCommits(fromSha);
 

@@ -24,17 +24,16 @@
 
 import { marked } from "marked";
 import { octokit, parseSemanticVersion } from "#utils";
-import { type TCommit, type TTag, APIBase } from "./api.js";
+import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js";
 
 export class GitHubAPI extends APIBase {
 
   public readonly gitHub = octokit();
 
   public async getNewContributors(previousTagName?: string): Promise<string | null> {
-    const { repository, tagName } = this;
-    const { rest } = octokit();
+    const { repository, tagName, gitHub } = this;
 
-    const { data } = await rest.repos.generateReleaseNotes({
+    const { data } = await gitHub.rest.repos.generateReleaseNotes({
       owner            : repository.owner,
       repo             : repository.repo,
       tag_name         : tagName,
@@ -46,7 +45,6 @@ export class GitHubAPI extends APIBase {
     const index = tokens.findIndex(markdownToken => markdownToken.type === "heading"
       && markdownToken.text === "New Contributors");
 
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     if (index === -1) return null;
 
     const markdownToken = tokens[index + 1];
@@ -114,6 +112,41 @@ export class GitHubAPI extends APIBase {
 
         yield commit;
       }
+    }
+  }
+
+  protected async *listNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor> {
+    const { gitHub, repository, tagName } = this;
+
+    const { data } = await gitHub.rest.repos.generateReleaseNotes({
+      owner            : repository.owner,
+      repo             : repository.repo,
+      tag_name         : tagName,
+      previous_tag_name: previousTagName,
+    });
+
+    const tokens = marked.lexer(data.body);
+
+    const index = tokens.findIndex(markdownToken => markdownToken.type === "heading"
+      && markdownToken.text === "New Contributors");
+
+    if (index === -1) return;
+
+    const markdownToken = tokens[index + 1];
+
+    if (markdownToken.type !== "list") return;
+
+    for (const item of markdownToken.items) {
+      // TODO: Implement logic to extract pr/commit from item.text
+      //
+      // Sample:
+      // ## New Contributors
+      // * @darksaid98 made their first contribution in https://github.com/ardalanamini/auto-changelog/pull/221
+      const [username] = item.text.split(" ");
+
+      yield {
+        username: username.slice(1),
+      };
     }
   }
 

@@ -130,7 +130,7 @@ it("should print a scope & its multiple commits", () => {
 it("should print a commit without scope", () => {
   const description = "ci: update test workflow";
 
-  const scopeNode = (new ScopeNode);
+  const scopeNode = new ScopeNode();
 
   const commitNode = scopeNode.addCommit(description);
 
@@ -147,7 +147,7 @@ it("should print multiple commits without scope", () => {
   const description = "ci: update test workflow";
   const description2 = "chore: update copyright year";
 
-  const scopeNode = (new ScopeNode);
+  const scopeNode = new ScopeNode();
 
   const commitNode = scopeNode.addCommit(description);
   const commitNode2 = scopeNode.addCommit(description2);

@@ -27,7 +27,7 @@ import { commitTypes, defaultCommitType, useGitHubAutolink } from "#inputs";
 import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "#nodes";
 
 it("should create an instance with common values", () => {
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   expect(changelogNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(changelogNode.defaultType).toBe(defaultCommitType());
@@ -41,7 +41,7 @@ it("should create an instance with common values", () => {
 });
 
 it("should not print anything", () => {
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   const typeNode = changelogNode.addType("feat");
 
@@ -54,7 +54,7 @@ it("should not print anything", () => {
 });
 
 it("should print commit changelog", () => {
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   const commitNode1 = changelogNode.addType("feat").addScope()
     .addCommit("implement awesome feature");

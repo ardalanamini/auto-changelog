@@ -30,11 +30,4 @@ export default smartConfig(
   gitignore(),
   globalIgnores(["action/*"]),
   configs.recommended,
-  {
-    languageOptions: {
-      parserOptions: {
-        project: "./tsconfig.json",
-      },
-    },
-  },
 );

@@ -32,7 +32,7 @@ it("should get octokit instance", () => {
 
   jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
 
-  jest.mocked(getOctokit).mockImplementationOnce(() => new GitHub);
+  jest.mocked(getOctokit).mockImplementationOnce(() => new GitHub());
 
   const result = octokit();
 

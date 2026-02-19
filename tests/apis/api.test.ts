@@ -24,7 +24,7 @@
 
 import { setOutput } from "@actions/core";
 import { context } from "@actions/github";
-import { type TCommit, type TTag, APIBase } from "#apis";
+import { type TCommit, type TNewContributor, type TTag, APIBase } from "#apis";
 import { includeCompareLink, mentionNewContributors, releaseName, useSemver } from "#inputs";
 
 class TestAPI extends APIBase {
@@ -47,6 +47,11 @@ class TestAPI extends APIBase {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected async *listNewContributors(): AsyncGenerator<TNewContributor> {
+    /* empty */
+  }
+
 }
 
 describe("getTagInfo", () => {
@@ -60,7 +65,7 @@ describe("getTagInfo", () => {
       },
     };
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementationOnce(async () => info.previous);
 
@@ -84,7 +89,7 @@ describe("getTagInfo", () => {
     jest.mocked(useSemver).mockReturnValueOnce(true);
     jest.mocked(releaseName).mockReturnValueOnce(releaseNameInputValue);
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementationOnce(async () => info.previous);
 
@@ -115,7 +120,7 @@ describe("generateChangelog", () => {
       sha: info.previous.sha,
     };
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementation(async () => info.previous);
 
@@ -148,7 +153,7 @@ describe("generateChangelog", () => {
       sha: "3c1177539c1a216084f922ea52e56dd719a25945",
     };
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementation(async () => info.previous);
 
@@ -181,7 +186,7 @@ describe("generateChangelog", () => {
       sha: "3c1177539c1a216084f922ea52e56dd719a25945",
     };
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementation(async () => info.previous);
 
@@ -206,7 +211,7 @@ describe("generateFooter", () => {
       },
     };
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementationOnce(async () => info.previous);
 
@@ -228,7 +233,7 @@ describe("generateFooter", () => {
     jest.mocked(releaseName).mockReturnValueOnce("2.0.0");
     jest.mocked(includeCompareLink).mockReturnValueOnce(false);
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getNewContributors")
       .mockImplementationOnce(async () => "## New Contributors\n- Author Name\n");
@@ -254,7 +259,7 @@ describe("generateFooter", () => {
     jest.mocked(releaseName).mockReturnValueOnce(releaseNameInputValue);
     jest.mocked(mentionNewContributors).mockReturnValueOnce(false);
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     const result = await testAPI.generateFooter(info.previous.name);
 
@@ -275,7 +280,7 @@ describe("generateFooter", () => {
 
     jest.mocked(releaseName).mockReturnValueOnce(releaseNameInputValue);
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getNewContributors")
       .mockImplementationOnce(async () => "## New Contributors\n- Author Name\n");
@@ -313,7 +318,7 @@ describe("generate", () => {
 
     jest.mocked(releaseName).mockReturnValueOnce(releaseNameInputValue);
 
-    const testAPI = (new TestAPI);
+    const testAPI = new TestAPI();
 
     jest.spyOn(testAPI, "getNewContributors")
       .mockImplementationOnce(async () => "## New Contributors\n- Ardalan Amini\n");
@@ -326,7 +331,6 @@ describe("generate", () => {
 
     await testAPI.generate();
 
-    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     expect(setOutput).toHaveBeenCalledTimes(3);
 
     expect(setOutput).toHaveBeenCalledWith("prerelease", info.prerelease);

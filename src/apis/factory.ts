@@ -32,7 +32,7 @@ export function api(): APIBase {
 
   switch (preferred) {
     case API.GITHUB:
-      return (new GitHubAPI);
+      return new GitHubAPI();
 
     default:
       throw new Error(`Unsupported API: ${ preferred }`);

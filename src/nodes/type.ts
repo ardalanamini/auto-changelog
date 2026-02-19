@@ -33,7 +33,7 @@ import { ScopeNode } from "./scope.js";
  */
 export class TypeNode extends Node {
 
-  protected readonly scopes = (new Map<string, ScopeNode>);
+  protected readonly scopes = new Map<string, ScopeNode>();
 
   /**
    * Constructs an instance of type node class with a specified type.
@@ -83,7 +83,7 @@ export class TypeNode extends Node {
     /**
      * Sorting the scopes to have a consistent output order in all changelogs.
      */
-    const scopeKeys = [...scopes.keys()].sort((a, b) => a.localeCompare(b));
+    const scopeKeys = [...scopes.keys()].toSorted((a, b) => a.localeCompare(b));
 
     for (const key of scopeKeys) {
       const scope = scopes.get(key)!;
