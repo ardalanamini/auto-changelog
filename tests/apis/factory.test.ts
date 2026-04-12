@@ -22,9 +22,18 @@
  * SOFTWARE.
  */
 
-import { GitHubAPI, api } from "#apis";
+import { GitAPI, GitHubAPI, api } from "#apis";
 import { API } from "#constants";
 import { preferredApi } from "#inputs";
+
+it("should return a GitAPI instance when preferred API is Git", () => {
+  jest.mocked(preferredApi).mockReturnValueOnce(API.GIT);
+
+  const result = api();
+
+  expect(result).toBeInstanceOf(GitAPI);
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+});
 
 it("should return a GitHubAPI instance when preferred API is GitHub", () => {
   jest.mocked(preferredApi).mockReturnValueOnce(API.GITHUB);

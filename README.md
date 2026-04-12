@@ -64,6 +64,11 @@ Possible options:
 - `Git`
 - `GitHub`
 
+Notes:
+
+- **`Git`**: Uses the local `git` CLI to read commits and tags from the checked-out repository. This is optimized for large repositories by **streaming commits and tags** (it does not load full histories into memory). It can optionally use GitHub (if a token is available) to resolve GitHub usernames from author emails.
+- **`GitHub`**: Uses GitHub APIs for commits/tags and for generating GitHub-style release notes sections (e.g. New Contributors).
+
 _Default:_
 
 ```yaml
@@ -75,6 +80,11 @@ GitHub
 **(Optional)**
 
 Github token.
+
+Notes:
+
+- Required when using **`preferred-api: GitHub`**.
+- When using **`preferred-api: Git`**, a token is only needed for optional enrichment (e.g. trying to resolve GitHub usernames from author emails). If omitted, Git mode will fall back to non-`@username` formatting where necessary.
 
 _Default:_
 
@@ -276,6 +286,7 @@ Using with custom inputs:
   name: Changelog
   with:
     github-token            : ${{ github.token }}
+    preferred-api           : GitHub
     commit-types            : |
       feat    : New Features
       fix     : Bug Fixes

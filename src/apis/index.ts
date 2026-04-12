@@ -24,4 +24,5 @@
 
 export * from "./api.js";
 export * from "./factory.js";
+export * from "./git.js";
 export * from "./github.js";

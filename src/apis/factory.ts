@@ -25,12 +25,16 @@
 import { API } from "#constants";
 import { preferredApi } from "#inputs";
 import { type APIBase } from "./api.js";
+import { GitAPI } from "./git.js";
 import { GitHubAPI } from "./github.js";
 
 export function api(): APIBase {
   const preferred = preferredApi();
 
   switch (preferred) {
+    case API.GIT:
+      return new GitAPI();
+
     case API.GITHUB:
       return new GitHubAPI();
 

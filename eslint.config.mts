@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { fixupConfigRules } from "@eslint/compat";
 import { globalIgnores } from "eslint/config";
 import gitignore from "eslint-config-flat-gitignore";
 import { configs, smartConfig } from "eslint-config-noir";
@@ -29,5 +30,5 @@ import { configs, smartConfig } from "eslint-config-noir";
 export default smartConfig(
   gitignore(),
   globalIgnores(["action/*"]),
-  configs.recommended,
+  ...fixupConfigRules(configs.recommended),
 );

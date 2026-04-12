@@ -33,6 +33,9 @@ importers:
       '@commitlint/types':
         specifier: 19.8.1
         version: 19.8.1
+      '@eslint/compat':
+        specifier: 2.0.2
+        version: 2.0.2(eslint@10.0.0(jiti@2.4.2))
       '@swc/core':
         specifier: 1.13.5
         version: 1.13.5
@@ -369,6 +372,15 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^9.10.0
+    peerDependenciesMeta:
+      eslint:
+        optional: true
+
+  '@eslint/compat@2.0.2':
+    resolution: {integrity: sha512-pR1DoD0h3HfF675QZx0xsyrsU8q70Z/plx7880NOhS02NuWLgBCOMDL787nUeQ7EWLkxv3bPQJaarjcPQb2Dwg==}
+    engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+    peerDependencies:
+      eslint: ^8.40 || 9 || 10
     peerDependenciesMeta:
       eslint:
         optional: true
@@ -3356,6 +3368,12 @@ snapshots:
   '@eslint-community/regexpp@4.12.2': {}
 
   '@eslint/compat@1.2.9(eslint@10.0.0(jiti@2.4.2))':
+    optionalDependencies:
+      eslint: 10.0.0(jiti@2.4.2)
+
+  '@eslint/compat@2.0.2(eslint@10.0.0(jiti@2.4.2))':
+    dependencies:
+      '@eslint/core': 1.1.0
     optionalDependencies:
       eslint: 10.0.0(jiti@2.4.2)
 
