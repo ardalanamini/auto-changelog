@@ -277,7 +277,7 @@ export class GitAPI extends APIBase {
             continue;
           }
 
-          if (fromSHA && shaValue === fromSHA) {
+          if (fromSHA && shaValue.trim() === fromSHA) {
             debug(`[git-api] iterateCommits stop (reached fromSHA=${ fromSHA })`);
             stopEarly();
             break;
@@ -295,7 +295,7 @@ export class GitAPI extends APIBase {
               ?? "unknown";
 
           yield {
-            sha: shaValue,
+            sha: shaValue.trim(),
             commit: { message: subject ?? "" },
             author: login ? { login } : null,
           };
