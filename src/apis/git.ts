@@ -23,6 +23,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { debug } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { gitHubToken } from "#inputs";
 import { octokit, parseSemanticVersion } from "#utils";
@@ -34,7 +35,12 @@ import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js
 const RECORD_SEPARATOR = "\u001E";
 const FIELD_SEPARATOR = "\u001F";
 
+function formatGitCommand(args: string[]): string {
+  return `git ${ args.join(" ") }`;
+}
+
 function spawnGit(args: string[]): ReturnType<typeof spawn> {
+  debug(`[git] spawn -> ${ formatGitCommand(args) }`);
   return spawn("git", args, {
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -56,6 +62,7 @@ async function waitForExit(child: ReturnType<typeof spawn>): Promise<number | nu
 }
 
 async function *streamRecords(args: string[]): AsyncGenerator<string> {
+  const command = formatGitCommand(args);
   const child = spawnGit(args);
 
   let buffer = "";
@@ -82,14 +89,18 @@ async function *streamRecords(args: string[]): AsyncGenerator<string> {
 
     if (exitCode !== 0) {
       const stderr = await readAllStdError(child);
+      debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
       throw new Error(`git ${ args.join(" ") } failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
     }
+
+    debug(`[git] done -> ${ command }`);
   } finally {
     child.kill();
   }
 }
 
 async function gitTrimmedStdout(args: string[]): Promise<string> {
+  const command = formatGitCommand(args);
   const child = spawnGit(args);
 
   const stdoutChunks: Buffer[] = [];
@@ -105,7 +116,12 @@ async function gitTrimmedStdout(args: string[]): Promise<string> {
   const stdout = Buffer.concat(stdoutChunks).toString("utf8");
   const stderr = Buffer.concat(stderrChunks).toString("utf8");
 
-  if (exitCode !== 0) throw new Error(`git ${ args.join(" ") } failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
+  if (exitCode !== 0) {
+    debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
+    throw new Error(`git ${ args.join(" ") } failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
+  }
+
+  debug(`[git] done -> ${ command }`);
 
   return stdout.trim();
 }
@@ -140,6 +156,7 @@ export class GitAPI extends APIBase {
   private readonly emailToLogin = new Map<string, string | null>();
 
   public async getNewContributors(previousTagName?: string): Promise<string | null> {
+    debug(`[git-api] getNewContributors start (previousTagName=${ previousTagName ?? "none" })`);
     const contributors: string[] = [];
 
     for await (const c of this.listNewContributors(previousTagName)) {
@@ -147,13 +164,18 @@ export class GitAPI extends APIBase {
       else contributors.push(`* ${ c.name } <${ c.email }>`);
     }
 
-    if (contributors.length === 0) return null;
+    if (contributors.length === 0) {
+      debug("[git-api] getNewContributors done (no contributors)");
+      return null;
+    }
 
+    debug(`[git-api] getNewContributors done (contributors=${ contributors.length })`);
     return `## New Contributors\n${ contributors.join("\n") }\n`;
   }
 
   public async getPreviousTag(): Promise<TTag | null> {
     const { currentSHA, semanticVersion } = this;
+    debug(`[git-api] getPreviousTag start (currentSHA=${ currentSHA }, semver=${ semanticVersion ? "enabled" : "disabled" })`);
 
     let best: {
       name: string;
@@ -191,12 +213,19 @@ export class GitAPI extends APIBase {
     }
 
     const selectedName = semanticVersion ? (best ? best.name : null) : firstNonCurrent;
-    if (!selectedName) return null;
+    if (!selectedName) {
+      debug("[git-api] getPreviousTag done (no candidate tag)");
+      return null;
+    }
 
     const sha = await gitTrimmedStdout(["rev-list", "-n", "1", selectedName]);
 
-    if (!sha || sha === currentSHA) return null;
+    if (!sha || sha === currentSHA) {
+      debug(`[git-api] getPreviousTag done (candidate=${ selectedName }, ignored=${ sha ? "points-to-current-sha" : "empty-sha" })`);
+      return null;
+    }
 
+    debug(`[git-api] getPreviousTag done (name=${ selectedName }, sha=${ sha })`);
     return {
       name: selectedName,
       sha,
@@ -205,13 +234,16 @@ export class GitAPI extends APIBase {
 
   public async *iterateCommits(fromSHA?: string): AsyncGenerator<TCommit> {
     const { currentSHA } = this;
+    debug(`[git-api] iterateCommits start (fromSHA=${ fromSHA ?? "none" }, head=${ currentSHA })`);
 
-    const child = spawnGit([
+    const args = [
       "--no-pager",
       "log",
       currentSHA,
       `--pretty=format:%H${ FIELD_SEPARATOR }%an${ FIELD_SEPARATOR }%ae${ FIELD_SEPARATOR }%s${ RECORD_SEPARATOR }`,
-    ]);
+    ];
+    const child = spawnGit(args);
+    const command = formatGitCommand(args);
 
     if (!child.stdout) throw new Error("Failed to read git stdout.");
 
@@ -246,6 +278,7 @@ export class GitAPI extends APIBase {
           }
 
           if (fromSHA && shaValue === fromSHA) {
+            debug(`[git-api] iterateCommits stop (reached fromSHA=${ fromSHA })`);
             stopEarly();
             break;
           }
@@ -277,8 +310,11 @@ export class GitAPI extends APIBase {
 
       if (!stopped && exitCode !== 0) {
         const stderr = await readAllStdError(child);
+        debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
         throw new Error(`git log failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
       }
+
+      debug(`[git-api] iterateCommits done (stopped=${ stopped })`);
     } finally {
       child.kill();
     }
@@ -286,14 +322,20 @@ export class GitAPI extends APIBase {
 
   protected async *listNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor> {
     const { tagName } = this;
+    debug(`[git-api] listNewContributors start (previous=${ previousTagName ?? "none" }, current=${ tagName })`);
 
-    if (!previousTagName || previousTagName === tagName) return;
+    if (!previousTagName || previousTagName === tagName) {
+      debug("[git-api] listNewContributors done (no comparable previous tag)");
+      return;
+    }
 
     const previousEmails = new Set<string>();
 
     // Use shortlog to avoid streaming per-commit author lines for large histories.
     {
-      const child = spawnGit(["--no-pager", "shortlog", "-sne", previousTagName]);
+      const args = ["--no-pager", "shortlog", "-sne", previousTagName];
+      const child = spawnGit(args);
+      const command = formatGitCommand(args);
       if (!child.stdout) throw new Error("Failed to read git stdout.");
 
       let buf = "";
@@ -311,8 +353,10 @@ export class GitAPI extends APIBase {
       const exitCode = await waitForExit(child);
       if (exitCode !== 0) {
         const stderr = await readAllStdError(child);
+        debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
         throw new Error(`git shortlog failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
       }
+      debug(`[git] done -> ${ command }`);
     }
 
     const seen = new Set<string>();
@@ -322,7 +366,9 @@ export class GitAPI extends APIBase {
       name: string;
     }> = [];
 
-    const child = spawnGit(["--no-pager", "shortlog", "-sne", range]);
+    const args = ["--no-pager", "shortlog", "-sne", range];
+    const child = spawnGit(args);
+    const command = formatGitCommand(args);
     if (!child.stdout) throw new Error("Failed to read git stdout.");
 
     let buffer = "";
@@ -347,10 +393,13 @@ export class GitAPI extends APIBase {
     const exitCode = await waitForExit(child);
     if (exitCode !== 0) {
       const stderr = await readAllStdError(child);
+      debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
       throw new Error(`git shortlog failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
     }
+    debug(`[git] done -> ${ command }`);
 
     const logins = await Promise.all(newContributors.map(async c => this.resolveGitHubLoginByEmail(c.email)));
+    debug(`[git-api] listNewContributors resolved candidates=${ newContributors.length }`);
     for (const [i, contributor] of newContributors.entries()) {
       const login = logins[i];
       yield login
@@ -363,15 +412,20 @@ export class GitAPI extends APIBase {
   }
 
   private async resolveGitHubLoginByEmail(email: string): Promise<string | null> {
-    if (this.emailToLogin.has(email)) return this.emailToLogin.get(email) ?? null;
+    if (this.emailToLogin.has(email)) {
+      debug(`[git-api] resolveGitHubLoginByEmail cache-hit (${ email })`);
+      return this.emailToLogin.get(email) ?? null;
+    }
 
     const gitHub = getMaybeGitHubClient();
     if (!gitHub) {
+      debug(`[git-api] resolveGitHubLoginByEmail skipped (no GitHub client, email=${ email })`);
       this.emailToLogin.set(email, null);
       return null;
     }
 
     try {
+      debug(`[git-api] resolveGitHubLoginByEmail lookup start (${ email })`);
       const { data } = await gitHub.rest.search.users({
         q: `${ email } in:email`,
         per_page: 1,
@@ -381,8 +435,10 @@ export class GitAPI extends APIBase {
       const first = items?.[0];
       const login = first?.login ?? null;
       this.emailToLogin.set(email, login);
+      debug(`[git-api] resolveGitHubLoginByEmail lookup done (${ email } -> ${ login ?? "none" })`);
       return login;
     } catch {
+      debug(`[git-api] resolveGitHubLoginByEmail lookup failed (${ email })`);
       this.emailToLogin.set(email, null);
       return null;
     }
