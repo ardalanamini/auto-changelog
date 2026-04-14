@@ -101,7 +101,7 @@ export abstract class APIBase {
     for await (const commit of this.iterateCommits(lastSha)) {
       const message = commit.commit.message.split("\n")[0];
 
-      debug(`commit message -> ${ message }`);
+      debug(`commit message -> ${ message } (${ commit.sha })`);
 
       let { type, scope, description, pr, flag, breaking } = parseCommitMessage(message);
 
