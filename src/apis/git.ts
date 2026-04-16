@@ -85,10 +85,13 @@ async function *streamRecords(args: string[]): AsyncGenerator<string> {
       }
     }
 
+    // Start collecting stderr immediately to avoid losing data
+    const stderrPromise = readAllStdError(child);
+
     const exitCode = await waitForExit(child);
 
     if (exitCode !== 0) {
-      const stderr = await readAllStdError(child);
+      const stderr = await stderrPromise;
       debug(`[git] failed -> ${ command } (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
       throw new Error(`git ${ args.join(" ") } failed (exit ${ exitCode })${ stderr ? `: ${ stderr.trim() }` : "" }`);
     }
@@ -108,8 +111,14 @@ async function gitTrimmedStdout(args: string[]): Promise<string> {
 
   if (!child.stdout || !child.stderr) throw new Error("Failed to read git output.");
 
-  for await (const chunk of child.stdout) stdoutChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  for await (const chunk of child.stderr) stderrChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  await Promise.all([
+    (async () => {
+      for await (const chunk of child.stdout!) stdoutChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    })(),
+    (async () => {
+      for await (const chunk of child.stderr!) stderrChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    })(),
+  ]);
 
   const exitCode = await waitForExit(child);
 
@@ -346,7 +355,7 @@ export class GitAPI extends APIBase {
           const line = buf.slice(0, index);
           buf = buf.slice(index + 1);
           const parsed = parseShortlogLine(line);
-          if (parsed) previousEmails.add(parsed.email);
+          if (parsed) previousEmails.add(parsed.email.toLowerCase());
           index = buf.indexOf("\n");
         }
       }
@@ -381,7 +390,7 @@ export class GitAPI extends APIBase {
         const parsed = parseShortlogLine(line);
         if (parsed) {
           const key = parsed.email.toLowerCase();
-          if (!seen.has(key) && !previousEmails.has(parsed.email)) {
+          if (!seen.has(key) && !previousEmails.has(key)) {
             seen.add(key);
             newContributors.push(parsed);
           }

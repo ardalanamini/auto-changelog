@@ -46,5 +46,6 @@
     "**/.cursor",
     "**/node_modules",
     "**/*.tsbuildinfo",
+    "action/",
   ],
 }

@@ -27,5 +27,6 @@
 import { setFailed } from "@actions/core";
 import { api } from "#apis";
 
-api().generate()
+Promise.resolve()
+  .then(async () => api().generate())
   .catch(setFailed);

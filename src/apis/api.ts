@@ -149,7 +149,7 @@ export abstract class APIBase {
     const footer: string[] = [];
 
     if (mentionNewContributors()) {
-      const newContributors = await this.getNewContributors();
+      const newContributors = await this.getNewContributors(previousTagName);
 
       if (newContributors != null) footer.push(newContributors);
     }
