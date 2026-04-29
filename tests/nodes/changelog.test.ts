@@ -27,17 +27,31 @@ import { commitTypes, defaultCommitType, useGitHubAutolink } from "#inputs";
 import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "#nodes";
 
 it("should create an instance with common values", () => {
+  const shouldUseGithubAutolink = true;
+  const defaultType = "Other Changes";
+  const typeMap = {
+    feat: "New Features",
+    fix : "Bug Fixes",
+  };
+
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
+  jest.mocked(defaultCommitType).mockReturnValueOnce(defaultType);
+  jest.mocked(commitTypes).mockReturnValueOnce(typeMap);
+
   const changelogNode = new ChangelogNode();
 
-  expect(changelogNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
-  expect(changelogNode.defaultType).toBe(defaultCommitType());
-  expect(changelogNode.typeMap).toEqual(commitTypes());
+  expect(changelogNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
+  expect(changelogNode.defaultType).toBe(defaultType);
+  expect(changelogNode.typeMap).toEqual(typeMap);
   expect(changelogNode.repo).toEqual({
     ...context.repo,
     url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(changelogNode.print()).toBeNull();
+  expect(useGitHubAutolink).toHaveBeenCalledTimes(1);
+  expect(defaultCommitType).toHaveBeenCalledTimes(1);
+  expect(commitTypes).toHaveBeenCalledTimes(1);
 });
 
 it("should not print anything", () => {

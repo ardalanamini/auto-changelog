@@ -249,7 +249,7 @@ export class GitAPI extends APIBase {
       "--no-pager",
       "log",
       currentSHA,
-      `--pretty=format:%H${ FIELD_SEPARATOR }%an${ FIELD_SEPARATOR }%ae${ FIELD_SEPARATOR }%s${ RECORD_SEPARATOR }`,
+      `--pretty=format:%H${ FIELD_SEPARATOR }%an${ FIELD_SEPARATOR }%ae${ FIELD_SEPARATOR }%B${ RECORD_SEPARATOR }`,
     ];
     const child = spawnGit(args);
     const command = formatGitCommand(args);
@@ -280,7 +280,7 @@ export class GitAPI extends APIBase {
             continue;
           }
 
-          const [shaValue, authorName, authorEmail, subject] = record.split(FIELD_SEPARATOR);
+          const [shaValue, authorName, authorEmail, message] = record.split(FIELD_SEPARATOR);
           if (!shaValue) {
             index = buffer.indexOf(RECORD_SEPARATOR);
             continue;
@@ -305,7 +305,7 @@ export class GitAPI extends APIBase {
 
           yield {
             sha: shaValue.trim(),
-            commit: { message: subject ?? "" },
+            commit: { message: message ?? "" },
             author: login ? { login } : null,
           };
 

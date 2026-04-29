@@ -22,9 +22,24 @@
  * SOFTWARE.
  */
 
+import { debug } from "@actions/core";
 import { marked } from "marked";
 import { octokit, parseSemanticVersion } from "#utils";
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js";
+
+function formatErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+
+  return String(error);
+}
+
+function gitHubAPIError(message: string, cause: unknown): Error & { code: "GITHUB_API_ERROR"; } {
+  const code = "GITHUB_API_ERROR" as const;
+  const error = Object.assign(new Error(message, { cause }), { code });
+  error.name = "GitHubAPIError";
+
+  return error;
+}
 
 export class GitHubAPI extends APIBase {
 
@@ -33,12 +48,19 @@ export class GitHubAPI extends APIBase {
   public async getNewContributors(previousTagName?: string): Promise<string | null> {
     const { repository, tagName, gitHub } = this;
 
-    const { data } = await gitHub.rest.repos.generateReleaseNotes({
-      owner            : repository.owner,
-      repo             : repository.repo,
-      tag_name         : tagName,
-      previous_tag_name: previousTagName,
-    });
+    let data: Awaited<ReturnType<typeof gitHub.rest.repos.generateReleaseNotes>>["data"];
+
+    try {
+      ({ data } = await gitHub.rest.repos.generateReleaseNotes({
+        owner            : repository.owner,
+        repo             : repository.repo,
+        tag_name         : tagName,
+        previous_tag_name: previousTagName,
+      }));
+    } catch (error) {
+      debug(`[github-api] getNewContributors failed (${ repository.owner }/${ repository.repo }, tag=${ tagName }, previousTag=${ previousTagName ?? "none" }): ${ formatErrorMessage(error) }`);
+      return null;
+    }
 
     const tokens = marked.lexer(data.body);
 
@@ -57,37 +79,39 @@ export class GitHubAPI extends APIBase {
   public async getPreviousTag(): Promise<TTag | null> {
     const { gitHub, repository, currentSHA, semanticVersion } = this;
 
-    const iterator = gitHub.paginate.iterator(
-      gitHub.rest.repos.listTags,
-      {
-        per_page: 100,
-        owner   : repository.owner,
-        repo    : repository.repo,
-      },
-    );
+    try {
+      const iterator = gitHub.paginate.iterator(
+        gitHub.rest.repos.listTags,
+        {
+          per_page: 100,
+          owner   : repository.owner,
+          repo    : repository.repo,
+        },
+      );
 
-    for await (const { data } of iterator) {
-      for (const { name, commit } of data) {
-        if (currentSHA === commit.sha) continue;
+      for await (const { data } of iterator) {
+        for (const { name, commit } of data) {
+          if (currentSHA === commit.sha) continue;
 
-        if (semanticVersion == null) {
+          if (semanticVersion == null) {
+            return {
+              name,
+              sha: commit.sha,
+            };
+          }
+
+          const version = parseSemanticVersion(name);
+
+          if (version == null || semanticVersion.compare(version) <= 0) continue;
+
           return {
             name,
             sha: commit.sha,
           };
         }
-
-        const version = parseSemanticVersion(name);
-
-        if (version == null || semanticVersion.compare(version) <= 0) continue;
-
-        // if (version.prerelease.length > 0 && !prerelease) continue;
-
-        return {
-          name,
-          sha: commit.sha,
-        };
       }
+    } catch (error) {
+      throw gitHubAPIError(`Failed to get previous tag for ${ repository.owner }/${ repository.repo } at ${ currentSHA }.`, error);
     }
 
     return null;
@@ -96,22 +120,26 @@ export class GitHubAPI extends APIBase {
   public async *iterateCommits(fromSHA?: string): AsyncGenerator<TCommit> {
     const { gitHub, repository, currentSHA } = this;
 
-    const iterator = gitHub.paginate.iterator(
-      gitHub.rest.repos.listCommits,
-      {
-        per_page: 100,
-        owner   : repository.owner,
-        repo    : repository.repo,
-        sha     : currentSHA,
-      },
-    );
+    try {
+      const iterator = gitHub.paginate.iterator(
+        gitHub.rest.repos.listCommits,
+        {
+          per_page: 100,
+          owner   : repository.owner,
+          repo    : repository.repo,
+          sha     : currentSHA,
+        },
+      );
 
-    loop: for await (const { data } of iterator) {
-      for (const commit of data) {
-        if (fromSHA === commit.sha) break loop;
+      loop: for await (const { data } of iterator) {
+        for (const commit of data) {
+          if (fromSHA === commit.sha) break loop;
 
-        yield commit;
+          yield commit;
+        }
       }
+    } catch (error) {
+      throw gitHubAPIError(`Failed to iterate commits for ${ repository.owner }/${ repository.repo } from SHA ${ fromSHA ?? "beginning" } at ${ currentSHA }.`, error);
     }
   }
 

@@ -27,6 +27,10 @@ import { useGitHubAutolink } from "#inputs";
 import { Node } from "#nodes";
 
 it("should create an instance with common values", () => {
+  const shouldUseGithubAutolink = true;
+
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
+
   class TestNode extends Node {
 
     public print(): string {
@@ -36,10 +40,11 @@ it("should create an instance with common values", () => {
   }
   const node = new TestNode();
 
-  expect(node.shouldUseGithubAutolink).toBe(useGitHubAutolink());
+  expect(node.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
   expect(node.serverUrl).toBe(context.serverUrl);
   expect(node.repo).toEqual({
     ...context.repo,
     url: `${ node.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
+  expect(useGitHubAutolink).toHaveBeenCalledTimes(1);
 });

@@ -29,6 +29,8 @@ import { GitHubAPI } from "#apis";
 import { gitHubToken, releaseName, useSemver } from "#inputs";
 import { cache } from "#utils";
 
+const SERVER_ERROR_STATUS = 500;
+
 describe("getNewContributors", () => {
   it("should return new contributors", async () => {
     const gitHubTokenInputValue = "github-token-value";
@@ -161,6 +163,25 @@ describe("getNewContributors", () => {
     expect(getOctokit).toHaveBeenCalledTimes(1);
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
   });
+
+  it("should return null when GitHub release notes cannot be generated", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      SERVER_ERROR_STATUS,
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+
+    await expect(githubAPI.getNewContributors("1.0.0")).resolves.toBeNull();
+  });
 });
 
 describe("getPreviousTag", () => {
@@ -292,6 +313,34 @@ describe("getPreviousTag", () => {
     expect(getOctokit).toHaveBeenCalledTimes(1);
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
   });
+
+  it("should throw a normalized error when tags cannot be listed", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.getOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/tags",
+      SERVER_ERROR_STATUS,
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+
+    const thrown = await githubAPI.getPreviousTag()
+      .then(() => null, (error: unknown) => error);
+
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown).toMatchObject({
+      code: "GITHUB_API_ERROR",
+      name: "GitHubAPIError",
+    });
+    if (!(thrown instanceof Error)) throw new TypeError("Expected Error.");
+    expect(thrown.message).toContain("Failed to get previous tag for ardalanamini/auto-changelog at");
+  });
 });
 
 describe("iterateCommits", () => {
@@ -351,5 +400,34 @@ describe("iterateCommits", () => {
 
     expect(getOctokit).toHaveBeenCalledTimes(1);
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
+  });
+
+  it("should throw a normalized error when commits cannot be listed", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.getOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/commits",
+      SERVER_ERROR_STATUS,
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+    const result = githubAPI.iterateCommits("from-sha");
+
+    const thrown = await result.next()
+      .then(() => null, (error: unknown) => error);
+
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown).toMatchObject({
+      code: "GITHUB_API_ERROR",
+      name: "GitHubAPIError",
+    });
+    if (!(thrown instanceof Error)) throw new TypeError("Expected Error.");
+    expect(thrown.message).toContain("Failed to iterate commits for ardalanamini/auto-changelog from SHA from-sha at");
   });
 });

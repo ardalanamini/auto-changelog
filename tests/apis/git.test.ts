@@ -100,7 +100,9 @@ describe("GitAPI", () => {
   it("streams commits and stops at fromSHA", async () => {
     setSpawnImplementation((gitArguments) => {
       if (gitArguments[1] === "--no-pager" && gitArguments[2] === "log") {
-        const commit1 = `aaa${ FIELD_SEPARATOR }Jane Doe${ FIELD_SEPARATOR }jane@example.com${ FIELD_SEPARATOR }feat: one${ RECORD_SEPARATOR }`;
+        expect(gitArguments[4]).toContain("%B");
+
+        const commit1 = `aaa${ FIELD_SEPARATOR }Jane Doe${ FIELD_SEPARATOR }jane@example.com${ FIELD_SEPARATOR }feat: one\n\nbody line${ RECORD_SEPARATOR }`;
         const commit2 = `bbb${ FIELD_SEPARATOR }John Doe${ FIELD_SEPARATOR }john@example.com${ FIELD_SEPARATOR }fix: two${ RECORD_SEPARATOR }`;
 
         // Split across chunks to ensure incremental parsing works
@@ -112,10 +114,16 @@ describe("GitAPI", () => {
 
     const api = new GitAPI();
 
-    const shas: string[] = [];
-    for await (const c of api.iterateCommits("bbb")) shas.push(c.sha);
+    const commits = [];
+    for await (const c of api.iterateCommits("bbb")) commits.push(c);
 
-    expect(shas).toEqual(["aaa"]);
+    expect(commits).toEqual([
+      {
+        sha   : "aaa",
+        commit: { message: "feat: one\n\nbody line" },
+        author: { login: "jane" },
+      },
+    ]);
   });
 
   it("selects previous tag using streaming for-each-ref and rev-list", async () => {

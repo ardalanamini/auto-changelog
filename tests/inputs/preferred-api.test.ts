@@ -29,9 +29,7 @@ import { preferredApi } from "#inputs";
 // Unmock the inputs module for this test file
 jest.unmock("#inputs");
 
-it(`should get and parse the "preferred-api" input`, () => {
-  const inputValue = API.GITHUB;
-
+it.each([API.GIT, API.GITHUB])(`should get and parse the "preferred-api" input (%s)`, (inputValue) => {
   jest.mocked(getInput).mockReturnValueOnce(inputValue);
 
   const result = preferredApi();
