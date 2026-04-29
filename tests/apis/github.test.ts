@@ -25,11 +25,19 @@
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
 import fetchMock from "fetch-mock";
-import { GitHubAPI } from "#apis";
+import { type TNewContributor, GitHubAPI } from "#apis";
 import { gitHubToken, releaseName, useSemver } from "#inputs";
 import { cache } from "#utils";
 
 const SERVER_ERROR_STATUS = 500;
+
+class TestGitHubAPI extends GitHubAPI {
+
+  public exposedListNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor> {
+    return this.listNewContributors(previousTagName);
+  }
+
+}
 
 describe("getNewContributors", () => {
   it("should return new contributors", async () => {
@@ -164,6 +172,31 @@ describe("getNewContributors", () => {
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
   });
 
+  it("should return null when the new contributors heading has no following token", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      {
+        body: {
+          body: "## New Contributors",
+        },
+      },
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+
+    const result = await githubAPI.getNewContributors("1.0.0");
+
+    expect(result).toBeNull();
+  });
+
   it("should return null when GitHub release notes cannot be generated", async () => {
     const gitHubTokenInputValue = "github-token-value";
 
@@ -181,6 +214,34 @@ describe("getNewContributors", () => {
     const githubAPI = new GitHubAPI();
 
     await expect(githubAPI.getNewContributors("1.0.0")).resolves.toBeNull();
+  });
+});
+
+describe("listNewContributors", () => {
+  it("should return when the new contributors heading has no following token", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      {
+        body: {
+          body: "## New Contributors",
+        },
+      },
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new TestGitHubAPI();
+    const result = githubAPI.exposedListNewContributors("1.0.0");
+
+    expect(await result.next()).toEqual({
+      done: true,
+    });
   });
 });
 

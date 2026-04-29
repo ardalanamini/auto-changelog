@@ -69,9 +69,9 @@ export class GitHubAPI extends APIBase {
 
     if (index === -1) return null;
 
-    const markdownToken = tokens[index + 1];
+    const markdownToken = tokens.at(index + 1);
 
-    if (markdownToken.type === "list") return `## New Contributors\n${ markdownToken.raw }\n`;
+    if (markdownToken?.type === "list") return `## New Contributors\n${ markdownToken.raw }\n`;
 
     return null;
   }
@@ -160,9 +160,9 @@ export class GitHubAPI extends APIBase {
 
     if (index === -1) return;
 
-    const markdownToken = tokens[index + 1];
+    const markdownToken = tokens.at(index + 1);
 
-    if (markdownToken.type !== "list") return;
+    if (markdownToken?.type !== "list") return;
 
     for (const item of markdownToken.items) {
       // TODO: Implement logic to extract pr/commit from item.text

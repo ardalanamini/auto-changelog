@@ -27,6 +27,7 @@ import { EventEmitter } from "node:events";
 import { getInput } from "@actions/core";
 import { GitAPI } from "#apis";
 import { releaseName, useSemver } from "#inputs";
+import { cache } from "#utils";
 
 jest.mock("node:child_process", () => ({
   spawn: jest.fn(),
@@ -156,6 +157,42 @@ describe("GitAPI", () => {
       name: "1.9.0",
       sha : "abc123",
     });
+  });
+
+  it("skips non-semver tags that resolve to the current SHA", async () => {
+    cache("sha", () => "head-sha");
+
+    const revListRequests: string[] = [];
+
+    setSpawnImplementation((gitArguments) => {
+      if (gitArguments[1] === "--no-pager" && gitArguments[2] === "for-each-ref") {
+        const tags
+          = `v2.0.0${ FIELD_SEPARATOR }tag-object-sha${ RECORD_SEPARATOR }`
+            + `v1.0.0${ FIELD_SEPARATOR }tag-object-sha${ RECORD_SEPARATOR }`;
+        return new MockChildProcess({ stdoutChunks: [tags] });
+      }
+
+      if (gitArguments[1] === "rev-list") {
+        const tagName = gitArguments.at(-1);
+        if (!tagName) throw new Error("Expected tag name.");
+
+        revListRequests.push(tagName);
+
+        if (tagName === "v2.0.0") return new MockChildProcess({ stdoutChunks: ["head-sha\n"] });
+        if (tagName === "v1.0.0") return new MockChildProcess({ stdoutChunks: ["previous-sha\n"] });
+      }
+
+      throw new Error(`Unexpected git args: ${ gitArguments.join(" ") }`);
+    });
+
+    const api = new GitAPI();
+    const previous = await api.getPreviousTag();
+
+    expect(previous).toEqual({
+      name: "v1.0.0",
+      sha : "previous-sha",
+    });
+    expect(revListRequests).toEqual(["v2.0.0", "v1.0.0"]);
   });
 
   it("computes new contributors via shortlog without scanning all commits", async () => {

@@ -190,8 +190,6 @@ export class GitAPI extends APIBase {
       name: string;
       semver: ReturnType<typeof parseSemanticVersion>;
     } | null = null;
-    let firstNonCurrent: string | null = null;
-
     for await (const record of streamRecords([
       "--no-pager",
       "for-each-ref",
@@ -202,11 +200,20 @@ export class GitAPI extends APIBase {
       const [name] = record.split(FIELD_SEPARATOR);
       if (!name) continue;
 
-      // Avoid selecting the tag that points exactly at current SHA.
-      // We resolve the commit sha lazily via rev-list (only for selected candidate).
-      firstNonCurrent ??= name;
+      if (!semanticVersion) {
+        const sha = await gitTrimmedStdout(["rev-list", "-n", "1", name]);
 
-      if (!semanticVersion) continue;
+        if (!sha || sha === currentSHA) {
+          debug(`[git-api] getPreviousTag skip (candidate=${ name }, ignored=${ sha ? "points-to-current-sha" : "empty-sha" })`);
+          continue;
+        }
+
+        debug(`[git-api] getPreviousTag done (name=${ name }, sha=${ sha })`);
+        return {
+          name,
+          sha,
+        };
+      }
 
       const version = parseSemanticVersion(name);
       if (!version) continue;
@@ -221,7 +228,7 @@ export class GitAPI extends APIBase {
       }
     }
 
-    const selectedName = semanticVersion ? (best ? best.name : null) : firstNonCurrent;
+    const selectedName = best ? best.name : null;
     if (!selectedName) {
       debug("[git-api] getPreviousTag done (no candidate tag)");
       return null;
