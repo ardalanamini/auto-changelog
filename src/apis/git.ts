@@ -23,6 +23,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { debug } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { gitHubToken } from "#inputs";
@@ -34,6 +35,7 @@ import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js
 
 const RECORD_SEPARATOR = "\u001E";
 const FIELD_SEPARATOR = "\u001F";
+const EMAIL_HASH_LENGTH = 12;
 
 function formatGitCommand(args: string[]): string {
   return `git ${ args.join(" ") }`;
@@ -149,6 +151,13 @@ function parseShortlogLine(line: string): {
   };
 }
 
+function hashEmailForLogs(email: string): string {
+  return createHash("sha256")
+    .update(email)
+    .digest("hex")
+    .slice(0, EMAIL_HASH_LENGTH);
+}
+
 function getMaybeGitHubClient(): ReturnType<typeof getOctokit> | null {
   const token = gitHubToken(false);
   if (!token) return null;
@@ -165,31 +174,25 @@ export class GitAPI extends APIBase {
   private readonly emailToLogin = new Map<string, string | null>();
 
   public async getNewContributors(previousTagName?: string): Promise<string | null> {
-    debug(`[git-api] getNewContributors start (previousTagName=${ previousTagName ?? "none" })`);
-    const contributors: string[] = [];
+    const newContributors = await this.formatNewContributors(previousTagName);
 
-    for await (const c of this.listNewContributors(previousTagName)) {
-      if ("username" in c) contributors.push(`* @${ c.username }`);
-      else contributors.push(`* ${ c.name } <${ c.email }>`);
-    }
-
-    if (contributors.length === 0) {
+    if (newContributors == null) {
       debug("[git-api] getNewContributors done (no contributors)");
       return null;
     }
 
-    debug(`[git-api] getNewContributors done (contributors=${ contributors.length })`);
-    return `## New Contributors\n${ contributors.join("\n") }\n`;
+    debug("[git-api] getNewContributors done");
+    return newContributors;
   }
 
   public async getPreviousTag(): Promise<TTag | null> {
     const { currentSHA, semanticVersion } = this;
     debug(`[git-api] getPreviousTag start (currentSHA=${ currentSHA }, semver=${ semanticVersion ? "enabled" : "disabled" })`);
 
-    let best: {
+    let best: Array<{
       name: string;
-      semver: ReturnType<typeof parseSemanticVersion>;
-    } | null = null;
+      semver: NonNullable<ReturnType<typeof parseSemanticVersion>>;
+    }> = [];
     for await (const record of streamRecords([
       "--no-pager",
       "for-each-ref",
@@ -220,32 +223,37 @@ export class GitAPI extends APIBase {
 
       if (semanticVersion.compare(version) <= 0) continue;
 
-      if (!best?.semver || best.semver.compare(version) < 0) {
-        best = {
-          name,
-          semver: version,
-        };
-      }
+      best.push({
+        name,
+        semver: version,
+      });
     }
 
-    const selectedName = best ? best.name : null;
-    if (!selectedName) {
+    if (best.length === 0) {
       debug("[git-api] getPreviousTag done (no candidate tag)");
       return null;
     }
 
-    const sha = await gitTrimmedStdout(["rev-list", "-n", "1", selectedName]);
+    best = best.toSorted((a, b) => b.semver.compare(a.semver));
 
-    if (!sha || sha === currentSHA) {
-      debug(`[git-api] getPreviousTag done (candidate=${ selectedName }, ignored=${ sha ? "points-to-current-sha" : "empty-sha" })`);
-      return null;
+    for (const { name } of best) {
+      /* eslint-disable-next-line no-await-in-loop -- candidates must be checked in semver order */
+      const sha = await gitTrimmedStdout(["rev-list", "-n", "1", name]);
+
+      if (!sha || sha === currentSHA) {
+        debug(`[git-api] getPreviousTag skip (candidate=${ name }, ignored=${ sha ? "points-to-current-sha" : "empty-sha" })`);
+        continue;
+      }
+
+      debug(`[git-api] getPreviousTag done (name=${ name }, sha=${ sha })`);
+      return {
+        name,
+        sha,
+      };
     }
 
-    debug(`[git-api] getPreviousTag done (name=${ selectedName }, sha=${ sha })`);
-    return {
-      name: selectedName,
-      sha,
-    };
+    debug("[git-api] getPreviousTag done (no candidate tag)");
+    return null;
   }
 
   public async *iterateCommits(fromSHA?: string): AsyncGenerator<TCommit> {
@@ -428,20 +436,22 @@ export class GitAPI extends APIBase {
   }
 
   private async resolveGitHubLoginByEmail(email: string): Promise<string | null> {
+    const emailHash = hashEmailForLogs(email);
+
     if (this.emailToLogin.has(email)) {
-      debug(`[git-api] resolveGitHubLoginByEmail cache-hit (${ email })`);
+      debug(`[git-api] resolveGitHubLoginByEmail cache-hit (emailHash=${ emailHash })`);
       return this.emailToLogin.get(email) ?? null;
     }
 
     const gitHub = getMaybeGitHubClient();
     if (!gitHub) {
-      debug(`[git-api] resolveGitHubLoginByEmail skipped (no GitHub client, email=${ email })`);
+      debug(`[git-api] resolveGitHubLoginByEmail skipped (no GitHub client, emailHash=${ emailHash })`);
       this.emailToLogin.set(email, null);
       return null;
     }
 
     try {
-      debug(`[git-api] resolveGitHubLoginByEmail lookup start (${ email })`);
+      debug(`[git-api] resolveGitHubLoginByEmail lookup start (emailHash=${ emailHash })`);
       const { data } = await gitHub.rest.search.users({
         q: `${ email } in:email`,
         per_page: 1,
@@ -451,10 +461,10 @@ export class GitAPI extends APIBase {
       const first = items?.[0];
       const login = first?.login ?? null;
       this.emailToLogin.set(email, login);
-      debug(`[git-api] resolveGitHubLoginByEmail lookup done (${ email } -> ${ login ?? "none" })`);
+      debug(`[git-api] resolveGitHubLoginByEmail lookup done (emailHash=${ emailHash } -> ${ login ?? "none" })`);
       return login;
     } catch {
-      debug(`[git-api] resolveGitHubLoginByEmail lookup failed (${ email })`);
+      debug(`[git-api] resolveGitHubLoginByEmail lookup failed (emailHash=${ emailHash })`);
       this.emailToLogin.set(email, null);
       return null;
     }

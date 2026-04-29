@@ -24,7 +24,7 @@
 
 import { spawn as nodeSpawn } from "node:child_process";
 import { EventEmitter } from "node:events";
-import { getInput } from "@actions/core";
+import { debug, getInput } from "@actions/core";
 import { GitAPI } from "#apis";
 import { releaseName, useSemver } from "#inputs";
 import { cache } from "#utils";
@@ -125,6 +125,10 @@ describe("GitAPI", () => {
         author: { login: "jane" },
       },
     ]);
+
+    const debugOutput = jest.mocked(debug).mock.calls.join("\n");
+    expect(debugOutput).toContain("emailHash=");
+    expect(debugOutput).not.toContain("jane@example.com");
   });
 
   it("selects previous tag using streaming for-each-ref and rev-list", async () => {
@@ -193,6 +197,45 @@ describe("GitAPI", () => {
       sha : "previous-sha",
     });
     expect(revListRequests).toEqual(["v2.0.0", "v1.0.0"]);
+  });
+
+  it("skips semver tags that resolve to the current SHA", async () => {
+    cache("sha", () => "head-sha");
+    jest.mocked(useSemver).mockReturnValueOnce(true);
+    jest.mocked(releaseName).mockReturnValueOnce("3.0.0");
+
+    const revListRequests: string[] = [];
+
+    setSpawnImplementation((gitArguments) => {
+      if (gitArguments[1] === "--no-pager" && gitArguments[2] === "for-each-ref") {
+        const tags
+          = `1.5.0${ FIELD_SEPARATOR }tag-object-sha${ RECORD_SEPARATOR }`
+            + `2.0.0${ FIELD_SEPARATOR }tag-object-sha${ RECORD_SEPARATOR }`
+            + `1.9.0${ FIELD_SEPARATOR }tag-object-sha${ RECORD_SEPARATOR }`;
+        return new MockChildProcess({ stdoutChunks: [tags] });
+      }
+
+      if (gitArguments[1] === "rev-list") {
+        const tagName = gitArguments.at(-1);
+        if (!tagName) throw new Error("Expected tag name.");
+
+        revListRequests.push(tagName);
+
+        if (tagName === "2.0.0") return new MockChildProcess({ stdoutChunks: ["head-sha\n"] });
+        if (tagName === "1.9.0") return new MockChildProcess({ stdoutChunks: ["previous-sha\n"] });
+      }
+
+      throw new Error(`Unexpected git args: ${ gitArguments.join(" ") }`);
+    });
+
+    const api = new GitAPI();
+    const previous = await api.getPreviousTag();
+
+    expect(previous).toEqual({
+      name: "1.9.0",
+      sha : "previous-sha",
+    });
+    expect(revListRequests).toEqual(["2.0.0", "1.9.0"]);
   });
 
   it("computes new contributors via shortlog without scanning all commits", async () => {

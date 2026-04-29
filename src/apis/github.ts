@@ -46,34 +46,13 @@ export class GitHubAPI extends APIBase {
   public readonly gitHub = octokit();
 
   public async getNewContributors(previousTagName?: string): Promise<string | null> {
-    const { repository, tagName, gitHub } = this;
-
-    let data: Awaited<ReturnType<typeof gitHub.rest.repos.generateReleaseNotes>>["data"];
-
     try {
-      ({ data } = await gitHub.rest.repos.generateReleaseNotes({
-        owner            : repository.owner,
-        repo             : repository.repo,
-        tag_name         : tagName,
-        previous_tag_name: previousTagName,
-      }));
+      return await this.formatNewContributors(previousTagName);
     } catch (error) {
+      const { repository, tagName } = this;
       debug(`[github-api] getNewContributors failed (${ repository.owner }/${ repository.repo }, tag=${ tagName }, previousTag=${ previousTagName ?? "none" }): ${ formatErrorMessage(error) }`);
       return null;
     }
-
-    const tokens = marked.lexer(data.body);
-
-    const index = tokens.findIndex(markdownToken => markdownToken.type === "heading"
-      && markdownToken.text === "New Contributors");
-
-    if (index === -1) return null;
-
-    const markdownToken = tokens.at(index + 1);
-
-    if (markdownToken?.type === "list") return `## New Contributors\n${ markdownToken.raw }\n`;
-
-    return null;
   }
 
   public async getPreviousTag(): Promise<TTag | null> {
@@ -146,12 +125,18 @@ export class GitHubAPI extends APIBase {
   protected async *listNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor> {
     const { gitHub, repository, tagName } = this;
 
-    const { data } = await gitHub.rest.repos.generateReleaseNotes({
-      owner            : repository.owner,
-      repo             : repository.repo,
-      tag_name         : tagName,
-      previous_tag_name: previousTagName,
-    });
+    let data: Awaited<ReturnType<typeof gitHub.rest.repos.generateReleaseNotes>>["data"];
+
+    try {
+      ({ data } = await gitHub.rest.repos.generateReleaseNotes({
+        owner            : repository.owner,
+        repo             : repository.repo,
+        tag_name         : tagName,
+        previous_tag_name: previousTagName,
+      }));
+    } catch (error) {
+      throw gitHubAPIError(`Failed to list new contributors for ${ repository.owner }/${ repository.repo } from ${ previousTagName ?? "beginning" } to ${ tagName }.`, error);
+    }
 
     const tokens = marked.lexer(data.body);
 

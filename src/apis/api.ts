@@ -182,6 +182,19 @@ export abstract class APIBase {
     return info;
   }
 
+  protected async formatNewContributors(previousTagName?: string): Promise<string | null> {
+    const contributors: string[] = [];
+
+    for await (const c of this.listNewContributors(previousTagName)) {
+      if ("username" in c) contributors.push(`* @${ c.username }`);
+      else contributors.push(`* ${ c.name } <${ c.email }>`);
+    }
+
+    if (contributors.length === 0) return null;
+
+    return `## New Contributors\n${ contributors.join("\n") }\n`;
+  }
+
   public abstract getNewContributors(previousTagName?: string): Promise<string | null>;
 
   public abstract getPreviousTag(): Promise<TTag | null>;

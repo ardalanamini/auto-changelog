@@ -40,7 +40,7 @@ class TestGitHubAPI extends GitHubAPI {
 }
 
 describe("getNewContributors", () => {
-  it("should return new contributors", async () => {
+  it("should return normalized new contributors", async () => {
     const gitHubTokenInputValue = "github-token-value";
 
     jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
@@ -63,7 +63,7 @@ describe("getNewContributors", () => {
       "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
       {
         body: {
-          body: "## New Contributors\n- Ardalan Amini",
+          body: "## New Contributors\n* @ardalanamini made their first contribution in https://github.com/ardalanamini/auto-changelog/pull/227",
         },
       },
     );
@@ -76,7 +76,7 @@ describe("getNewContributors", () => {
 
     const result = await githubAPI.getNewContributors(fromSha);
 
-    expect(result).toBe("## New Contributors\n- Ardalan Amini\n");
+    expect(result).toBe("## New Contributors\n* @ardalanamini\n");
 
     expect(gitHubToken).toHaveBeenCalledTimes(1);
 
@@ -242,6 +242,35 @@ describe("listNewContributors", () => {
     expect(await result.next()).toEqual({
       done: true,
     });
+  });
+
+  it("should throw a normalized error when release notes cannot be generated", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      SERVER_ERROR_STATUS,
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new TestGitHubAPI();
+    const result = githubAPI.exposedListNewContributors("1.0.0");
+
+    const thrown = await result.next()
+      .then(() => null, (error: unknown) => error);
+
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown).toMatchObject({
+      code: "GITHUB_API_ERROR",
+      name: "GitHubAPIError",
+    });
+    if (!(thrown instanceof Error)) throw new TypeError("Expected Error.");
+    expect(thrown.message).toContain("Failed to list new contributors for ardalanamini/auto-changelog from 1.0.0 to");
   });
 });
 
