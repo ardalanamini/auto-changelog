@@ -172,10 +172,12 @@ export class GitHubAPI extends APIBase {
       // Sample:
       // ## New Contributors
       // * @darksaid98 made their first contribution in https://github.com/ardalanamini/auto-changelog/pull/221
-      const [username] = item.text.split(" ");
+      const username = item.text.match(/^@(?<username>[\dA-Za-z-]+)(?:\s|$)/)?.groups?.username;
+
+      if (!username) continue;
 
       yield {
-        username: username.slice(1),
+        username,
       };
     }
   }

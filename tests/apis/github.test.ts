@@ -27,7 +27,7 @@ import { GitHub } from "@actions/github/lib/utils";
 import fetchMock from "fetch-mock";
 import { type TNewContributor, GitHubAPI } from "#apis";
 import { gitHubToken, releaseName, useSemver } from "#inputs";
-import { cache } from "#utils";
+import { cache, clearCache } from "#utils";
 
 const SERVER_ERROR_STATUS = 500;
 
@@ -38,6 +38,11 @@ class TestGitHubAPI extends GitHubAPI {
   }
 
 }
+
+beforeEach(() => {
+  clearCache();
+  fetchMock.hardReset();
+});
 
 describe("getNewContributors", () => {
   it("should return normalized new contributors", async () => {
@@ -218,6 +223,36 @@ describe("getNewContributors", () => {
 });
 
 describe("listNewContributors", () => {
+  it("should skip malformed contributor entries", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      {
+        body: {
+          body: "## New Contributors\n* malformed contributor\n* @valid-user made their first contribution",
+        },
+      },
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new TestGitHubAPI();
+    const result = githubAPI.exposedListNewContributors("1.0.0");
+
+    expect(await result.next()).toEqual({
+      done : false,
+      value: { username: "valid-user" },
+    });
+    expect(await result.next()).toEqual({
+      done: true,
+    });
+  });
+
   it("should return when the new contributors heading has no following token", async () => {
     const gitHubTokenInputValue = "github-token-value";
 
