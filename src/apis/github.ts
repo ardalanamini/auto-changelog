@@ -25,6 +25,7 @@
 import { debug } from "@actions/core";
 import { marked } from "marked";
 import { octokit, parseSemanticVersion } from "#utils";
+/* eslint-disable @stylistic/key-spacing -- conflicts with type-annotation-spacing in type definitions */
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js";
 
 function formatErrorMessage(error: unknown): string {
@@ -59,6 +60,12 @@ export class GitHubAPI extends APIBase {
     const { gitHub, repository, currentSHA, semanticVersion } = this;
 
     try {
+      let best: {
+        name: string;
+        sha: string;
+        version: NonNullable<ReturnType<typeof parseSemanticVersion>>;
+      } | null = null;
+
       const iterator = gitHub.paginate.iterator(
         gitHub.rest.repos.listTags,
         {
@@ -83,11 +90,21 @@ export class GitHubAPI extends APIBase {
 
           if (version == null || semanticVersion.compare(version) <= 0) continue;
 
-          return {
-            name,
-            sha: commit.sha,
-          };
+          if (best == null || version.compare(best.version) > 0) {
+            best = {
+              name,
+              sha: commit.sha,
+              version,
+            };
+          }
         }
+      }
+
+      if (best != null) {
+        return {
+          name: best.name,
+          sha : best.sha,
+        };
       }
     } catch (error) {
       throw gitHubAPIError(`Failed to get previous tag for ${ repository.owner }/${ repository.repo } at ${ currentSHA }.`, error);

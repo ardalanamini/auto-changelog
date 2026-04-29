@@ -378,6 +378,51 @@ describe("getPreviousTag", () => {
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
   });
 
+  it("should return the highest previous semver tag", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(releaseName).mockReturnValueOnce("2.0.0");
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+    jest.mocked(useSemver).mockReturnValueOnce(true);
+
+    const fetch = fetchMock.getOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/tags",
+      [
+        {
+          name  : "1.0.0",
+          commit: {
+            sha: "older-sha",
+          },
+        },
+        {
+          name  : "1.9.0",
+          commit: {
+            sha: "previous-sha",
+          },
+        },
+        {
+          name  : "2.1.0",
+          commit: {
+            sha: "future-sha",
+          },
+        },
+      ],
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+
+    const result = await githubAPI.getPreviousTag();
+
+    expect(result).toEqual({
+      name: "1.9.0",
+      sha : "previous-sha",
+    });
+  });
+
   it("should return null", async () => {
     const gitHubTokenInputValue = "github-token-value";
 
