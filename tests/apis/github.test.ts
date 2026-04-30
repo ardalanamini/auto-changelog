@@ -89,6 +89,33 @@ describe("getNewContributors", () => {
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
   });
 
+  it("should include bot contributors", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const fetch = fetchMock.postOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/releases/generate-notes",
+      {
+        body: {
+          body: "## New Contributors\n"
+            + "* @dependabot[bot] made their first contribution\n"
+            + "* @github-actions[bot] made their first contribution",
+        },
+      },
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+
+    const result = await githubAPI.getNewContributors("1.0.0");
+
+    expect(result).toBe("## New Contributors\n* @dependabot[bot]\n* @github-actions[bot]\n");
+  });
+
   it("should return null (when there's no new contributors)", async () => {
     const gitHubTokenInputValue = "github-token-value";
 
