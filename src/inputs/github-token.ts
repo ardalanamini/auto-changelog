@@ -29,6 +29,6 @@ import { input } from "#utils/input";
  *
  * @returns The GitHub token as a string.
  */
-export function gitHubToken(): string {
-  return input("github-token");
+export function gitHubToken(required = true): string {
+  return input("github-token", required);
 }

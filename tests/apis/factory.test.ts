@@ -1,0 +1,60 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2025 Ardalan Amini
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+import { GitAPI, GitHubAPI, api } from "#apis";
+import { API } from "#constants";
+import { preferredApi } from "#inputs";
+
+it("should return a GitAPI instance when preferred API is Git", () => {
+  jest.mocked(preferredApi).mockReturnValueOnce(API.GIT);
+
+  const result = api();
+
+  expect(result).toBeInstanceOf(GitAPI);
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+});
+
+it("should return a GitHubAPI instance when preferred API is GitHub", () => {
+  jest.mocked(preferredApi).mockReturnValueOnce(API.GITHUB);
+
+  const result = api();
+
+  expect(result).toBeInstanceOf(GitHubAPI);
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+});
+
+it("should throw an error for unsupported API", () => {
+  // This is a bit of a hack since TypeScript won't allow us to assign an invalid value to API
+  // But in runtime, this could happen if the validation in preferredApi somehow fails
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  jest.mocked(preferredApi).mockReturnValue("UnsupportedAPI" as never);
+
+  expect(() => api()).toThrow(Error);
+
+  expect(preferredApi).toHaveBeenCalledTimes(1);
+
+  expect(() => api()).toThrow("Unsupported API: UnsupportedAPI");
+
+  expect(preferredApi).toHaveBeenCalledTimes(2);
+});

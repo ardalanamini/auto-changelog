@@ -25,6 +25,9 @@
 import { getInput } from "@actions/core";
 import { releaseName } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it("should get and parse the \"release-name\" input", () => {
   const inputValue = "v1.0.0";
 

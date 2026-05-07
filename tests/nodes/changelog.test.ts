@@ -22,65 +22,40 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput, getInput } from "@actions/core";
 import { context } from "@actions/github";
-import YAML from "yaml";
+import { commitTypes, defaultCommitType, useGitHubAutolink } from "#inputs";
 import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "#nodes";
-
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-const url = `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`;
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
 
 it("should create an instance with common values", () => {
   const shouldUseGithubAutolink = true;
-  const defaultCommitType = "Other Changes";
-  const commitTypes = "feat: Features\nbug: Bug Fixes";
+  const defaultType = "Other Changes";
+  const typeMap = {
+    feat: "New Features",
+    fix : "Bug Fixes",
+  };
 
-  jest.mocked(getBooleanInput).mockReturnValueOnce(shouldUseGithubAutolink);
-  jest.mocked(getInput).mockImplementation((input) => {
-    switch (input) {
-      case "default-commit-type":
-        return defaultCommitType;
-      case "commit-types":
-        return commitTypes;
-      default:
-        return "";
-    }
-  });
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
+  jest.mocked(defaultCommitType).mockReturnValueOnce(defaultType);
+  jest.mocked(commitTypes).mockReturnValueOnce(typeMap);
 
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   expect(changelogNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
-  expect(changelogNode.defaultType).toBe(defaultCommitType);
-  expect(changelogNode.typeMap).toEqual(YAML.parse(commitTypes));
+  expect(changelogNode.defaultType).toBe(defaultType);
+  expect(changelogNode.typeMap).toEqual(typeMap);
   expect(changelogNode.repo).toEqual({
-    ...repo,
-    url,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(changelogNode.print()).toBeNull();
+  expect(useGitHubAutolink).toHaveBeenCalledTimes(1);
+  expect(defaultCommitType).toHaveBeenCalledTimes(1);
+  expect(commitTypes).toHaveBeenCalledTimes(1);
 });
 
 it("should not print anything", () => {
-  jest.mocked(getBooleanInput).mockReturnValueOnce(true);
-  jest.mocked(getInput).mockImplementation((input) => {
-    switch (input) {
-      case "default-commit-type":
-        return "Other Changes";
-      case "commit-types":
-        return "feat: Features\nbug: Bug Fixes";
-      default:
-        return "";
-    }
-  });
-
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   const typeNode = changelogNode.addType("feat");
 
@@ -93,27 +68,15 @@ it("should not print anything", () => {
 });
 
 it("should print commit changelog", () => {
-  jest.mocked(getBooleanInput).mockReturnValueOnce(true);
-  jest.mocked(getInput).mockImplementation((input) => {
-    switch (input) {
-      case "default-commit-type":
-        return "Other Changes";
-      case "commit-types":
-        return "feat: Features\nbug: Bug Fixes";
-      default:
-        return "";
-    }
-  });
-
-  const changelogNode = (new ChangelogNode);
+  const changelogNode = new ChangelogNode();
 
   const commitNode1 = changelogNode.addType("feat").addScope()
     .addCommit("implement awesome feature");
-  const commitNode2 = changelogNode.addType("bug").addScope()
+  const commitNode2 = changelogNode.addType("fix").addScope()
     .addCommit("fix some issue");
 
   expect(commitNode1).toBeInstanceOf(CommitNode);
   expect(commitNode2).toBeInstanceOf(CommitNode);
 
-  expect(changelogNode.print()).toBe("## Features\n* implement awesome feature\n\n## Bug Fixes\n* fix some issue");
+  expect(changelogNode.print()).toBe("## New Features\n* implement awesome feature\n\n## Bug Fixes\n* fix some issue");
 });

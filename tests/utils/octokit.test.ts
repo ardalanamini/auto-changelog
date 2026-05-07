@@ -22,29 +22,23 @@
  * SOFTWARE.
  */
 
-import { getInput } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
+import { gitHubToken } from "#inputs";
 import { octokit } from "#utils";
 
 it("should get octokit instance", () => {
-  const gitHubTokenInputName = "github-token";
   const gitHubTokenInputValue = "github-token-value";
 
-  jest.mocked(getInput).mockImplementationOnce((name) => {
-    if (name === gitHubTokenInputName) return gitHubTokenInputValue;
+  jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
 
-    return "";
-  });
-
-  jest.mocked(getOctokit).mockImplementationOnce(() => new GitHub);
+  jest.mocked(getOctokit).mockImplementationOnce(() => new GitHub());
 
   const result = octokit();
 
   expect(result).toBeInstanceOf(GitHub);
 
-  expect(getInput).toHaveBeenCalledTimes(1);
-  expect(getInput).toHaveBeenCalledWith(gitHubTokenInputName, { required: true });
+  expect(gitHubToken).toHaveBeenCalledTimes(1);
 
   expect(getOctokit).toHaveBeenCalledTimes(1);
   expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);

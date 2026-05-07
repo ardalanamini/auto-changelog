@@ -24,7 +24,6 @@
 
 export * from "./boolean-input.js";
 export * from "./cache.js";
-export * from "./github.js";
 export * from "./input.js";
 export * from "./octokit.js";
 export * from "./output.js";

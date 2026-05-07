@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2023-2025 Ardalan Amini
+ * Copyright (c) 2025 Ardalan Amini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,4 @@
  * SOFTWARE.
  */
 
-import { booleanInput } from "#utils/boolean-input";
-
-/**
- * Determines whether the "semver" input is enabled.
- *
- * @returns `true` if the "semver" input is set to a truthy value; otherwise, `false`.
- */
-export function semver(): boolean {
-  return booleanInput("semver");
-}
+export const useGitHubAutolink = jest.fn(() => true).mockName("useGitHubAutolink");

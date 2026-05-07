@@ -9,6 +9,7 @@ Automatic Changelog generator
 
 - [Usage](#usage)
 - [Inputs](#inputs)
+  - [Preferred API](#preferred-api)
   - [Github Token](#github-token)
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
@@ -52,11 +53,38 @@ type(category): description [flag]
 
 ### Inputs
 
+#### `preferred-api`
+
+**(Optional)**
+
+The preferred API to acquire the required information to generate the changelog.
+
+Possible options:
+
+- `Git`
+- `GitHub`
+
+Notes:
+
+- **`Git`**: Uses the local `git` CLI to read commits and tags from the checked-out repository. This is optimized for large repositories by **streaming commits and tags** (it does not load full histories into memory). It can optionally use GitHub (if a token is available) to resolve GitHub usernames from author emails.
+- **`GitHub`**: Uses GitHub APIs for commits/tags and for generating GitHub-style release notes sections (e.g. New Contributors).
+
+_Default:_
+
+```yaml
+GitHub
+```
+
 #### `github-token`
 
 **(Optional)**
 
 Github token.
+
+Notes:
+
+- Required when using **`preferred-api: GitHub`**.
+- When using **`preferred-api: Git`**, a token is only needed for optional enrichment (e.g. trying to resolve GitHub usernames from author emails). If omitted, Git mode will fall back to non-`@username` formatting where necessary.
 
 _Default:_
 
@@ -194,9 +222,9 @@ true
 
 **(Optional)**
 
-Enable semver based version comparison.
+Enable Semver-based version comparison.
 
-If enabled it'll determine whether the github ref is a valid semver string,
+If enabled it'll determine whether the GitHub ref is a valid `semver` string,
 it'll fail the action in case it's not.
 
 It'll then determine whether the version is a pre-release or not,
@@ -232,13 +260,13 @@ The generated changelog.
 
 Indicates whether it's a pre-release or not.
 
-> if semver is set to `true`, otherwise this output will always return `false`.
+> if `semver` is set to `true`, otherwise this output will always return `false`.
 
 #### `release-id`
 
-The pre-release id in case of prerelease being `true`, `latest` otherwise. (e.g. `alpha`, `beta`, `rc`, `canary`)
+The pre-release id in case of pre-release being `true`, `latest` otherwise. (e.g. `alpha`, `beta`, `rc`, `canary`)
 
-> if semver is set to `true`, otherwise this output will always return `latest`.
+> if `semver` is set to `true`, otherwise this output will always return `latest`.
 
 ### Example Usage
 
@@ -258,6 +286,7 @@ Using with custom inputs:
   name: Changelog
   with:
     github-token            : ${{ github.token }}
+    preferred-api           : GitHub
     commit-types            : |
       feat    : New Features
       fix     : Bug Fixes

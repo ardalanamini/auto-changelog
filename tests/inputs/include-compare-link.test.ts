@@ -25,6 +25,9 @@
 import { getBooleanInput } from "@actions/core";
 import { includeCompareLink } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it.each([true, false])("should get and parse the \"include-compare-link\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 

@@ -25,6 +25,8 @@
 /* istanbul ignore file */
 
 import { setFailed } from "@actions/core";
-import { generate } from "./generate.js";
+import { api } from "#apis";
 
-generate().catch(setFailed);
+Promise.resolve()
+  .then(async () => api().generate())
+  .catch(setFailed);

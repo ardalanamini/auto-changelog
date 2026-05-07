@@ -22,22 +22,11 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
+import { includePRLinks, useGitHubAutolink } from "#inputs";
 import { Node, PullRequestNode } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
-it("should print the pr only to be autolinked", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
+it("should print the pr only to be auto linked", () => {
   const pr = "197";
 
   const pullRequestNode = new PullRequestNode(pr);
@@ -49,15 +38,19 @@ it("should print the pr only to be autolinked", () => {
   expect(pullRequestNode.shouldNotPrint).toBe(false);
   expect(pullRequestNode.shouldUseGithubAutolink).toBe(true);
   expect(pullRequestNode.repo).toEqual({
-    ...repo,
-    url: `${ context.serverUrl }/${ repo.owner }/${ repo.repo }`,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(pullRequestNode.print()).toBe(`#${ pr }`);
 });
 
 it("should not print anything", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(false);
+  const shouldUseIncludePRLinks = false;
+  const shouldUseGithubAutolink = false;
+
+  jest.mocked(includePRLinks).mockReturnValueOnce(shouldUseIncludePRLinks);
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
   const pr = "197";
 
@@ -65,15 +58,16 @@ it("should not print anything", () => {
 
   expect(pullRequestNode.pr).toBe(pr);
 
-  expect(pullRequestNode.shouldNotPrint).toBe(true);
-  expect(pullRequestNode.shouldUseGithubAutolink).toBe(false);
+  expect(pullRequestNode.shouldNotPrint).toBe(!shouldUseIncludePRLinks);
+  expect(pullRequestNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
   expect(pullRequestNode.print()).toBeNull();
 });
 
 it("should print the pr with the link (not using autolink)", () => {
-  // Enable PR links but disable GitHub autolink to test manual link generation
-  jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+  const shouldUseGithubAutolink = false;
+
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
   const pr = "197";
 
@@ -82,7 +76,7 @@ it("should print the pr with the link (not using autolink)", () => {
   expect(pullRequestNode.pr).toBe(pr);
 
   expect(pullRequestNode.shouldNotPrint).toBe(false);
-  expect(pullRequestNode.shouldUseGithubAutolink).toBe(false);
+  expect(pullRequestNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
-  expect(pullRequestNode.print()).toBe(`[#${ pr }](${ context.serverUrl }/${ repo.owner }/${ repo.repo }/issues/${ pr })`);
+  expect(pullRequestNode.print()).toBe(`[#${ pr }](${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }/issues/${ pr })`);
 });

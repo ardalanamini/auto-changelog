@@ -22,24 +22,11 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
 import { context } from "@actions/github";
+import { mentionAuthors, useGitHubAutolink } from "#inputs";
 import { CommitAuthorNode, CommitHashNode, Node, PullRequestNode } from "#nodes";
 
-const repo = {
-  owner: "ardalanamini",
-  repo : "auto-changelog",
-};
-const serverUrl = context.serverUrl;
-const url = `${ serverUrl }/${ repo.owner }/${ repo.repo }`;
-
-beforeEach(() => {
-  jest.spyOn(context, "repo", "get").mockReturnValueOnce(repo);
-});
-
 it("should print the username only to be autolinked", () => {
-  jest.mocked(getBooleanInput).mockReturnValue(true);
-
   const username = "ardalanamini";
 
   const commitAuthorNode = new CommitAuthorNode(username);
@@ -48,18 +35,20 @@ it("should print the username only to be autolinked", () => {
 
   expect(commitAuthorNode.username).toBe(username);
 
-  expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
-  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitAuthorNode.shouldMentionAuthor).toBe(mentionAuthors());
+  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
   expect(commitAuthorNode.repo).toEqual({
-    ...repo,
-    url,
+    ...context.repo,
+    url: `${ context.serverUrl }/${ context.repo.owner }/${ context.repo.repo }`,
   });
 
   expect(commitAuthorNode.print()).toBe(`@${ username }`);
 });
 
 it("should not print anything", () => {
-  jest.mocked(getBooleanInput).mockImplementation(name => name !== "mention-authors");
+  const shouldMentionAuthor = false;
+
+  jest.mocked(mentionAuthors).mockReturnValueOnce(shouldMentionAuthor);
 
   const username = "ardalanamini";
 
@@ -67,14 +56,16 @@ it("should not print anything", () => {
 
   expect(commitAuthorNode.username).toBe(username);
 
-  expect(commitAuthorNode.shouldMentionAuthor).toBe(false);
-  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
+  expect(commitAuthorNode.shouldMentionAuthor).toBe(shouldMentionAuthor);
+  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(useGitHubAutolink());
 
   expect(commitAuthorNode.print()).toBeNull();
 });
 
 it("should print the username with the link (not using autolink)", () => {
-  jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+  const shouldUseGithubAutolink = false;
+
+  jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
   const username = "ardalanamini";
 
@@ -82,16 +73,14 @@ it("should print the username with the link (not using autolink)", () => {
 
   expect(commitAuthorNode.username).toBe(username);
 
-  expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
-  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(false);
+  expect(commitAuthorNode.shouldMentionAuthor).toBe(mentionAuthors());
+  expect(commitAuthorNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
-  expect(commitAuthorNode.print()).toBe(`[@${ username }](${ serverUrl }/${ username })`);
+  expect(commitAuthorNode.print()).toBe(`[@${ username }](${ context.serverUrl }/${ username })`);
 });
 
 describe("should print the username & commit sha", () => {
   it("with autolink", () => {
-    jest.mocked(getBooleanInput).mockReturnValue(true);
-
     const username = "ardalanamini";
     const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
 
@@ -110,7 +99,9 @@ describe("should print the username & commit sha", () => {
   });
 
   it("without autolink", () => {
-    jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+    const shouldUseGithubAutolink = false;
+
+    jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
     const username = "ardalanamini";
     const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
@@ -122,18 +113,16 @@ describe("should print the username & commit sha", () => {
     expect(commitAuthorNode.username).toBe(username);
 
     expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
-    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(false);
+    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
     expect(reference).toBeInstanceOf(CommitHashNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ serverUrl }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ context.serverUrl }/${ username })`);
   });
 });
 
 describe("should print the username & pr (prioritized over commit sha)", () => {
   it("with autolink", () => {
-    jest.mocked(getBooleanInput).mockReturnValue(true);
-
     const username = "ardalanamini";
     const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
     const pr = "197";
@@ -153,7 +142,9 @@ describe("should print the username & pr (prioritized over commit sha)", () => {
   });
 
   it("without autolink", () => {
-    jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+    const shouldUseGithubAutolink = false;
+
+    jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
     const username = "ardalanamini";
     const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
@@ -166,18 +157,16 @@ describe("should print the username & pr (prioritized over commit sha)", () => {
     expect(commitAuthorNode.username).toBe(username);
 
     expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
-    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(false);
+    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
     expect(reference).toBeInstanceOf(PullRequestNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ serverUrl }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } by [@${ username }](${ context.serverUrl }/${ username })`);
   });
 });
 
 describe("should print the username & multiple references", () => {
   it("with autolink", () => {
-    jest.mocked(getBooleanInput).mockReturnValue(true);
-
     const username = "ardalanamini";
 
     const sha = "3c1177539c1a216084f922ea52e56dd719a25945";
@@ -202,7 +191,9 @@ describe("should print the username & multiple references", () => {
   });
 
   it("without autolink", () => {
-    jest.mocked(getBooleanInput).mockImplementation(name => name !== "use-github-autolink");
+    const shouldUseGithubAutolink = false;
+
+    jest.mocked(useGitHubAutolink).mockReturnValueOnce(shouldUseGithubAutolink);
 
     const username = "ardalanamini";
 
@@ -219,19 +210,17 @@ describe("should print the username & multiple references", () => {
     expect(commitAuthorNode.username).toBe(username);
 
     expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
-    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(false);
+    expect(commitAuthorNode.shouldUseGithubAutolink).toBe(shouldUseGithubAutolink);
 
     expect(reference).toBeInstanceOf(PullRequestNode);
     expect(reference2).toBeInstanceOf(CommitHashNode);
 
-    expect(commitAuthorNode.print()).toBe(`${ reference.print() } & ${ reference2.print() } by [@${ username }](${ serverUrl }/${ username })`);
+    expect(commitAuthorNode.print()).toBe(`${ reference.print() } & ${ reference2.print() } by [@${ username }](${ context.serverUrl }/${ username })`);
   });
 });
 
 describe("should reuse reference", () => {
   it("commit sha", () => {
-    jest.mocked(getBooleanInput).mockReturnValue(true);
-
     const username = "ardalanamini";
 
     const commitAuthorNode = new CommitAuthorNode(username);
@@ -249,17 +238,11 @@ describe("should reuse reference", () => {
 
     expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
     expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
-    expect(commitAuthorNode.repo).toEqual({
-      ...repo,
-      url,
-    });
 
     expect(commitAuthorNode.print()).toBe(`${ sha } by @${ username }`);
   });
 
   it("pr number", () => {
-    jest.mocked(getBooleanInput).mockReturnValue(true);
-
     const username = "ardalanamini";
 
     const commitAuthorNode = new CommitAuthorNode(username);
@@ -278,10 +261,6 @@ describe("should reuse reference", () => {
 
     expect(commitAuthorNode.shouldMentionAuthor).toBe(true);
     expect(commitAuthorNode.shouldUseGithubAutolink).toBe(true);
-    expect(commitAuthorNode.repo).toEqual({
-      ...repo,
-      url,
-    });
 
     expect(commitAuthorNode.print()).toBe(`#${ pr } by @${ username }`);
   });

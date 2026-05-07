@@ -25,6 +25,9 @@
 import { getInput } from "@actions/core";
 import { gitHubToken } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it("should get and parse the \"github-token\" input", () => {
   const inputValue = "github-token-value";
 

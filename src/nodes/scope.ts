@@ -32,7 +32,7 @@ import { Node } from "./node.js";
  */
 export class ScopeNode extends Node {
 
-  protected readonly commits = (new Map<string, CommitNode>);
+  protected readonly commits = new Map<string, CommitNode>();
 
   /**
    * Constructs an instance of the scope node.

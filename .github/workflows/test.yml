@@ -1,23 +1,23 @@
 name: Test
 
-on  : # rebuild any PRs and main branch changes
-  push         :
+on: # rebuild any PRs and main branch changes
+  push:
     branches:
       - main
-  pull_request :
+  pull_request:
   workflow_call:
 
-env :
+env:
   NODE_VERSION: 24
   PNPM_VERSION: 10.17.1
 
 jobs:
-  build                : # make sure build/ci work properly
-    name   : Build
+  build: # make sure build/ci work properly
+    name: Build
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
       - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
@@ -28,21 +28,21 @@ jobs:
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v5
         with:
-          cache       : pnpm
+          cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run : pnpm i
+        run: pnpm i
 
       - name: Build using Rolldown
-        run : pnpm build
+        run: pnpm build
 
-  lint                 : # make sure build/ci work properly
-    name   : Lint
+  lint: # make sure build/ci work properly
+    name: Lint
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
       - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
@@ -53,21 +53,21 @@ jobs:
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v5
         with:
-          cache       : pnpm
+          cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run : pnpm i
+        run: pnpm i
 
       - name: Check code styles
-        run : pnpm lint
+        run: pnpm lint
 
-  test                 : # make sure build/ci work properly
-    name   : Test
+  test: # make sure build/ci work properly
+    name: Test
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
       - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
@@ -78,29 +78,29 @@ jobs:
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v5
         with:
-          cache       : pnpm
+          cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run : pnpm i
+        run: pnpm i
 
       - name: Type check source files & unit tests
-        run : pnpm test:types
+        run: pnpm test:types
 
       - name: Run unit tests
-        run : pnpm test:coverage
+        run: pnpm test:coverage
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  action               : # make sure the action files are up to date
-    name   : Action files
+  action: # make sure the action files are up to date
+    name: Action files
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
       - uses: actions/checkout@v5
 
       - name: Use PNPM ${{ env.PNPM_VERSION }}
@@ -111,45 +111,68 @@ jobs:
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v5
         with:
-          cache       : pnpm
+          cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run : pnpm i
+        run: pnpm i
 
       - uses: nickcharlton/diff-check@v1.0.0
         with:
           command: pnpm build
 
-  live-test            : # make sure the action works on a clean machine without building
-    name   : Live Test
+  live-test: # make sure the action works on a clean machine without building
+    name: Live Test
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
       - uses: actions/checkout@v5
 
       - name: Changelog
         uses: ./
         with:
-          semver                  : ${{ startsWith(github.ref, 'refs/tags/') }}
+          semver: ${{ startsWith(github.ref, 'refs/tags/') }}
           mention-new-contributors: ${{ github.ref_protected }}
 
-  live-test-with-inputs: # make sure the action works on a clean machine without building
-    name   : Live Test with inputs
+  live-test-with-git: # make sure the action works on a clean machine without building
+    name: Live Test with Git
+
+    permissions:
+      contents: read
 
     runs-on: ubuntu-latest
 
-    steps  :
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          # repository: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name || github.repository }}
+          # ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Changelog
+        uses: ./
+        with:
+          semver: ${{ startsWith(github.ref, 'refs/tags/') }}
+          mention-new-contributors: ${{ github.ref_protected }}
+          preferred-api: Git
+
+  live-test-with-inputs: # make sure the action works on a clean machine without building
+    name: Live Test with inputs
+
+    runs-on: ubuntu-latest
+
+    steps:
       - uses: actions/checkout@v5
 
       - name: Changelog
         uses: ./
         with:
-          commit-types            : |
+          commit-types: |
             feat: Feature
-          default-commit-type     : Default Type
-          mention-authors         : false
+          default-commit-type: Default Type
+          mention-authors: false
           mention-new-contributors: false
-          include-compare-link    : false
-          semver                  : false
+          include-compare-link: false
+          semver: false

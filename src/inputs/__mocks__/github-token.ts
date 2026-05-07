@@ -22,39 +22,4 @@
  * SOFTWARE.
  */
 
-import { octokit } from "./octokit.js";
-import { sha } from "./sha.js";
-
-export async function *iterateCommits(owner: string, repo: string, from?: string): AsyncGenerator<TCommit> {
-  const { paginate, rest } = octokit();
-
-  const iterator = paginate.iterator(
-    rest.repos.listCommits,
-    {
-      per_page: 100,
-      sha     : sha(),
-      owner,
-      repo,
-    },
-  );
-
-  loop: for await (const { data } of iterator) {
-    for (const commit of data) {
-      if (commit.sha === from) break loop;
-
-      yield commit;
-    }
-  }
-}
-
-export interface TCommit {
-  author?: {
-    login: string;
-  } | null;
-
-  commit: {
-    message: string;
-  };
-
-  sha: string;
-}
+export const gitHubToken = jest.fn(() => "mock-github-token").mockName("gitHubToken");

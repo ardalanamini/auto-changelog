@@ -25,6 +25,9 @@
 import { getBooleanInput } from "@actions/core";
 import { mentionNewContributors } from "#inputs";
 
+// Unmock the inputs module for this test file
+jest.unmock("#inputs");
+
 it.each([true, false])("should get and parse the \"mention-new-contributors\" input as %j", (inputValue) => {
   jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
 

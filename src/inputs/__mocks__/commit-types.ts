@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-import { getBooleanInput } from "@actions/core";
-import { semver } from "#inputs";
-
-it.each([true, false])("should get and parse the \"semver\" input as %j", (inputValue) => {
-  jest.mocked(getBooleanInput).mockReturnValueOnce(inputValue);
-
-  const result = semver();
-
-  expect(result).toEqual(inputValue);
-
-  expect(getBooleanInput).toHaveBeenCalledTimes(1);
-  expect(getBooleanInput).toHaveBeenCalledWith("semver", { required: true });
-});
+export const commitTypes = jest.fn(() => ({
+  feat    : "New Features",
+  fix     : "Bug Fixes",
+  build   : "Build System & Dependencies",
+  perf    : "Performance Improvements",
+  docs    : "Documentation",
+  test    : "Tests",
+  refactor: "Refactors",
+  chore   : "Chores",
+  ci      : "CI",
+  style   : "Code Style",
+  revert  : "Reverts",
+})).mockName("commitTypes");

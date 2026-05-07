@@ -10,6 +10,11 @@ branding:
 
 inputs:
 
+  preferred-api:
+    description: The preferred API to acquire the required information to generate the changelog
+    required: true
+    default: "GitHub"
+
   github-token:
     description: Github token
     required: true

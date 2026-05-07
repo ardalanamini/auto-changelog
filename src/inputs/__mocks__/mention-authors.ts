@@ -22,27 +22,4 @@
  * SOFTWARE.
  */
 
-import { setChangelog, setPrerelease, setReleaseId } from "#outputs";
-import { generateChangelog } from "./changelog.js";
-import { generateFooter } from "./footer.js";
-import { getTagInfo } from "./tag.js";
-
-/**
- * Generates and sets release metadata and changelog content based on the latest tag information.
- *
- * Retrieves tag details, updates prerelease status and release ID, generates the changelog and footer,
- * and sets the complete changelog output.
- */
-export async function generate(): Promise<void> {
-  const { prerelease, releaseId, previous } = await getTagInfo();
-
-  setPrerelease(prerelease);
-
-  setReleaseId(releaseId);
-
-  let changelog = await generateChangelog(previous?.sha);
-
-  changelog += await generateFooter(previous?.name);
-
-  setChangelog(changelog);
-}
+export const mentionAuthors = jest.fn(() => true).mockName("mentionAuthors");

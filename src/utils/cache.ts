@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-const CACHE = (new Map);
+const CACHE = new Map();
 
 export function cache<T>(key: string, value: () => T, overwrite = false): T {
   if (overwrite || !CACHE.has(key)) CACHE.set(key, value());
