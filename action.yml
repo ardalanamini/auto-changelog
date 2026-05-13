@@ -46,6 +46,21 @@ inputs:
     required: true
     default: ${{ github.ref_name }}
 
+  package:
+    description: Monorepo package/app name to generate changelog for
+    required: false
+    default: ""
+
+  monorepo-detectors:
+    description: Monorepo detection strategies used when package is set. One or more of auto, pnpm, npm, yarn, lerna, nx.
+    required: false
+    default: "auto"
+
+  include-root-commits:
+    description: Include root-level commits in package changelogs. One of false, auto, all.
+    required: false
+    default: "false"
+
   release-name-prefix:
     description: Release name (version) prefix
     required: false
@@ -96,6 +111,12 @@ outputs:
 
   release-id:
     description: The pre-release id in case of prerelease being true, latest otherwise (if semver is set to true, otherwise this output will always return latest)
+
+  package-name:
+    description: The selected monorepo package name when package mode is enabled
+
+  package-path:
+    description: The selected monorepo package path when package mode is enabled
 
 runs:
   using: node24

@@ -24,6 +24,7 @@
 
 import { debug } from "@actions/core";
 import { marked } from "marked";
+import { type MonorepoContext, parsePackageTagSemanticVersion, shouldIncludeCommit } from "#monorepo";
 import { octokit, parseSemanticVersion } from "#utils";
 /* eslint-disable @stylistic/key-spacing -- conflicts with type-annotation-spacing in type definitions */
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "./api.js";
@@ -56,7 +57,7 @@ export class GitHubAPI extends APIBase {
     }
   }
 
-  public async getPreviousTag(): Promise<TTag | null> {
+  public async getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null> {
     const { gitHub, repository, currentSHA, semanticVersion } = this;
 
     try {
@@ -78,6 +79,7 @@ export class GitHubAPI extends APIBase {
       for await (const { data } of iterator) {
         for (const { name, commit } of data) {
           if (currentSHA === commit.sha) continue;
+          if (monorepoContext && !name.startsWith(monorepoContext.tagPrefix)) continue;
 
           if (semanticVersion == null) {
             return {
@@ -86,7 +88,9 @@ export class GitHubAPI extends APIBase {
             };
           }
 
-          const version = parseSemanticVersion(name);
+          const version = monorepoContext
+            ? parsePackageTagSemanticVersion(name, monorepoContext.selectedPackage.name)
+            : parseSemanticVersion(name);
 
           if (version == null || semanticVersion.compare(version) <= 0) continue;
 
@@ -113,7 +117,7 @@ export class GitHubAPI extends APIBase {
     return null;
   }
 
-  public async *iterateCommits(fromSHA?: string): AsyncGenerator<TCommit> {
+  public async *iterateCommits(fromSHA?: string, monorepoContext?: MonorepoContext | null): AsyncGenerator<TCommit> {
     const { gitHub, repository, currentSHA } = this;
 
     try {
@@ -131,7 +135,24 @@ export class GitHubAPI extends APIBase {
         for (const commit of data) {
           if (fromSHA === commit.sha) break loop;
 
-          yield commit;
+          if (!monorepoContext) {
+            yield {
+              author: commit.author,
+              commit: commit.commit,
+              sha   : commit.sha,
+            };
+            continue;
+          }
+
+          /* eslint-disable-next-line no-await-in-loop -- package mode needs per-commit file data */
+          const files = await this.listCommitFiles(commit.sha);
+
+          if (!shouldIncludeCommit(files, monorepoContext)) continue;
+
+          yield {
+            ...commit,
+            files,
+          };
         }
       }
     } catch (error) {
@@ -180,6 +201,18 @@ export class GitHubAPI extends APIBase {
         username,
       };
     }
+  }
+
+  private async listCommitFiles(commitSHA: string): Promise<string[]> {
+    const { gitHub, repository } = this;
+
+    const { data } = await gitHub.rest.repos.getCommit({
+      owner: repository.owner,
+      ref  : commitSHA,
+      repo : repository.repo,
+    });
+
+    return data.files?.map(file => file.filename) ?? [];
   }
 
 }

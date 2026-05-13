@@ -26,7 +26,8 @@ import { spawn as nodeSpawn } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { debug, getInput } from "@actions/core";
 import { GitAPI } from "#apis";
-import { releaseName, useSemver } from "#inputs";
+import { packageName, releaseName, useSemver } from "#inputs";
+import { type MonorepoContext } from "#monorepo";
 import { cache } from "#utils";
 
 jest.mock("node:child_process", () => ({
@@ -35,6 +36,25 @@ jest.mock("node:child_process", () => ({
 
 const FIELD_SEPARATOR = "\u001F";
 const RECORD_SEPARATOR = "\u001E";
+
+const monorepoContext: MonorepoContext = {
+  includeRootCommits: "false",
+  packages          : [
+    {
+      name: "web",
+      path: "apps/web",
+    },
+    {
+      name: "api",
+      path: "apps/api",
+    },
+  ],
+  selectedPackage: {
+    name: "web",
+    path: "apps/web",
+  },
+  tagPrefix: "web@",
+};
 
 class MockChildProcess extends EventEmitter {
 
@@ -95,6 +115,7 @@ describe("GitAPI", () => {
   beforeEach(() => {
     jest.mocked(useSemver).mockReturnValue(false);
     jest.mocked(releaseName).mockReturnValue("2.0.0");
+    jest.mocked(packageName).mockReturnValue("");
     jest.mocked(getInput).mockImplementation((name: string) => (name === "github-token" ? "" : ""));
   });
 
@@ -161,6 +182,74 @@ describe("GitAPI", () => {
       name: "1.9.0",
       sha : "abc123",
     });
+  });
+
+  it("selects previous package tag using the selected package prefix", async () => {
+    jest.mocked(packageName).mockReturnValueOnce("web");
+    jest.mocked(useSemver).mockReturnValueOnce(true);
+    jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0");
+
+    setSpawnImplementation((gitArguments) => {
+      if (gitArguments[1] === "--no-pager" && gitArguments[2] === "for-each-ref") {
+        const tags
+          = `api@1.9.0${ FIELD_SEPARATOR }deadbeef${ RECORD_SEPARATOR }`
+            + `web@1.5.0${ FIELD_SEPARATOR }deadbeef${ RECORD_SEPARATOR }`
+            + `web@1.9.0${ FIELD_SEPARATOR }deadbeef${ RECORD_SEPARATOR }`;
+        return new MockChildProcess({ stdoutChunks: [tags] });
+      }
+
+      if (gitArguments[1] === "rev-list") {
+        expect(gitArguments.at(-1)).toBe("web@1.9.0");
+        return new MockChildProcess({ stdoutChunks: ["abc123\n"] });
+      }
+
+      throw new Error(`Unexpected git args: ${ gitArguments.join(" ") }`);
+    });
+
+    const api = new GitAPI();
+    const previous = await api.getPreviousTag(monorepoContext);
+
+    expect(previous).toEqual({
+      name: "web@1.9.0",
+      sha : "abc123",
+    });
+  });
+
+  it("filters commits by selected package files in package mode", async () => {
+    jest.mocked(packageName).mockReturnValueOnce("web");
+    jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0");
+
+    setSpawnImplementation((gitArguments) => {
+      if (gitArguments[1] === "--no-pager" && gitArguments[2] === "log") {
+        const apiCommit = `aaa${ FIELD_SEPARATOR }Jane Doe${ FIELD_SEPARATOR }jane@example.com${ FIELD_SEPARATOR }feat: api${ RECORD_SEPARATOR }`;
+        const webCommit = `bbb${ FIELD_SEPARATOR }Jane Doe${ FIELD_SEPARATOR }jane@example.com${ FIELD_SEPARATOR }feat: web${ RECORD_SEPARATOR }`;
+
+        return new MockChildProcess({ stdoutChunks: [apiCommit + webCommit] });
+      }
+
+      if (gitArguments[1] === "diff-tree") {
+        const commitSHA = gitArguments.at(-1);
+
+        if (commitSHA === "aaa") return new MockChildProcess({ stdoutChunks: ["apps/api/index.ts\n"] });
+        if (commitSHA === "bbb") return new MockChildProcess({ stdoutChunks: ["apps/web/index.ts\n"] });
+      }
+
+      throw new Error(`Unexpected git args: ${ gitArguments.join(" ") }`);
+    });
+
+    const api = new GitAPI();
+    const commits = [];
+
+    for await (const commit of api.iterateCommits(void 0, monorepoContext)) commits.push(commit);
+
+    expect(commits).toEqual([
+      {
+        sha   : "bbb",
+        commit: { message: "feat: web" },
+        author: { login: "jane" },
+        files : ["apps/web/index.ts"],
+      },
+    ]);
   });
 
   it("skips non-semver tags that resolve to the current SHA", async () => {

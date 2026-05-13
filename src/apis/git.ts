@@ -27,6 +27,7 @@ import { createHash } from "node:crypto";
 import { debug } from "@actions/core";
 import { getOctokit } from "@actions/github";
 import { gitHubToken } from "#inputs";
+import { type MonorepoContext, parsePackageTagSemanticVersion, shouldIncludeCommit } from "#monorepo";
 import { octokit, parseSemanticVersion } from "#utils";
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- defensive checks for split/API responses */
@@ -137,6 +138,25 @@ async function gitTrimmedStdout(args: string[]): Promise<string> {
   return stdout.trim();
 }
 
+async function listCommitFiles(commitSHA: string): Promise<string[]> {
+  const stdout = await gitTrimmedStdout([
+    "diff-tree",
+    "--no-commit-id",
+    "--name-only",
+    "-r",
+    "-m",
+    "--root",
+    commitSHA,
+  ]);
+
+  if (!stdout) return [];
+
+  return stdout
+    .split("\n")
+    .map(file => file.trim())
+    .filter(Boolean);
+}
+
 function parseShortlogLine(line: string): {
   email: string;
   name: string;
@@ -185,7 +205,7 @@ export class GitAPI extends APIBase {
     return newContributors;
   }
 
-  public async getPreviousTag(): Promise<TTag | null> {
+  public async getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null> {
     const { currentSHA, semanticVersion } = this;
     debug(`[git-api] getPreviousTag start (currentSHA=${ currentSHA }, semver=${ semanticVersion ? "enabled" : "disabled" })`);
 
@@ -203,6 +223,8 @@ export class GitAPI extends APIBase {
       const [name] = record.split(FIELD_SEPARATOR);
       if (!name) continue;
 
+      if (monorepoContext && !name.startsWith(monorepoContext.tagPrefix)) continue;
+
       if (!semanticVersion) {
         const sha = await gitTrimmedStdout(["rev-list", "-n", "1", name]);
 
@@ -218,7 +240,10 @@ export class GitAPI extends APIBase {
         };
       }
 
-      const version = parseSemanticVersion(name);
+      const version = monorepoContext
+        ? parsePackageTagSemanticVersion(name, monorepoContext.selectedPackage.name)
+        : parseSemanticVersion(name);
+
       if (!version) continue;
 
       if (semanticVersion.compare(version) <= 0) continue;
@@ -256,7 +281,7 @@ export class GitAPI extends APIBase {
     return null;
   }
 
-  public async *iterateCommits(fromSHA?: string): AsyncGenerator<TCommit> {
+  public async *iterateCommits(fromSHA?: string, monorepoContext?: MonorepoContext | null): AsyncGenerator<TCommit> {
     const { currentSHA } = this;
     debug(`[git-api] iterateCommits start (fromSHA=${ fromSHA ?? "none" }, head=${ currentSHA })`);
 
@@ -307,6 +332,14 @@ export class GitAPI extends APIBase {
             break;
           }
 
+          /* eslint-disable-next-line no-await-in-loop -- package mode needs per-commit file data */
+          const files = monorepoContext ? await listCommitFiles(shaValue.trim()) : void 0;
+
+          if (monorepoContext && !shouldIncludeCommit(files ?? [], monorepoContext)) {
+            index = buffer.indexOf(RECORD_SEPARATOR);
+            continue;
+          }
+
           /* eslint-disable no-await-in-loop -- must resolve login before yielding each commit */
           const login
             = (authorEmail ? await this.resolveGitHubLoginByEmail(authorEmail) : null)
@@ -322,6 +355,7 @@ export class GitAPI extends APIBase {
             sha: shaValue.trim(),
             commit: { message: message ?? "" },
             author: login ? { login } : null,
+            files,
           };
 
           index = buffer.indexOf(RECORD_SEPARATOR);

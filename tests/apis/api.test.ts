@@ -25,7 +25,7 @@
 import { setOutput } from "@actions/core";
 import { context } from "@actions/github";
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "#apis";
-import { includeCompareLink, mentionNewContributors, releaseName, useSemver } from "#inputs";
+import { includeCompareLink, mentionNewContributors, packageName, releaseName, useSemver } from "#inputs";
 
 class TestAPI extends APIBase {
 
@@ -96,6 +96,36 @@ describe("getTagInfo", () => {
     const result = await testAPI.getTagInfo();
 
     expect(result).toEqual(info);
+  });
+
+  it("should get package semver tag information", async () => {
+    const info = {
+      releaseId : "beta",
+      prerelease: true,
+      previous  : {
+        name: "web@1.0.0",
+        sha : "3c1177539c1a216084f922ea52e56dd719a25945",
+      },
+    };
+
+    jest.mocked(packageName).mockReturnValueOnce("web");
+    jest.mocked(useSemver).mockReturnValueOnce(true);
+    jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0-beta.1");
+
+    const testAPI = new TestAPI();
+
+    jest.spyOn(testAPI, "getPreviousTag").mockImplementationOnce(async () => info.previous);
+
+    const result = await testAPI.getTagInfo();
+
+    expect(result).toEqual(info);
+  });
+
+  it("should reject package releases that do not match the selected package tag prefix", () => {
+    jest.mocked(packageName).mockReturnValueOnce("web");
+    jest.mocked(releaseName).mockReturnValueOnce("api@1.0.0");
+
+    expect(() => new TestAPI()).toThrow("Expected monorepo releaseName \"web@<version>\"");
   });
 });
 
@@ -331,11 +361,15 @@ describe("generate", () => {
 
     await testAPI.generate();
 
-    expect(setOutput).toHaveBeenCalledTimes(3);
+    expect(setOutput).toHaveBeenCalledTimes(5);
 
     expect(setOutput).toHaveBeenCalledWith("prerelease", info.prerelease);
 
     expect(setOutput).toHaveBeenCalledWith("release-id", info.releaseId);
+
+    expect(setOutput).toHaveBeenCalledWith("package-name", "");
+
+    expect(setOutput).toHaveBeenCalledWith("package-path", "");
 
     expect(setOutput).toHaveBeenCalledWith(
       "changelog",

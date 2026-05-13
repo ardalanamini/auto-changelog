@@ -28,6 +28,7 @@
   "imports": {
     "#constants": "./src/constants/index.ts",
     "#apis": "./src/apis/index.ts",
+    "#monorepo": "./src/monorepo/index.ts",
     "#nodes": "./src/nodes/index.ts",
     "#inputs": "./src/inputs/index.ts",
     "#outputs": "./src/outputs/index.ts",

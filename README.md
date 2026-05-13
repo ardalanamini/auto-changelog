@@ -14,6 +14,9 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
+  - [Package](#package)
+  - [Monorepo Detectors](#monorepo-detectors)
+  - [Include Root Commits](#include-root-commits)
   - [Release Name Prefix](#release-name-prefix)
   - [Mention Authors](#mention-authors)
   - [Mention New Contributors](#mention-new-contributors)
@@ -24,6 +27,8 @@ Automatic Changelog generator
   - [Changelog](#changelog)
   - [Pre-release](#prerelease)
   - [Release ID](#release-id)
+  - [Package Name](#package-name)
+  - [Package Path](#package-path)
 - [Example Usage](#example-usage)
 
 ## Usage
@@ -140,6 +145,81 @@ _Default:_
 
 ```yaml
 ${{ github.ref_name }}
+```
+
+#### `package`
+
+**(Optional)**
+
+Monorepo package/app name to generate the changelog for.
+
+When this input is empty, the action keeps the current repository-wide behavior and does not run monorepo detection.
+
+When this input is set, the action detects workspace packages, selects the matching package by name, and expects package release tags in this format:
+
+```txt
+{name}@{version}
+```
+
+Examples:
+
+```txt
+web@1.2.3
+api@2.0.0
+@scope/ui@0.4.1
+```
+
+_Default:_
+
+```yaml
+""
+```
+
+#### `monorepo-detectors`
+
+**(Optional)**
+
+Monorepo detection strategies used when `package` is set.
+
+Possible options:
+
+- `auto`
+- `pnpm`
+- `npm`
+- `yarn`
+- `lerna`
+- `nx`
+
+Use comma-separated values to limit detection:
+
+```yaml
+pnpm,nx
+```
+
+`auto` tries `pnpm`, `npm`/`yarn` workspaces, `lerna`, then `nx`.
+
+_Default:_
+
+```yaml
+auto
+```
+
+#### `include-root-commits`
+
+**(Optional)**
+
+Controls root/shared commits in monorepo package changelogs. This input is ignored when `package` is empty.
+
+Possible options:
+
+- `false`: only include commits touching the selected package path.
+- `auto`: include selected package commits and related root workspace/config files.
+- `all`: include selected package commits and any root/shared files, but still exclude commits that only touch sibling packages.
+
+_Default:_
+
+```yaml
+false
 ```
 
 #### `release-name-prefix`
@@ -268,6 +348,14 @@ The pre-release id in case of pre-release being `true`, `latest` otherwise. (e.g
 
 > if `semver` is set to `true`, otherwise this output will always return `latest`.
 
+#### `package-name`
+
+The selected monorepo package name when `package` mode is enabled, otherwise an empty string.
+
+#### `package-path`
+
+The selected monorepo package path when `package` mode is enabled, otherwise an empty string.
+
 ### Example Usage
 
 Using with default inputs:
@@ -301,6 +389,9 @@ Using with custom inputs:
       revert  : Reverts
     default-commit-type     : Other Changes
     release-name            : v1.0.0
+    package                 : ""
+    monorepo-detectors      : auto
+    include-root-commits    : false
     release-name-prefix     : ""
     mention-authors         : true
     mention-new-contributors: true
@@ -309,4 +400,17 @@ Using with custom inputs:
     include-commit-links    : true
     semver                  : true
     use-github-autolink     : true
+```
+
+Using with a monorepo package release:
+
+```yaml
+- uses: ardalanamini/auto-changelog@v4
+  id  : changelog
+  name: Changelog
+  with:
+    package             : web
+    release-name        : web@1.2.3
+    monorepo-detectors  : pnpm,nx
+    include-root-commits: auto
 ```
