@@ -119,6 +119,9 @@ export class GitHubAPI extends APIBase {
 
   public async *iterateCommits(fromSHA?: string, monorepoContext?: MonorepoContext | null): AsyncGenerator<TCommit> {
     const { gitHub, repository, currentSHA } = this;
+    const path = monorepoContext?.includeRootCommits === "false"
+      ? monorepoContext.selectedPackage.path
+      : void 0;
 
     try {
       const iterator = gitHub.paginate.iterator(
@@ -126,6 +129,7 @@ export class GitHubAPI extends APIBase {
         {
           per_page: 100,
           owner   : repository.owner,
+          path,
           repo    : repository.repo,
           sha     : currentSHA,
         },
@@ -135,7 +139,7 @@ export class GitHubAPI extends APIBase {
         for (const commit of data) {
           if (fromSHA === commit.sha) break loop;
 
-          if (!monorepoContext) {
+          if (!monorepoContext || monorepoContext.includeRootCommits === "false") {
             yield {
               author: commit.author,
               commit: commit.commit,
