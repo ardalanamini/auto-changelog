@@ -220,7 +220,10 @@ export class GitAPI extends APIBase {
       `--format=%(refname:strip=2)${ FIELD_SEPARATOR }%(objectname)${ RECORD_SEPARATOR }`,
       "refs/tags",
     ])) {
-      const [name] = record.split(FIELD_SEPARATOR);
+      let [name] = record.split(FIELD_SEPARATOR);
+
+      name = name.trim();
+
       if (!name) continue;
 
       if (monorepoContext && !name.startsWith(monorepoContext.tagPrefix)) continue;
