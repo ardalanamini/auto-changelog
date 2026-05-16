@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 const mocked = jest.createMockFromModule<typeof import("@actions/github")>("@actions/github");
 
@@ -35,4 +37,6 @@ Reflect.defineProperty(mocked.context, "repo", {
 
 mocked.context.serverUrl = "https://github.com";
 
-export = mocked;
+export const { context, getOctokit } = mocked;
+
+export default mocked;

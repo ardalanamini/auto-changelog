@@ -1,3 +1,4 @@
+import { expect, it } from "@jest/globals";
 import { getPackageTagPrefix, parsePackageTagSemanticVersion, parsePackageTagVersion } from "#monorepo";
 
 it("should build package tag prefixes", () => {

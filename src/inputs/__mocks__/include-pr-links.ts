@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const includePRLinks = jest.fn(() => true).mockName("includePrLinks");

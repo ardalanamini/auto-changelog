@@ -23,6 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
+import { expect, it, jest } from "@jest/globals";
 import { cache, input } from "#utils";
 
 it("should get input value", () => {

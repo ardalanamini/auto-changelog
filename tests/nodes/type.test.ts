@@ -23,6 +23,7 @@
  */
 
 import { context } from "@actions/github";
+import { expect, it } from "@jest/globals";
 import { CommitNode, Node, ScopeNode, TypeNode } from "#nodes";
 
 it("should not print anything when no scopes/commits are added", () => {

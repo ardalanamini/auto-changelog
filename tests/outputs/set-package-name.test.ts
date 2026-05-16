@@ -1,4 +1,5 @@
 import { info, setOutput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { setPackageName } from "#outputs";
 
 it("should log and set the package-name output", () => {

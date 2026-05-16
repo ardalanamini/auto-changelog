@@ -23,6 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { API } from "#constants";
 import { preferredApi } from "#inputs";
 

@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const useSemver = jest.fn(() => false).mockName("useSemver");

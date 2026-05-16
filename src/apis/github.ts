@@ -141,7 +141,7 @@ export class GitHubAPI extends APIBase {
 
           if (!monorepoContext || monorepoContext.includeRootCommits === "false") {
             yield {
-              author: commit.author,
+              author: commit.author && { login: commit.author.login },
               commit: commit.commit,
               sha   : commit.sha,
             };
@@ -154,7 +154,9 @@ export class GitHubAPI extends APIBase {
           if (!shouldIncludeCommit(files, monorepoContext)) continue;
 
           yield {
-            ...commit,
+            author: commit.author && { login: commit.author.login },
+            commit: commit.commit,
+            sha   : commit.sha,
             files,
           };
         }

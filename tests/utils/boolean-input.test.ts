@@ -23,6 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
+import { expect, it, jest } from "@jest/globals";
 import { booleanInput, cache } from "#utils";
 
 it("should get and parse a boolean input", () => {

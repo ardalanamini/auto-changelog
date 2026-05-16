@@ -23,6 +23,7 @@
  */
 
 /* eslint-disable no-undefined */
+import { describe, expect, it } from "@jest/globals";
 import { parseCommitMessage } from "#utils";
 
 describe("acceptable commit message formats", () => {

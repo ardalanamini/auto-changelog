@@ -23,6 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { setReleaseId } from "#outputs";
 
 it("should output \"release-id\" value", () => {

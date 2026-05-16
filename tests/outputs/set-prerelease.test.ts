@@ -23,6 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { setPrerelease } from "#outputs";
 
 it.each([true, false])("should output \"prerelease\" value as %j", (outputValue) => {

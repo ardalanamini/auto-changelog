@@ -23,6 +23,7 @@
  */
 
 import { getBooleanInput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { includeCompareLink } from "#inputs";
 
 // Unmock the inputs module for this test file

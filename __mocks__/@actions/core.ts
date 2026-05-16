@@ -22,7 +22,18 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 const mocked = jest.createMockFromModule<typeof import("@actions/core")>("@actions/core");
 
-export = mocked;
+export const {
+  debug,
+  getBooleanInput,
+  getInput,
+  info,
+  setFailed,
+  setOutput,
+} = mocked;
+
+export default mocked;

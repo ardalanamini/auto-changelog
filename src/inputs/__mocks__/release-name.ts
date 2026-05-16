@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const releaseName = jest.fn(() => "1.0.0").mockName("releaseName");

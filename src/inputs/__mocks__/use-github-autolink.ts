@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const useGitHubAutolink = jest.fn(() => true).mockName("useGitHubAutolink");

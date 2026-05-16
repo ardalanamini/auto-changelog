@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const preferredApi = jest.fn(() => "GitHub").mockName("preferredApi");

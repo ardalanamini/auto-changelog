@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { expect, it, jest } from "@jest/globals";
 import { cache, clearCache } from "#utils";
 
 it("should cache value", () => {

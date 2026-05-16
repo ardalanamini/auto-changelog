@@ -24,6 +24,7 @@
 
 import { setOutput } from "@actions/core";
 import { context } from "@actions/github";
+import { describe, expect, it, jest } from "@jest/globals";
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "#apis";
 import { includeCompareLink, mentionNewContributors, packageName, releaseName, useSemver } from "#inputs";
 

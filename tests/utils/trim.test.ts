@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { expect, it } from "@jest/globals";
 import { trim } from "#utils";
 
 it("should remove leading and trailing whitespace", () => {

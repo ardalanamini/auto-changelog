@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { expect, it, jest } from "@jest/globals";
 import { GitAPI, GitHubAPI, api } from "#apis";
 import { API } from "#constants";
 import { preferredApi } from "#inputs";

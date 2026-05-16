@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const mentionAuthors = jest.fn(() => true).mockName("mentionAuthors");

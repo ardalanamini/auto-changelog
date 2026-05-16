@@ -23,6 +23,7 @@
  */
 
 import { context } from "@actions/github";
+import { expect, it, jest } from "@jest/globals";
 import { includePRLinks, useGitHubAutolink } from "#inputs";
 import { Node, PullRequestNode } from "#nodes";
 

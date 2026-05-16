@@ -23,6 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { setChangelog } from "#outputs";
 
 it("should log and set the changelog output", () => {

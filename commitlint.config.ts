@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-// @ts-expect-error Commitlint doesn't support `.mts` files yet!
 import { type UserConfig } from "@commitlint/types";
 
 export default {

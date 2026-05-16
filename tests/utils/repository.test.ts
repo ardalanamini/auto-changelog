@@ -23,6 +23,7 @@
  */
 
 import { context } from "@actions/github";
+import { expect, it, jest } from "@jest/globals";
 import { repository } from "#utils";
 
 it("should get the repository information with constructed URL", () => {

@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 jest.mock("@actions/core");
 jest.mock("@actions/github");
 

@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const includeCommitLinks = jest.fn(() => true).mockName("includeCommitLinks");

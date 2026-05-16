@@ -24,6 +24,7 @@
 
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
+import { expect, it, jest } from "@jest/globals";
 import { gitHubToken } from "#inputs";
 import { octokit } from "#utils";
 

@@ -23,7 +23,7 @@
  */
 
 import { getOctokit } from "@actions/github";
-import { type GitHub } from "@actions/github/lib/utils.js";
+import { type GitHub } from "@actions/github/lib/utils";
 import { gitHubToken } from "#inputs";
 import { cache } from "./cache.js";
 

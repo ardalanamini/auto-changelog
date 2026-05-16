@@ -1,4 +1,5 @@
 import { getInput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { packageName } from "#inputs";
 
 jest.unmock("#inputs");

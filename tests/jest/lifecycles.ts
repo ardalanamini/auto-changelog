@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { afterEach } from "@jest/globals";
 import { clearCache } from "#utils";
 
 afterEach(() => clearCache());

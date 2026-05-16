@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const commitTypes = jest.fn(() => ({
   feat    : "New Features",
   fix     : "Bug Fixes",

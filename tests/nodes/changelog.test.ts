@@ -23,6 +23,7 @@
  */
 
 import { context } from "@actions/github";
+import { expect, it, jest } from "@jest/globals";
 import { commitTypes, defaultCommitType, useGitHubAutolink } from "#inputs";
 import { ChangelogNode, CommitNode, ScopeNode, TypeNode } from "#nodes";
 

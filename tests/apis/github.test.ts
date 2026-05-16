@@ -24,6 +24,7 @@
 
 import { getOctokit } from "@actions/github";
 import { GitHub } from "@actions/github/lib/utils";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import fetchMock from "fetch-mock";
 import { type TNewContributor, GitHubAPI } from "#apis";
 import { gitHubToken, releaseName, useSemver } from "#inputs";

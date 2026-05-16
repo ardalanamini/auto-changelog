@@ -118,7 +118,10 @@ export default {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources
   // with a single module
   moduleNameMapper: {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^(\\.{1,2}/.*)\\.js$"       : "$1",
+    "^@actions/core$"            : "<rootDir>/node_modules/@actions/core/lib/core.js",
+    "^@actions/github$"          : "<rootDir>/node_modules/@actions/github/lib/github.js",
+    "^@actions/github/lib/utils$": "<rootDir>/node_modules/@actions/github/lib/utils.js",
   },
 
   // An array of regexp pattern strings, matched against all module paths
@@ -213,10 +216,10 @@ export default {
 
   // An array of regexp pattern strings that are matched against all source file paths,
   // matched files will skip transformation
-  // transformIgnorePatterns: [
-  //   "/node_modules/",
-  //   "\\.pnp\\.[^\\/]+$"
-  // ],
+  transformIgnorePatterns: [
+    String.raw`/node_modules/(?!(?:\.pnpm/marked@|marked/))`,
+    String.raw`\.pnp\.[^\\/]+$`,
+  ],
 
   // An array of regexp pattern strings that are matched against all modules
   // before the module loader will automatically return a mock for them
@@ -229,7 +232,7 @@ export default {
   // watchPathIgnorePatterns: [],
 
   // Whether to use watchman for file crawling
-  // watchman: true,
+  watchman: false,
 
   logHeapUsage: true,
 

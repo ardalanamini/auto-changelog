@@ -22,4 +22,6 @@
  * SOFTWARE.
  */
 
+import { jest } from "@jest/globals";
+
 export const gitHubToken = jest.fn(() => "mock-github-token").mockName("gitHubToken");

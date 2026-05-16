@@ -23,6 +23,7 @@
  */
 
 import { info, setOutput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { output } from "#utils";
 
 it("should output value", () => {

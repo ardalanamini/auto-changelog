@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { expect, it, jest } from "@jest/globals";
 import { releaseName, releaseNamePrefix } from "#inputs";
 import { parseSemanticVersion } from "#utils";
 

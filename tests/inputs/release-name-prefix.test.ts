@@ -23,6 +23,7 @@
  */
 
 import { getInput } from "@actions/core";
+import { expect, it } from "@jest/globals";
 import { releaseNamePrefix } from "#inputs";
 
 // Unmock the inputs module for this test file
