@@ -27,18 +27,27 @@ import { type SemVer } from "semver";
 import {
   includeCompareLink,
   mentionNewContributors,
+  packageName,
   releaseName,
   releaseNamePrefix,
   useGitHubAutolink,
   useSemver,
 } from "#inputs";
+import {
+  type MonorepoContext,
+  detectMonorepoContext,
+  parsePackageTagSemanticVersion,
+  parsePackageTagVersion,
+} from "#monorepo";
 import { ChangelogNode } from "#nodes";
-import { setChangelog, setPrerelease, setReleaseId } from "#outputs";
+import { setChangelog, setPackageName, setPackagePath, setPrerelease, setReleaseId } from "#outputs";
 import { parseCommitMessage, parseSemanticVersion, repository as repositoryUtility, sha, trim } from "#utils";
 
 export abstract class APIBase {
 
   public readonly currentSHA = sha();
+
+  public readonly packageName = packageName();
 
   public readonly prerelease: boolean = false;
 
@@ -53,8 +62,16 @@ export abstract class APIBase {
   public readonly tagName = releaseName();
 
   public constructor() {
+    if (this.packageName && parsePackageTagVersion(this.tagName, this.packageName) == null) {
+      const expected = `${ this.packageName }@<version>`;
+
+      throw new Error(`Expected monorepo releaseName "${ expected }", got "${ this.tagName }".`);
+    }
+
     if (this.semver) {
-      this.semanticVersion = parseSemanticVersion(this.tagName);
+      this.semanticVersion = this.packageName
+        ? parsePackageTagSemanticVersion(this.tagName, this.packageName)
+        : parseSemanticVersion(this.tagName);
 
       if (this.semanticVersion == null) throw new Error(`Expected a semver compatible releaseName, got "${ releaseName() }" instead.`);
 
@@ -71,13 +88,18 @@ export abstract class APIBase {
    * and sets the complete changelog output.
    */
   public async generate(): Promise<void> {
-    const { prerelease, releaseId, previous } = await this.getTagInfo();
+    const monorepoContext = await detectMonorepoContext();
+    const { prerelease, releaseId, previous } = await this.getTagInfo(monorepoContext);
 
     setPrerelease(prerelease);
 
     setReleaseId(releaseId);
 
-    let changelog = await this.generateChangelog(previous?.sha);
+    setPackageName(monorepoContext?.selectedPackage.name ?? "");
+
+    setPackagePath(monorepoContext?.selectedPackage.path ?? "");
+
+    let changelog = await this.generateChangelog(previous?.sha, monorepoContext);
 
     changelog += await this.generateFooter(previous?.name);
 
@@ -95,10 +117,10 @@ export abstract class APIBase {
    * @param lastSha - Optional SHA of the last processed commit; if provided, only newer commits are included.
    * @returns The formatted changelog string, or an empty string if there are no relevant commits.
    */
-  public async generateChangelog(lastSha?: string): Promise<string> {
+  public async generateChangelog(lastSha?: string, monorepoContext?: MonorepoContext | null): Promise<string> {
     const changelogNode = new ChangelogNode();
 
-    for await (const commit of this.iterateCommits(lastSha)) {
+    for await (const commit of this.iterateCommits(lastSha, monorepoContext)) {
       const message = commit.commit.message.split("\n")[0];
 
       debug(`commit message -> ${ message } (${ commit.sha })`);
@@ -167,7 +189,7 @@ export abstract class APIBase {
     return footer.join("\n\n");
   }
 
-  public async getTagInfo(): Promise<TTagInfo> {
+  public async getTagInfo(monorepoContext?: MonorepoContext | null): Promise<TTagInfo> {
     const { releaseId, prerelease } = this;
 
     const info: TTagInfo = {
@@ -175,7 +197,7 @@ export abstract class APIBase {
       prerelease: prerelease,
     };
 
-    const previousTag = await this.getPreviousTag();
+    const previousTag = await this.getPreviousTag(monorepoContext);
 
     if (previousTag != null) info.previous = previousTag;
 
@@ -197,9 +219,9 @@ export abstract class APIBase {
 
   public abstract getNewContributors(previousTagName?: string): Promise<string | null>;
 
-  public abstract getPreviousTag(): Promise<TTag | null>;
+  public abstract getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null>;
 
-  public abstract iterateCommits(fromSHA?: string): AsyncGenerator<TCommit>;
+  public abstract iterateCommits(fromSHA?: string, monorepoContext?: MonorepoContext | null): AsyncGenerator<TCommit>;
 
   protected abstract listNewContributors(previousTagName?: string): AsyncGenerator<TNewContributor>;
 
@@ -213,6 +235,8 @@ export interface TCommit {
   commit: {
     message: string;
   };
+
+  files?: string[];
 
   sha: string;
 }

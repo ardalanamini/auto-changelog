@@ -27,9 +27,29 @@ import { GitHub } from "@actions/github/lib/utils";
 import fetchMock from "fetch-mock";
 import { type TNewContributor, GitHubAPI } from "#apis";
 import { gitHubToken, releaseName, useSemver } from "#inputs";
+import { type MonorepoContext } from "#monorepo";
 import { cache, clearCache } from "#utils";
 
 const SERVER_ERROR_STATUS = 500;
+
+const monorepoContext: MonorepoContext = {
+  includeRootCommits: "false",
+  packages          : [
+    {
+      name: "web",
+      path: "apps/web",
+    },
+    {
+      name: "api",
+      path: "apps/api",
+    },
+  ],
+  selectedPackage: {
+    name: "web",
+    path: "apps/web",
+  },
+  tagPrefix: "web@",
+};
 
 class TestGitHubAPI extends GitHubAPI {
 
@@ -597,6 +617,63 @@ describe("iterateCommits", () => {
 
     expect(getOctokit).toHaveBeenCalledTimes(1);
     expect(getOctokit).toHaveBeenCalledWith(gitHubTokenInputValue);
+  });
+
+  it("should use GitHub path filtering for package commits without root commits", async () => {
+    const gitHubTokenInputValue = "github-token-value";
+
+    jest.mocked(gitHubToken).mockReturnValueOnce(gitHubTokenInputValue);
+
+    const commit = {
+      author: {
+        login: "ardalanamini",
+      },
+      commit: {
+        message: "feat: update web app",
+      },
+      sha: "3c1177539c1a216084f922ea52e56dd719a25945",
+    };
+
+    cache("sha", () => commit.sha);
+
+    const fromSha = "7a94b0db6150850cb1ae7243b13a4c972e9db261";
+
+    const fetch = fetchMock.getOnce(
+      "begin:https://api.github.com/repos/ardalanamini/auto-changelog/commits",
+      [
+        commit,
+        {
+          author: {
+            login: "ardalanamini",
+          },
+          commit: {
+            message: "feat: previous web app change",
+          },
+          sha: fromSha,
+        },
+      ],
+    );
+
+    const gitHub = new GitHub({ request: { fetch: fetch.fetchHandler } });
+
+    jest.mocked(getOctokit).mockImplementationOnce(() => gitHub);
+
+    const githubAPI = new GitHubAPI();
+    const result = githubAPI.iterateCommits(fromSha, monorepoContext);
+
+    expect(await result.next()).toEqual({
+      done : false,
+      value: commit,
+    });
+
+    expect(await result.next()).toEqual({
+      done: true,
+    });
+
+    const calls = fetch.callHistory.calls();
+
+    expect(calls).toHaveLength(1);
+    expect(new URL(calls[0]!.url).searchParams.get("path")).toBe("apps/web");
   });
 
   it("should throw a normalized error when commits cannot be listed", async () => {
