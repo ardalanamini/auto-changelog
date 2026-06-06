@@ -27,7 +27,7 @@ import { EventEmitter } from "node:events";
 import { debug, getInput } from "@actions/core";
 import { beforeEach, describe, expect, it } from "@jest/globals";
 import { GitAPI } from "#apis";
-import { packageName, releaseName, useSemver } from "#inputs";
+import { releaseName, useSemver } from "#inputs";
 import { type MonorepoContext } from "#monorepo";
 import { cache } from "#utils";
 
@@ -116,7 +116,6 @@ describe("GitAPI", () => {
   beforeEach(() => {
     jest.mocked(useSemver).mockReturnValue(false);
     jest.mocked(releaseName).mockReturnValue("2.0.0");
-    jest.mocked(packageName).mockReturnValue("");
     jest.mocked(getInput).mockImplementation((name: string) => (name === "github-token" ? "" : ""));
   });
 
@@ -186,7 +185,6 @@ describe("GitAPI", () => {
   });
 
   it("selects previous package tag using the selected package prefix", async () => {
-    jest.mocked(packageName).mockReturnValueOnce("web");
     jest.mocked(useSemver).mockReturnValueOnce(true);
     jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0");
 
@@ -216,8 +214,7 @@ describe("GitAPI", () => {
     });
   });
 
-  it("filters commits by selected package files in package mode", async () => {
-    jest.mocked(packageName).mockReturnValueOnce("web");
+  it("filters commits by selected package files in package context", async () => {
     jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0");
 
     setSpawnImplementation((gitArguments) => {

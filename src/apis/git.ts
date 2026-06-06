@@ -206,7 +206,8 @@ export class GitAPI extends APIBase {
   }
 
   public async getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null> {
-    const { currentSHA, semanticVersion } = this;
+    const { currentSHA } = this;
+    const semanticVersion = this.getCurrentSemanticVersion(monorepoContext);
     debug(`[git-api] getPreviousTag start (currentSHA=${ currentSHA }, semver=${ semanticVersion ? "enabled" : "disabled" })`);
 
     let best: Array<{
@@ -335,7 +336,7 @@ export class GitAPI extends APIBase {
             break;
           }
 
-          /* eslint-disable-next-line no-await-in-loop -- package mode needs per-commit file data */
+          /* eslint-disable-next-line no-await-in-loop -- package context needs per-commit file data */
           const files = monorepoContext ? await listCommitFiles(shaValue.trim()) : void 0;
 
           if (monorepoContext && !shouldIncludeCommit(files ?? [], monorepoContext)) {

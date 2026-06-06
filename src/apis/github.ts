@@ -58,7 +58,8 @@ export class GitHubAPI extends APIBase {
   }
 
   public async getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null> {
-    const { gitHub, repository, currentSHA, semanticVersion } = this;
+    const { gitHub, repository, currentSHA } = this;
+    const semanticVersion = this.getCurrentSemanticVersion(monorepoContext);
 
     try {
       let best: {
@@ -148,7 +149,7 @@ export class GitHubAPI extends APIBase {
             continue;
           }
 
-          /* eslint-disable-next-line no-await-in-loop -- package mode needs per-commit file data */
+          /* eslint-disable-next-line no-await-in-loop -- package context needs per-commit file data */
           const files = await this.listCommitFiles(commit.sha);
 
           if (!shouldIncludeCommit(files, monorepoContext)) continue;

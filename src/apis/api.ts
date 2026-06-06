@@ -27,7 +27,6 @@ import { type SemVer } from "semver";
 import {
   includeCompareLink,
   mentionNewContributors,
-  packageName,
   releaseName,
   releaseNamePrefix,
   useGitHubAutolink,
@@ -37,7 +36,6 @@ import {
   type MonorepoContext,
   detectMonorepoContext,
   parsePackageTagSemanticVersion,
-  parsePackageTagVersion,
 } from "#monorepo";
 import { ChangelogNode } from "#nodes";
 import { setChangelog, setPackageName, setPackagePath, setPrerelease, setReleaseId } from "#outputs";
@@ -47,39 +45,11 @@ export abstract class APIBase {
 
   public readonly currentSHA = sha();
 
-  public readonly packageName = packageName();
-
-  public readonly prerelease: boolean = false;
-
-  public readonly releaseId: string = "latest";
-
   public readonly repository = repositoryUtility();
-
-  public readonly semanticVersion: SemVer | null = null;
 
   public readonly semver = useSemver();
 
   public readonly tagName = releaseName();
-
-  public constructor() {
-    if (this.packageName && parsePackageTagVersion(this.tagName, this.packageName) == null) {
-      const expected = `${ this.packageName }@<version>`;
-
-      throw new Error(`Expected monorepo releaseName "${ expected }", got "${ this.tagName }".`);
-    }
-
-    if (this.semver) {
-      this.semanticVersion = this.packageName
-        ? parsePackageTagSemanticVersion(this.tagName, this.packageName)
-        : parseSemanticVersion(this.tagName);
-
-      if (this.semanticVersion == null) throw new Error(`Expected a semver compatible releaseName, got "${ releaseName() }" instead.`);
-
-      this.prerelease = this.semanticVersion.prerelease.length > 0;
-
-      if (this.prerelease) this.releaseId = `${ this.semanticVersion.prerelease[0] }`;
-    }
-  }
 
   /**
    * Generates and sets release metadata and changelog content based on the latest tag information.
@@ -190,7 +160,7 @@ export abstract class APIBase {
   }
 
   public async getTagInfo(monorepoContext?: MonorepoContext | null): Promise<TTagInfo> {
-    const { releaseId, prerelease } = this;
+    const { releaseId, prerelease } = this.getCurrentTagInfo(monorepoContext);
 
     const info: TTagInfo = {
       releaseId : releaseId,
@@ -215,6 +185,36 @@ export abstract class APIBase {
     if (contributors.length === 0) return null;
 
     return `## New Contributors\n${ contributors.join("\n") }\n`;
+  }
+
+  protected getCurrentSemanticVersion(monorepoContext?: MonorepoContext | null): SemVer | null {
+    if (!this.semver) return null;
+
+    const semanticVersion = monorepoContext
+      ? parsePackageTagSemanticVersion(this.tagName, monorepoContext.selectedPackage.name)
+      : parseSemanticVersion(this.tagName);
+
+    if (semanticVersion == null) throw new Error(`Expected a semver compatible releaseName, got "${ this.tagName }" instead.`);
+
+    return semanticVersion;
+  }
+
+  protected getCurrentTagInfo(monorepoContext?: MonorepoContext | null): Pick<TTagInfo, "prerelease" | "releaseId"> {
+    const semanticVersion = this.getCurrentSemanticVersion(monorepoContext);
+
+    if (semanticVersion == null) {
+      return {
+        releaseId : "latest",
+        prerelease: false,
+      };
+    }
+
+    const prerelease = semanticVersion.prerelease.length > 0;
+
+    return {
+      prerelease,
+      releaseId: prerelease ? `${ semanticVersion.prerelease[0] }` : "latest",
+    };
   }
 
   public abstract getNewContributors(previousTagName?: string): Promise<string | null>;

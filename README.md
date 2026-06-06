@@ -14,7 +14,6 @@ Automatic Changelog generator
   - [Commit Types](#commit-types)
   - [Default Commit Type](#default-commit-type)
   - [Release Name](#release-name)
-  - [Package](#package)
   - [Monorepo Detectors](#monorepo-detectors)
   - [Include Root Commits](#include-root-commits)
   - [Release Name Prefix](#release-name-prefix)
@@ -141,21 +140,7 @@ Other Changes
 
 Release name (version, e.g. `v1.0.0`).
 
-_Default:_
-
-```yaml
-${{ github.ref_name }}
-```
-
-#### `package`
-
-**(Optional)**
-
-Monorepo package/app name to generate the changelog for.
-
-When this input is empty, the action keeps the current repository-wide behavior and does not run monorepo detection.
-
-When this input is set, the action detects workspace packages, selects the matching package by name, and expects package release tags in this format:
+For monorepo package releases, use package release tags in this format:
 
 ```txt
 {name}@{version}
@@ -169,17 +154,19 @@ api@2.0.0
 @scope/ui@0.4.1
 ```
 
+When `release-name` matches a detected workspace package tag, the action generates a package changelog.
+
 _Default:_
 
 ```yaml
-""
+${{ github.ref_name }}
 ```
 
 #### `monorepo-detectors`
 
 **(Optional)**
 
-Monorepo detection strategies used when `package` is set.
+Monorepo detection strategies used for package release tags.
 
 Possible options:
 
@@ -208,7 +195,7 @@ auto
 
 **(Optional)**
 
-Controls root/shared commits in monorepo package changelogs. This input is ignored when `package` is empty.
+Controls root/shared commits in monorepo package changelogs. This input is ignored when `release-name` does not match a detected package tag.
 
 Possible options:
 
@@ -350,11 +337,11 @@ The pre-release id in case of pre-release being `true`, `latest` otherwise. (e.g
 
 #### `package-name`
 
-The selected monorepo package name when `package` mode is enabled, otherwise an empty string.
+The selected monorepo package name when a package release tag is detected, otherwise an empty string.
 
 #### `package-path`
 
-The selected monorepo package path when `package` mode is enabled, otherwise an empty string.
+The selected monorepo package path when a package release tag is detected, otherwise an empty string.
 
 ### Example Usage
 
@@ -389,7 +376,6 @@ Using with custom inputs:
       revert  : Reverts
     default-commit-type     : Other Changes
     release-name            : v1.0.0
-    package                 : ""
     monorepo-detectors      : auto
     include-root-commits    : false
     release-name-prefix     : ""
@@ -409,7 +395,6 @@ Using with a monorepo package release:
   id  : changelog
   name: Changelog
   with:
-    package             : web
     release-name        : web@1.2.3
     monorepo-detectors  : pnpm,nx
     include-root-commits: auto

@@ -14,10 +14,10 @@ import {
   type MonorepoDetector,
   includeRootCommits,
   monorepoDetectors,
-  packageName as packageNameInput,
+  releaseName as releaseNameInput,
 } from "#inputs";
 import { type MonorepoContext, type MonorepoPackage, normalizePackagePath } from "./package.js";
-import { getPackageTagPrefix } from "./tags.js";
+import { getPackageTagPrefix, parsePackageTagName } from "./tags.js";
 
 interface PackageJson {
   name?: string;
@@ -306,25 +306,62 @@ function expandDetectors(detectors: MonorepoDetector[]): Array<Exclude<MonorepoD
   return detectors.filter(detector => detector !== "auto");
 }
 
-export async function detectMonorepoContext(root = process.cwd()): Promise<MonorepoContext | null> {
-  const selectedPackageName = packageNameInput();
+function detectedPackageSuffix(packages: MonorepoPackage[]): string {
+  const names = packages.map(monorepoPackage => monorepoPackage.name).toSorted((a, b) => a.localeCompare(b));
 
-  if (!selectedPackageName) return null;
+  if (names.length > 0) return ` Detected packages: ${ names.join(", ") }.`;
+
+  return " No packages were detected.";
+}
+
+function formatPackage(monorepoPackage: MonorepoPackage): string {
+  return `${ monorepoPackage.name } (${ monorepoPackage.path })`;
+}
+
+function selectPackageFromReleaseName(tagName: string, packages: MonorepoPackage[]): MonorepoPackage | null {
+  const matches = packages
+    .map(monorepoPackage => ({
+      monorepoPackage,
+      tagPrefix: getPackageTagPrefix(monorepoPackage.name),
+    }))
+    .filter(({ tagPrefix }) => tagName.startsWith(tagPrefix) && tagName.length > tagPrefix.length)
+    .toSorted((a, b) => b.tagPrefix.length - a.tagPrefix.length);
+
+  if (matches.length === 0) return null;
+
+  const firstMatch = matches[0];
+
+  const longestMatches = matches.filter(match => match.tagPrefix.length === firstMatch.tagPrefix.length);
+
+  if (longestMatches.length > 1) {
+    const matchingPackages = longestMatches
+      .map(({ monorepoPackage }) => formatPackage(monorepoPackage))
+      .join(", ");
+
+    throw new Error(`Ambiguous monorepo package releaseName "${ tagName }". Matching packages: ${ matchingPackages }.`);
+  }
+
+  return firstMatch.monorepoPackage;
+}
+
+export async function detectMonorepoContext(root = process.cwd()): Promise<MonorepoContext | null> {
+  const tagName = releaseNameInput();
+
+  if (!tagName.includes("@")) return null;
 
   const detectors = expandDetectors(monorepoDetectors());
   const packageDetections = detectors.map(async detector => detectPackagesForDetector(root, detector));
   const detectedPackages = await Promise.all(packageDetections);
   const packages = uniquePackages(detectedPackages.flat());
 
-  const selectedPackage = packages.find(monorepoPackage => monorepoPackage.name === selectedPackageName);
+  const selectedPackage = selectPackageFromReleaseName(tagName, packages);
 
   if (!selectedPackage) {
-    const names = packages.map(monorepoPackage => monorepoPackage.name).toSorted((a, b) => a.localeCompare(b));
-    const suffix = names.length > 0
-      ? ` Detected packages: ${ names.join(", ") }.`
-      : " No packages were detected.";
+    const selectedPackageName = parsePackageTagName(tagName);
 
-    throw new Error(`Could not find monorepo package "${ selectedPackageName }".${ suffix }`);
+    if (selectedPackageName == null) return null;
+
+    throw new Error(`Could not find monorepo package "${ selectedPackageName }".${ detectedPackageSuffix(packages) }`);
   }
 
   return {

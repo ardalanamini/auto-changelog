@@ -32,7 +32,6 @@ export * from "./include-root-commits.js";
 export * from "./mention-authors.js";
 export * from "./mention-new-contributors.js";
 export * from "./monorepo-detectors.js";
-export * from "./package.js";
 export * from "./preferred-api.js";
 export * from "./release-name-prefix.js";
 export * from "./release-name.js";

@@ -26,7 +26,23 @@ import { setOutput } from "@actions/core";
 import { context } from "@actions/github";
 import { describe, expect, it, jest } from "@jest/globals";
 import { type TCommit, type TNewContributor, type TTag, APIBase } from "#apis";
-import { includeCompareLink, mentionNewContributors, packageName, releaseName, useSemver } from "#inputs";
+import { includeCompareLink, mentionNewContributors, releaseName, useSemver } from "#inputs";
+import { type MonorepoContext } from "#monorepo";
+
+const monorepoContext: MonorepoContext = {
+  includeRootCommits: "false",
+  packages          : [
+    {
+      name: "web",
+      path: "apps/web",
+    },
+  ],
+  selectedPackage: {
+    name: "web",
+    path: "apps/web",
+  },
+  tagPrefix: "web@",
+};
 
 class TestAPI extends APIBase {
 
@@ -109,7 +125,6 @@ describe("getTagInfo", () => {
       },
     };
 
-    jest.mocked(packageName).mockReturnValueOnce("web");
     jest.mocked(useSemver).mockReturnValueOnce(true);
     jest.mocked(releaseName).mockReturnValueOnce("web@2.0.0-beta.1");
 
@@ -117,16 +132,9 @@ describe("getTagInfo", () => {
 
     jest.spyOn(testAPI, "getPreviousTag").mockImplementationOnce(async () => info.previous);
 
-    const result = await testAPI.getTagInfo();
+    const result = await testAPI.getTagInfo(monorepoContext);
 
     expect(result).toEqual(info);
-  });
-
-  it("should reject package releases that do not match the selected package tag prefix", () => {
-    jest.mocked(packageName).mockReturnValueOnce("web");
-    jest.mocked(releaseName).mockReturnValueOnce("api@1.0.0");
-
-    expect(() => new TestAPI()).toThrow("Expected monorepo releaseName \"web@<version>\"");
   });
 });
 

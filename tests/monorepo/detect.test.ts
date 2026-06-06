@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { includeRootCommits, monorepoDetectors, packageName } from "#inputs";
+import { includeRootCommits, monorepoDetectors, releaseName } from "#inputs";
 import { detectMonorepoContext } from "#monorepo";
 
 async function writeJson(path: string, value: unknown): Promise<void> {
@@ -20,7 +20,7 @@ describe("detectMonorepoContext", () => {
   beforeEach(async () => {
     root = await mkdtemp(join(tmpdir(), "auto-changelog-monorepo-"));
 
-    jest.mocked(packageName).mockReturnValue("web");
+    jest.mocked(releaseName).mockReturnValue("web@1.0.0");
     jest.mocked(monorepoDetectors).mockReturnValue(["auto"]);
     jest.mocked(includeRootCommits).mockReturnValue("false");
   });
@@ -32,8 +32,8 @@ describe("detectMonorepoContext", () => {
     });
   });
 
-  it("should return null when package input is empty", async () => {
-    jest.mocked(packageName).mockReturnValueOnce("");
+  it("should return null when release name is not a package tag", async () => {
+    jest.mocked(releaseName).mockReturnValueOnce("1.0.0");
 
     await expect(detectMonorepoContext(root)).resolves.toBeNull();
   });
@@ -65,6 +65,7 @@ describe("detectMonorepoContext", () => {
 
   it("should detect package.json workspace packages", async () => {
     jest.mocked(monorepoDetectors).mockReturnValueOnce(["npm"]);
+    jest.mocked(releaseName).mockReturnValueOnce("web@1.0.0");
 
     await writeJson(join(root, "package.json"), { workspaces: ["packages/*"] });
     await createPackage(root, "packages/web", "web");
@@ -79,6 +80,7 @@ describe("detectMonorepoContext", () => {
 
   it("should detect lerna packages", async () => {
     jest.mocked(monorepoDetectors).mockReturnValueOnce(["lerna"]);
+    jest.mocked(releaseName).mockReturnValueOnce("web@1.0.0");
 
     await writeJson(join(root, "lerna.json"), { packages: ["modules/*"] });
     await createPackage(root, "modules/web", "web");
@@ -93,6 +95,7 @@ describe("detectMonorepoContext", () => {
 
   it("should detect nx project packages", async () => {
     jest.mocked(monorepoDetectors).mockReturnValueOnce(["nx"]);
+    jest.mocked(releaseName).mockReturnValueOnce("web@1.0.0");
 
     await writeJson(join(root, "workspace.json"), {
       projects: {
@@ -109,8 +112,23 @@ describe("detectMonorepoContext", () => {
     });
   });
 
+  it("should detect scoped package tags", async () => {
+    jest.mocked(releaseName).mockReturnValueOnce("@scope/ui@1.0.0");
+
+    await writeFile(join(root, "pnpm-workspace.yaml"), "packages:\n  - packages/*\n", "utf8");
+    await createPackage(root, "packages/ui", "@scope/ui");
+
+    await expect(detectMonorepoContext(root)).resolves.toMatchObject({
+      selectedPackage: {
+        name: "@scope/ui",
+        path: "packages/ui",
+      },
+      tagPrefix: "@scope/ui@",
+    });
+  });
+
   it("should throw with detected package names when selected package is missing", async () => {
-    jest.mocked(packageName).mockReturnValueOnce("missing");
+    jest.mocked(releaseName).mockReturnValueOnce("missing@1.0.0");
 
     await writeFile(join(root, "pnpm-workspace.yaml"), "packages:\n  - apps/*\n", "utf8");
     await createPackage(root, "apps/web", "web");
