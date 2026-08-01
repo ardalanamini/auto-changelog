@@ -24,7 +24,7 @@ jobs:
       - test
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Changelog
         uses: ardalanamini/auto-changelog@main
