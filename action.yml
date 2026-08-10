@@ -86,6 +86,11 @@ inputs:
     required: true
     default: 'true'
 
+  tag-pattern:
+    description: Tag pattern to filter previous tags for changelog generation (e.g., "player-*")
+    required: false
+    default: ""
+
   semver:
     description: Enable semver based version comparison
     required: true
