@@ -29,6 +29,7 @@ import {
   mentionNewContributors,
   releaseName,
   releaseNamePrefix,
+  tagPattern,
   useGitHubAutolink,
   useSemver,
 } from "#inputs";
@@ -167,7 +168,7 @@ export abstract class APIBase {
       prerelease: prerelease,
     };
 
-    const previousTag = await this.getPreviousTag(monorepoContext);
+    const previousTag = await this.getPreviousTag(monorepoContext, tagPattern());
 
     if (previousTag != null) info.previous = previousTag;
 
@@ -219,7 +220,7 @@ export abstract class APIBase {
 
   public abstract getNewContributors(previousTagName?: string): Promise<string | null>;
 
-  public abstract getPreviousTag(monorepoContext?: MonorepoContext | null): Promise<TTag | null>;
+  public abstract getPreviousTag(monorepoContext?: MonorepoContext | null, pattern?: string): Promise<TTag | null>;
 
   public abstract iterateCommits(fromSHA?: string, monorepoContext?: MonorepoContext | null): AsyncGenerator<TCommit>;
 
